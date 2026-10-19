@@ -22,6 +22,7 @@ Tick a box when a phase is done.
 | 3 | Install Fedora | 45 min | You (at desktop) | [ ] |
 | 4 | First boot basics | 30 min | You (at desktop) | [ ] |
 | 5 | SSH from the laptop | 15 min | You + Claude | [ ] |
+| 5b | This repo + Claude on the server | 15 min | You | [ ] |
 | 6 | Tailscale (private network) | 30 min | You + Claude | [ ] |
 | 7 | Lock it down | 40 min | Claude, you approve | [ ] |
 | 8 | Netheron workspace | 1 hour | Decide together, then Claude | [ ] |
@@ -128,6 +129,25 @@ Open **Konsole** (the terminal). Run each command, one at a time.
 5. Tell Claude your username and IP (**never the password**). From here, Claude can do setup over SSH.
 
 **Done when:** `ssh yourusername@IP` logs in with no password prompt.
+
+---
+
+## Phase 5b: This repo + Claude on the server (15 min)
+
+This folder lives in the private GitHub repo `DrKingSchultz69/home-server`, so Claude on the server gets the same plan and notes.
+
+1. On the server, install the GitHub CLI and sign in (pick GitHub.com, HTTPS, log in with a browser):
+   ```bash
+   sudo dnf install -y gh git && gh auth login
+   ```
+2. Download the repo into `~/Server`:
+   ```bash
+   gh repo clone DrKingSchultz69/home-server ~/Server
+   ```
+3. Install Claude Code on the server (instructions at claude.com/claude-code), then run `claude` inside `~/Server`.
+4. **Keep both machines in sync:** run `git pull` before you start working, and `git add -A && git commit -m "what changed" && git push` when you finish.
+
+**Done when:** `claude` on the server can see `CLAUDE.md` and this plan.
 
 ---
 
