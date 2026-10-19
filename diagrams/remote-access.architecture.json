@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Home Server Remote Access",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [1080, 520]
+  },
+  "components": [
+    { "id": "mine", "type": "frontend", "label": "Your devices", "sublabel": "OMEN laptop · Galaxy S24", "tag": "approved", "pos": [40, 70], "size": [170, 56] },
+    { "id": "family", "type": "frontend", "label": "Family devices", "sublabel": "phones · tablets", "tag": "approved", "pos": [40, 190], "size": [170, 56] },
+    { "id": "tv", "type": "frontend", "label": "Living-room TV", "sublabel": "home Wi-Fi", "pos": [40, 330], "size": [170, 56] },
+    { "id": "internet", "type": "external", "label": "Public internet", "sublabel": "bots · strangers", "pos": [40, 440], "size": [170, 56] },
+    { "id": "tailscale", "type": "security", "label": "Tailscale", "sublabel": "device approval + ACLs", "pos": [400, 140], "size": [170, 64] },
+    { "id": "firewall", "type": "security", "label": "firewalld", "sublabel": "home Wi-Fi zone", "pos": [400, 330], "size": [170, 56] },
+    { "id": "router", "type": "security", "label": "Home router", "sublabel": "no open ports", "pos": [400, 440], "size": [170, 56] },
+    { "id": "netheron", "type": "backend", "label": "Netheron", "sublabel": ":4141 · Tailscale IP only", "pos": [800, 40], "size": [190, 56] },
+    { "id": "ssh", "type": "backend", "label": "SSH", "sublabel": "Tailscale SSH · check mode", "pos": [800, 130], "size": [190, 56] },
+    { "id": "files", "type": "database", "label": "Your files", "sublabel": "1 TB HDD", "pos": [800, 220], "size": [190, 56] },
+    { "id": "streaming", "type": "backend", "label": "Streaming site", "sublabel": "rootless container + login", "pos": [800, 330], "size": [190, 56] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Fedora desktop server", "wraps": ["netheron", "ssh", "files", "streaming"] },
+    { "kind": "security-group", "label": "streamer user · own network", "wraps": ["streaming"] }
+  ],
+  "connections": [
+    { "id": "mine-to-tailscale", "from": "mine", "to": "tailscale", "label": "encrypted", "variant": "emphasis" },
+    { "id": "family-to-tailscale", "from": "family", "to": "tailscale", "label": "streaming-only ACL" },
+    { "id": "tailscale-to-netheron", "from": "tailscale", "to": "netheron", "label": "your devices only", "variant": "security" },
+    { "id": "tailscale-to-ssh", "from": "tailscale", "to": "ssh", "variant": "security" },
+    { "id": "tailscale-to-files", "from": "tailscale", "to": "files", "variant": "security" },
+    { "id": "tailscale-to-streaming", "from": "tailscale", "to": "streaming", "label": "family + you", "labelSegment": 2 },
+    { "id": "tv-to-firewall", "from": "tv", "to": "firewall", "label": "LAN" },
+    { "id": "firewall-to-streaming", "from": "firewall", "to": "streaming", "label": "streaming only", "labelDx": -55 },
+    { "id": "internet-to-router", "from": "internet", "to": "router", "label": "blocked", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Who reaches what", "items": ["You: everything", "Family + TV: streaming only", "Internet: nothing"] },
+    { "dot": "rose", "title": "Lost device", "items": ["Remove it in Tailscale admin", "Wipe, rotate keys and tokens"] },
+    { "dot": "violet", "title": "Isolation", "items": ["streamer user, rootless container", "Auto security updates"] }
+  ]
+}

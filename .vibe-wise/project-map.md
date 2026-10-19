@@ -1,0 +1,49 @@
+# Project Map
+
+## Purpose
+Turn a desktop PC into a home server that also stays usable as a normal daily PC.
+
+## Requirements
+- Hardware: Intel i5 7th gen, NVIDIA GT 710, 8 GB RAM, 1 TB HDD.
+- Dual use: normal desktop PC and always-on server at the same time.
+- Wanted uses: websites/apps, files and media, game server, AI/dev tools.
+- Main remote use: maintain files and projects on the server, and run Claude Code or Netheron in a workspace there.
+- Netheron (per the learner's description): a local control room running Claude Code, Codex, OpenCode, Pi, Oh My Pi and a shell side by side. Ports 4141/4142/4143 (plus 5141–5143 for a test copy); 4141 must never be reachable from outside the server; data in ~/.mm; health checks at /health (4141) and /api/version (4142). It says to keep it private and to run fewer agents if memory is short.
+- Devices: OMEN laptop and Galaxy S24 (learner), family members' phones and other devices, living-room TV.
+- Family streams at home (TV on the same Wi-Fi) and away from home. Learner's idea: build their own streaming website on the server.
+- Requirements stated by learner: no ports opened on the router; traffic encrypted; the streaming site must not become a way into Netheron, SSH or files; approve only devices known to be safe; follow Cloudflare's terms if Cloudflare is used.
+- Management laptop: OMEN 16 (Windows 11), used to set up and reach the server.
+
+## Components
+- OS: Fedora (chosen by learner). KDE Plasma edition was proposed by AI; not explicitly confirmed.
+- Remote access: Tailscale private network (chosen; confirmed at the Design checkpoint). Not yet implemented.
+- Proposed by AI before learn mode started, not yet decided: Docker or Podman, Jellyfin, File Browser/Syncthing/Samba, Minecraft (Paper), Uptime Kuma, cloud-API AI agents. Removing the GT 710 was also an AI recommendation.
+
+## Main Flow
+Remote access design (chosen, not implemented):
+- Learner's laptop and phone --(Tailscale + login)--> Netheron, SSH, files, streaming
+- Family devices --(Tailscale, access rules: streaming only + streaming login)--> streaming website
+- New device --> request access --> learner approves or removes it in the Tailscale admin console
+- Living-room TV --(home Wi-Fi)--> streaming website
+- Internet --X--> nothing (no router ports, nothing public)
+
+## Data and Trust Boundaries
+Chosen (learner decisions):
+- Netheron, SSH and files bound to the Tailscale IP, never 0.0.0.0; never public.
+- Device approval on; only devices known to be safe.
+- Lost device plan: key expiry on, Tailscale SSH in check mode, 2FA on the sign-in account (not SMS), phone screen lock and remote wipe; on loss, remove the device, sign out of all sessions, wipe, rotate keys and tokens.
+- Streaming isolation: hardened rootless container under a separate `streamer` user (drop all capabilities, no new privileges, media mounted read-only, no container socket), separate container network plus firewall, Netheron's own login (never "trust localhost"), least-privilege secrets (scoped keys, chmod 600). No VM (RAM cost on 8 GB).
+Approved AI additions:
+- Automatic security updates on Fedora.
+- Streaming listens only on home Wi-Fi and Tailscale.
+- firewalld blocks everything on home Wi-Fi except streaming.
+
+## Build and Deployment
+Nothing installed yet. Fedora install steps were given to the learner; not confirmed done.
+
+## Unknowns
+- Whether Fedora is installed yet; whether the HDD can be wiped; RAM/SSD upgrades.
+- Tailscale free-plan user limit vs the number of family members.
+- Streaming: custom website vs a ready-made media server; video formats the TV browser can play; home upload speed for away-from-home streaming.
+- Memory: Netheron running several agents on 8 GB alongside other services.
+- Container runtime (Podman vs Docker) and where data lives on the 1 TB HDD.
