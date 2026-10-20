@@ -16,10 +16,10 @@ Tick a box when a phase is done.
 
 | # | Phase | Time | Who | Done |
 |---|---|---|---|---|
-| 0 | Prepare | 15 min | You | [ ] |
-| 1 | Make the boot USB | 20 min | You (on laptop) | [ ] |
-| 2 | BIOS settings | 10 min | You (at desktop) | [ ] |
-| 3 | Install Fedora | 45 min | You (at desktop) | [ ] |
+| 0 | Prepare | 15 min | You | [x] |
+| 1 | Make the boot USB | 20 min | You (on laptop) | [x] |
+| 2 | BIOS settings | 10 min | You (at desktop) | [x] |
+| 3 | Install Fedora | 45 min | You (at desktop) | [x] |
 | 4 | First boot basics | 30 min | You (at desktop) | [ ] |
 | 5 | SSH from the laptop | 15 min | You + Claude | [ ] |
 | 5b | This repo + Claude on the server | 15 min | You | [ ] |
