@@ -34,3 +34,7 @@ This folder is synced through a private GitHub repo, so Claude has the same cont
 - Tailscale: homeserver = 100.114.125.48, laptop desktop-sb5io1v = 100.91.27.57, phone shais-s24 = 100.100.141.115 (tailnet owner shairaam12@gmail.com).
 - From the laptop: `ssh homeserver` (now via the Tailscale IP) (key `~/.ssh/id_ed25519_homeserver`, no passphrase; defined in `~/.ssh/config`).
 - The folder name `Setup[` contains a bracket. On Linux, quote it: `cd 'Setup['`.
+
+## Status page
+
+- Published artifact: https://claude.ai/artifact/MmioPgAyXnKfVT8PtRnpQP (source: `docs/homeserver-plan.html`). Republish it when a phase finishes.

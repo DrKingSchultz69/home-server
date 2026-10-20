@@ -1,0 +1,224 @@
+<title>Homeserver Build Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column; status strip, next action, machines, architecture, phases, open items. */
+:root {
+  --bg: #f3f5f8;
+  --surface: #ffffff;
+  --ink: #16202e;
+  --muted: #5a6577;
+  --line: #d9dee7;
+  --accent: #2257c9;
+  --accent-soft: #e4ecfb;
+  --done: #1f7a4a;
+  --done-soft: #e2f3ea;
+  --now: #a35a00;
+  --now-soft: #fbefdc;
+  --todo: #6b7486;
+  --todo-soft: #eceff4;
+  --warn: #b3261e;
+  --warn-soft: #fbe7e5;
+  --display: "Archivo", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141c; --surface: #161d28; --ink: #e6ebf3; --muted: #9aa5b8; --line: #2a3342;
+    --accent: #7ea6ff; --accent-soft: #1c2a47; --done: #5fcf92; --done-soft: #15301f;
+    --now: #f0b45c; --now-soft: #3a2a12; --todo: #9aa5b8; --todo-soft: #222a37;
+    --warn: #ff8a80; --warn-soft: #3d1c1a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141c; --surface: #161d28; --ink: #e6ebf3; --muted: #9aa5b8; --line: #2a3342;
+  --accent: #7ea6ff; --accent-soft: #1c2a47; --done: #5fcf92; --done-soft: #15301f;
+  --now: #f0b45c; --now-soft: #3a2a12; --todo: #9aa5b8; --todo-soft: #222a37;
+  --warn: #ff8a80; --warn-soft: #3d1c1a; color-scheme: dark;
+}
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 920px; margin: 0 auto; padding-block: 32px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 40px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(28px, 5vw, 40px); font-weight: 800; letter-spacing: -0.01em; }
+h2 { font-size: 22px; font-weight: 700; }
+h3 { font-size: 16px; font-weight: 700; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.mono { font-family: var(--mono); font-size: 0.92em; }
+section { display: grid; gap: 14px; }
+.lede { color: var(--muted); max-width: 65ch; }
+header { display: grid; gap: 12px; }
+.progress { display: grid; gap: 8px; }
+.bar { display: grid; grid-template-columns: repeat(13, 1fr); gap: 4px; }
+.bar span { height: 10px; border-radius: 3px; background: var(--todo-soft); }
+.bar span.done { background: var(--done); }
+.bar span.now { background: var(--now); }
+.progress small { color: var(--muted); font-variant-numeric: tabular-nums; }
+.next { background: var(--now-soft); border: 1px solid var(--now); border-radius: 10px; padding: 18px 20px; display: grid; gap: 8px; }
+.next .eyebrow { color: var(--now); }
+.next ol { margin: 0; padding-left: 22px; display: grid; gap: 4px; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+.diagram { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; overflow-x: auto; }
+.diagram pre.mermaid { margin: 0; background: transparent; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; color: var(--muted); font-size: 14px; }
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.rule { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 6px; min-width: 0; }
+.rule p { color: var(--muted); font-size: 15px; }
+.phases { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.phase { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: start; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.phase:last-child { border-bottom: 0; }
+.phase .num { font-family: var(--mono); font-weight: 600; color: var(--muted); padding-top: 2px; }
+.phase .body { display: grid; gap: 3px; min-width: 0; }
+.phase .body p { color: var(--muted); font-size: 15px; }
+.phase.now { background: var(--now-soft); }
+.chip { font-family: var(--mono); font-size: 12px; padding: 3px 9px; border-radius: 999px; white-space: nowrap; font-weight: 600; }
+.chip.done { background: var(--done-soft); color: var(--done); }
+.chip.now { background: var(--now-soft); color: var(--now); border: 1px solid var(--now); }
+.chip.todo { background: var(--todo-soft); color: var(--todo); }
+.chip.decide { background: var(--accent-soft); color: var(--accent); }
+.issues { display: grid; gap: 10px; }
+.issue { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.issue .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 7px; background: var(--warn); }
+.issue .dot.info { background: var(--accent); }
+.issue div { display: grid; gap: 4px; min-width: 0; }
+.issue p { color: var(--muted); font-size: 15px; }
+footer { color: var(--muted); font-size: 14px; }
+@media (max-width: 520px) {
+  .phase { grid-template-columns: 34px 1fr; }
+  .phase .chip { grid-column: 2; justify-self: start; }
+}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <span class="eyebrow">Home server · desktop PC · updated 21 Oct 2026</span>
+    <h1>Homeserver Build Plan</h1>
+    <p class="lede">A 7th-gen i5 desktop running Fedora KDE as a daily PC and an always-on private server. Nothing is public: every remote connection goes through your Tailscale network.</p>
+    <div class="progress" aria-label="Progress">
+      <div class="bar">
+        <span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="todo"></span><span class="done"></span><span class="now"></span><span></span><span></span><span></span><span></span>
+      </div>
+      <small>7 of 13 phases done · Phase 7 in progress · 5b skipped for now</small>
+    </div>
+  </header>
+
+  <div class="next">
+    <span class="eyebrow">Next action · Phase 7</span>
+    <h3>Pick the SSH setup: A or B</h3>
+    <ol>
+      <li>Open console.tailscale.com → Access controls.</li>
+      <li>Copy the section that starts with <span class="mono">"ssh"</span> and paste it to Claude.</li>
+      <li>Decide: <b>B</b> keeps Tailscale SSH with check mode (sessions run in a service security context). <b>A</b> uses normal SSH over Tailscale only, with your key as the lock.</li>
+    </ol>
+  </div>
+
+  <section>
+    <span class="eyebrow">Machines</span>
+    <h2>What's on the network</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Device</th><th>Role</th><th>Hardware / OS</th><th>Addresses</th></tr></thead>
+        <tbody>
+          <tr><td><b>homeserver</b></td><td>Server + daily PC</td><td>i5 7th gen, Intel HD 630, 8 GB RAM, 1 TB Acer SSD · Fedora 44 KDE · user <span class="mono">palani</span></td><td><span class="mono">100.114.125.48</span> Tailscale<br><span class="mono">192.168.29.218</span> home LAN</td></tr>
+          <tr><td><b>Laptop</b></td><td>Admin machine</td><td>OMEN 16 · Windows 11 · <span class="mono">ssh homeserver</span></td><td><span class="mono">100.91.27.57</span> Tailscale</td></tr>
+          <tr><td><b>Galaxy S24</b></td><td>Your phone</td><td>Android · Tailscale app</td><td><span class="mono">100.100.141.115</span> Tailscale</td></tr>
+          <tr><td>Family devices</td><td>Streaming only</td><td>Join later (Phase 11)</td><td>—</td></tr>
+          <tr><td>Living-room TV</td><td>Streaming at home</td><td>Home Wi-Fi only</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Architecture</span>
+    <h2>Who can reach what</h2>
+    <p class="lede">Your confirmed design. Solid boxes are running now; dashed boxes are planned.</p>
+    <div class="diagram">
+<pre class="mermaid">
+flowchart LR
+  subgraph you["Your devices"]
+    laptop["Laptop"]
+    phone["Galaxy S24"]
+  end
+  family["Family devices"]:::planned
+  tv["Living-room TV"]:::planned
+  internet["Public internet"]
+  ts{{"Tailscale<br/>device approval + access rules"}}
+  router["Home router<br/>no open ports"]
+  fw["firewalld<br/>home Wi-Fi zone"]:::planned
+  subgraph server["homeserver · Fedora 44"]
+    ssh["SSH"]
+    neth["Netheron :4141"]:::planned
+    files["Files"]:::planned
+    stream["Streaming site<br/>isolated streamer user"]:::planned
+  end
+  laptop --> ts
+  phone --> ts
+  family -. "streaming only" .-> ts
+  ts --> ssh
+  ts -.-> neth
+  ts -.-> files
+  ts -.-> stream
+  tv -. "LAN" .-> fw -.-> stream
+  internet -- "blocked" --x router
+  classDef planned stroke-dasharray: 5 4
+</pre>
+    </div>
+    <div class="legend"><span>→ running now</span><span>⇢ planned</span><span>✕ blocked</span></div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Design rules</span>
+    <h2>Confirmed rules</h2>
+    <div class="rules">
+      <div class="rule"><h3>Nothing public</h3><p>No router ports are opened. Remote access only through Tailscale.</p></div>
+      <div class="rule"><h3>Approved devices only</h3><p>Device approval is on. Only approve devices you know are safe. Key expiry stays on.</p></div>
+      <div class="rule"><h3>You vs family</h3><p>Your laptop and phone reach everything. Family devices reach streaming only.</p></div>
+      <div class="rule"><h3>Private services stay private</h3><p>Netheron, SSH and files listen on the Tailscale address, never 0.0.0.0. Port 4141 is never reachable from outside.</p></div>
+      <div class="rule"><h3>Streaming is isolated</h3><p>Separate streamer user, rootless container running as that user, media read-only, own network, own login. No VM.</p></div>
+      <div class="rule"><h3>Lost device plan</h3><p>Remove it in the Tailscale admin console, sign out all sessions, remote-wipe, rotate keys and tokens.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Phases</span>
+    <h2>Phase by phase</h2>
+    <ol class="phases">
+      <li class="phase"><span class="num">0</span><div class="body"><h3>Prepare</h3><p>Desktop files backed up to the laptop: 36,038 files, 150.8 GB, checked by size and date.</p></div><span class="chip done">Done</span></li>
+      <li class="phase"><span class="num">1</span><div class="body"><h3>Boot USB</h3><p>Fedora KDE 44 ISO, checksum matched. Written with Rufus in DD mode.</p></div><span class="chip done">Done</span></li>
+      <li class="phase"><span class="num">2</span><div class="body"><h3>BIOS</h3><p>AHCI, power on after a power cut, onboard graphics, Fast Boot off.</p></div><span class="chip done">Done</span></li>
+      <li class="phase"><span class="num">3</span><div class="body"><h3>Install Fedora</h3><p>Installed on the 1 TB SSD after removing the GT 710, whose driver crashed the installer.</p></div><span class="chip done">Done</span></li>
+      <li class="phase"><span class="num">4</span><div class="body"><h3>First boot</h3><p>Updates, hostname <span class="mono">homeserver</span>, sleep disabled, SSH on.</p></div><span class="chip done">Done</span></li>
+      <li class="phase"><span class="num">5</span><div class="body"><h3>SSH from the laptop</h3><p>Password-free login with a dedicated key: <span class="mono">ssh homeserver</span>.</p></div><span class="chip done">Done</span></li>
+      <li class="phase"><span class="num">5b</span><div class="body"><h3>Repo + Claude on the server</h3><p>Clone the private <span class="mono">home-server</span> repo to <span class="mono">~/Server</span> and install Claude Code there.</p></div><span class="chip todo">Later</span></li>
+      <li class="phase"><span class="num">6</span><div class="body"><h3>Tailscale</h3><p>Server, laptop and phone joined. Device approval on. Phone reached the server over mobile data.</p></div><span class="chip done">Done</span></li>
+      <li class="phase now"><span class="num">7</span><div class="body"><h3>Lock it down</h3><p>SSH setup (A or B), access rules, firewalld on home Wi-Fi, automatic security updates, phone screen lock and remote wipe.</p></div><span class="chip now">In progress</span></li>
+      <li class="phase"><span class="num">8</span><div class="body"><h3>Netheron workspace</h3><p>Decide together: project folder layout, how many agents fit in 8 GB.</p></div><span class="chip decide">Decide first</span></li>
+      <li class="phase"><span class="num">9</span><div class="body"><h3>File access</h3><p>Decide together: browser, synced folders or network drive, and which folders.</p></div><span class="chip decide">Decide first</span></li>
+      <li class="phase"><span class="num">10</span><div class="body"><h3>Streaming site</h3><p>Decide together: build your own or use a ready-made media server, TV video formats, upload speed.</p></div><span class="chip decide">Decide first</span></li>
+      <li class="phase"><span class="num">11</span><div class="body"><h3>Family access</h3><p>Invite family, approve their devices, streaming-only access rule, test from mobile data.</p></div><span class="chip todo">Later</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <span class="eyebrow">Open items</span>
+    <h2>Known issues</h2>
+    <div class="issues">
+      <div class="issue"><span class="dot"></span><div><h3>Tailscale SSH and SELinux</h3><p>Tailscale SSH works, but sessions run in a service security context instead of the normal user one. Part of the Phase 7 decision.</p></div></div>
+      <div class="issue"><span class="dot"></span><div><h3>Ethernet stuck at 100 Mbps</h3><p>The desktop links at 100 Mbps instead of 1 Gbps. Ruled out: card, settings, cable category. Next test: reseat the plug, try the router port the laptop uses.</p></div></div>
+      <div class="issue"><span class="dot info"></span><div><h3>GT 710 still detected</h3><p>The server's hardware list still shows the GT 710. If apps crash or the screen glitches, take the card out completely.</p></div></div>
+      <div class="issue"><span class="dot info"></span><div><h3>8 GB of RAM</h3><p>The desktop already uses about 3.4 GB. Netheron agents, streaming and a game server will compete; +8 GB DDR4 is the cheapest upgrade.</p></div></div>
+    </div>
+  </section>
+
+  <footer>Source: the private GitHub repo <span class="mono">home-server</span> (setup plan, design notes, diagram).</footer>
+
+</div>
