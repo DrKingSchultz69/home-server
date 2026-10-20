@@ -2,8 +2,8 @@
 
 ## Pending decision
 - Decision: Netheron workspace (Phase 8)
-- Stage: awaiting reasoning (Build checkpoint)
-- Awaiting: where projects live on the server, how Netheron gets there, how many agents run at once on 8 GB.
+- Stage: awaiting reasoning (Build checkpoint, round 2)
+- Awaiting: the mechanism that keeps laptop and server copies in sync; how many agents fit the 1 GB cap and what should happen when it is hit.
 
 ## Remote access
 - Introduced (AI explained): local network vs internet; router blocks incoming connections by default; three kinds of remote use (command line, web apps, full desktop); private network (Tailscale, WireGuard) vs publishing a service (Cloudflare Tunnel); plain WireGuard needs a forwarded port.
@@ -36,3 +36,7 @@
 - Introduced (AI explained): Tailscale SSH vs OpenSSH; check mode; SELinux session context; why root login is a bigger target.
 - Learner choice: option B (Tailscale SSH + check mode), reasons not stated. Confirmed at the Design checkpoint with AI additions.
 - Needs reinforcement: what check mode adds over a key alone (asked, not yet answered).
+
+## Netheron workspace
+- Learner answers (round 1): projects live in ~/Workspace on the server and also stay on the laptop; Netheron should stay up to date (mechanism not stated); agents together get no more than 1 GB of RAM.
+- Introduced (AI explained): memory limits with systemd (MemoryMax, cgroups); what happens when a limit is hit.
