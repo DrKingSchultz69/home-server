@@ -244,6 +244,7 @@ To decide together:
 - Backups for the single HDD.
 - Status dashboard and automatic restarts.
 - Upgrades: +8 GB RAM, an SSD for Fedora.
+- Fix the desktop's 100 Mbps Ethernet link (should be 1 Gbps). Already ruled out: the card (Realtek PCIe GBE, gigabit), "Speed & Duplex" (Auto), Energy Efficient Ethernet and Green Ethernet (both now Disabled), and the cable category (Cat 6 and Cat 6e). Next test: reseat the plug at both ends, then try the router port the laptop uses (the laptop gets 1 Gbps there).
 
 ---
 
