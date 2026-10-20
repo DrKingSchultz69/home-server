@@ -22,7 +22,7 @@ Tick a box when a phase is done.
 | 3 | Install Fedora | 45 min | You (at desktop) | [x] |
 | 4 | First boot basics | 30 min | You (at desktop) | [x] |
 | 5 | SSH from the laptop | 15 min | You + Claude | [x] |
-| 5b | This repo + Claude on the server | 15 min | You | [ ] |
+| 5b | This repo + Claude on the server | 15 min | You | [x] |
 | 6 | Tailscale (private network) | 30 min | You + Claude | [x] |
 | 7 | Lock it down | 40 min | Claude, you approve | [x] |
 | 8 | Netheron workspace | 1 hour | Decide together, then Claude | [ ] |

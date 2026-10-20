@@ -104,19 +104,19 @@ footer { color: var(--muted); font-size: 14px; }
     <p class="lede">A 7th-gen i5 desktop running Fedora KDE as a daily PC and an always-on private server. Nothing is public: every remote connection goes through your Tailscale network.</p>
     <div class="progress" aria-label="Progress">
       <div class="bar">
-        <span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="now"></span><span class="done"></span><span class="done"></span><span></span><span></span><span></span><span></span>
+        <span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="now"></span><span></span><span></span><span></span>
       </div>
-      <small>8 of 13 phases done · Phase 5b next · server is reachable and locked down</small>
+      <small>9 of 13 phases done · Phase 8 next: design first · Claude Code runs on the server</small>
     </div>
   </header>
 
   <div class="next">
-    <span class="eyebrow">Next action · Phase 5b · about 15 min</span>
-    <h3>Put this project and Claude Code on the server</h3>
+    <span class="eyebrow">Next action · Phase 8 · design first</span>
+    <h3>Design the Netheron workspace</h3>
     <ol>
-      <li>On the server: <span class="mono">sudo dnf install -y gh git &amp;&amp; gh auth login</span></li>
-      <li>Download the repo: <span class="mono">gh repo clone DrKingSchultz69/home-server ~/Server</span></li>
-      <li>Install Claude Code, then run <span class="mono">claude</span> inside <span class="mono">~/Server</span>.</li>
+      <li>Decide where your projects live on the server.</li>
+      <li>Decide how many agents run at once in 8 GB of RAM.</li>
+      <li>Then Netheron gets installed, bound to the Tailscale address only.</li>
     </ol>
   </div>
 
@@ -198,10 +198,10 @@ flowchart LR
       <li class="phase"><span class="num">3</span><div class="body"><h3>Install Fedora</h3><p>Installed on the 1 TB SSD after removing the GT 710, whose driver crashed the installer.</p></div><span class="chip done">Done</span></li>
       <li class="phase"><span class="num">4</span><div class="body"><h3>First boot</h3><p>Updates, hostname <span class="mono">homeserver</span>, sleep disabled, SSH on.</p></div><span class="chip done">Done</span></li>
       <li class="phase"><span class="num">5</span><div class="body"><h3>SSH from the laptop</h3><p>Password-free login with a dedicated key: <span class="mono">ssh homeserver</span>.</p></div><span class="chip done">Done</span></li>
-      <li class="phase now"><span class="num">5b</span><div class="body"><h3>Repo + Claude on the server</h3><p>Clone the private <span class="mono">home-server</span> repo to <span class="mono">~/Server</span> and install Claude Code there.</p></div><span class="chip now">Next</span></li>
+      <li class="phase"><span class="num">5b</span><div class="body"><h3>Repo + Claude on the server</h3><p>Private <span class="mono">home-server</span> repo cloned to <span class="mono">~/Server</span>. Claude Code 2.1.305 installed and signed in. Sync with git pull / git push.</p></div><span class="chip done">Done</span></li>
       <li class="phase"><span class="num">6</span><div class="body"><h3>Tailscale</h3><p>Server, laptop and phone joined. Device approval on. Phone reached the server over mobile data.</p></div><span class="chip done">Done</span></li>
       <li class="phase"><span class="num">7</span><div class="body"><h3>Lock it down</h3><p>Tailscale SSH with check mode, root login refused. Home Wi-Fi blocks SSH and all high ports; Tailscale trusted. Daily automatic security updates. Phone lock and remote wipe on.</p></div><span class="chip done">Done</span></li>
-      <li class="phase"><span class="num">8</span><div class="body"><h3>Netheron workspace</h3><p>Decide together: project folder layout, how many agents fit in 8 GB.</p></div><span class="chip decide">Decide first</span></li>
+      <li class="phase now"><span class="num">8</span><div class="body"><h3>Netheron workspace</h3><p>Decide together: project folder layout, how many agents fit in 8 GB.</p></div><span class="chip decide">Decide first</span></li>
       <li class="phase"><span class="num">9</span><div class="body"><h3>File access</h3><p>Decide together: browser, synced folders or network drive, and which folders.</p></div><span class="chip decide">Decide first</span></li>
       <li class="phase"><span class="num">10</span><div class="body"><h3>Streaming site</h3><p>Decide together: build your own or use a ready-made media server, TV video formats, upload speed.</p></div><span class="chip decide">Decide first</span></li>
       <li class="phase"><span class="num">11</span><div class="body"><h3>Family access</h3><p>Invite family, approve their devices, streaming-only access rule, test from mobile data.</p></div><span class="chip todo">Later</span></li>

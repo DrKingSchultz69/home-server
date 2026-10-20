@@ -1,5 +1,10 @@
 # Learning Progress
 
+## Pending decision
+- Decision: Netheron workspace (Phase 8)
+- Stage: awaiting reasoning (Build checkpoint)
+- Awaiting: where projects live on the server, how Netheron gets there, how many agents run at once on 8 GB.
+
 ## Remote access
 - Introduced (AI explained): local network vs internet; router blocks incoming connections by default; three kinds of remote use (command line, web apps, full desktop); private network (Tailscale, WireGuard) vs publishing a service (Cloudflare Tunnel); plain WireGuard needs a forwarded port.
 - Learner described: public IP -> router NAT -> port forwarding -> server private IP; risks of careless port forwarding (pivoting, exposed router admin, plaintext traffic, DoS). Part of the answer was pasted from another source, so treat it as introduced, not yet demonstrated.
