@@ -23,7 +23,7 @@ Tick a box when a phase is done.
 | 4 | First boot basics | 30 min | You (at desktop) | [x] |
 | 5 | SSH from the laptop | 15 min | You + Claude | [x] |
 | 5b | This repo + Claude on the server | 15 min | You | [ ] |
-| 6 | Tailscale (private network) | 30 min | You + Claude | [ ] |
+| 6 | Tailscale (private network) | 30 min | You + Claude | [x] |
 | 7 | Lock it down | 40 min | Claude, you approve | [ ] |
 | 8 | Netheron workspace | 1 hour | Decide together, then Claude | [ ] |
 | 9 | File access | 30–60 min | Decide together, then Claude | [ ] |
