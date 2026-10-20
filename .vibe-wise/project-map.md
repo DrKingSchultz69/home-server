@@ -39,7 +39,7 @@ Approved AI additions:
 - firewalld blocks everything on home Wi-Fi except streaming.
 
 ## Build and Deployment
-Fedora KDE Plasma 44 installed on the desktop (2026-10-21). Desktop files backed up to the laptop at C:\DesktopBackup (36,038 files, 150.8 GB, verified by size and date). Nothing else configured yet.
+Fedora KDE Plasma 44 installed on the desktop (2026-10-21). Desktop files backed up to the laptop at C:\DesktopBackup (36,038 files, 150.8 GB, verified by size and date). GT 710 removed (its nouveau driver crashed the installer); monitor on the Intel onboard graphics. Phase 4 done: updates, hostname homeserver, sleep disabled, sshd enabled. User palani, LAN IP 192.168.29.218.
 
 ## Unknowns
 - Whether Fedora is installed yet; RAM upgrade. The desktop has one 1 TB SSD (Acer RE100), not an HDD; the earlier "1 TB HDD" was wrong.

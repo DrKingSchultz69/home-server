@@ -30,5 +30,5 @@ This folder is synced through a private GitHub repo, so Claude has the same cont
 ## Machines
 
 - Laptop: OMEN 16, Windows 11, folder `C:\Server`.
-- Server: Fedora KDE, hostname `homeserver` (planned). Clone this repo into `~/Server`.
+- Server: Fedora KDE 44, hostname `homeserver`, user `palani`, LAN IP `192.168.29.218`. GT 710 removed; uses Intel onboard graphics. Clone this repo into `~/Server`.
 - The folder name `Setup[` contains a bracket. On Linux, quote it: `cd 'Setup['`.

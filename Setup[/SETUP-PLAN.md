@@ -20,7 +20,7 @@ Tick a box when a phase is done.
 | 1 | Make the boot USB | 20 min | You (on laptop) | [x] |
 | 2 | BIOS settings | 10 min | You (at desktop) | [x] |
 | 3 | Install Fedora | 45 min | You (at desktop) | [x] |
-| 4 | First boot basics | 30 min | You (at desktop) | [ ] |
+| 4 | First boot basics | 30 min | You (at desktop) | [x] |
 | 5 | SSH from the laptop | 15 min | You + Claude | [ ] |
 | 5b | This repo + Claude on the server | 15 min | You | [ ] |
 | 6 | Tailscale (private network) | 30 min | You + Claude | [ ] |
@@ -250,6 +250,6 @@ To decide together:
 
 ## Notes
 
-- Server local IP:
+- Server local IP: 192.168.29.218 (Ethernet)
 - Server Tailscale name:
-- Fedora username:
+- Fedora username: palani
