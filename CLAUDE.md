@@ -1,6 +1,6 @@
 # Home Server Project
 
-A desktop PC (Intel i5 7th gen, GT 710, 8 GB RAM, 1 TB HDD) becoming a home server that is also used as a normal daily PC. OS: Fedora KDE Plasma.
+A desktop PC (Intel i5 7th gen, GT 710, 8 GB RAM, 1 TB SSD (Acer RE100)) becoming a home server that is also used as a normal daily PC. OS: Fedora KDE Plasma.
 
 This folder is synced through a private GitHub repo, so Claude has the same context on the Windows laptop (`C:\Server`) and on the Fedora server.
 

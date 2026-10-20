@@ -5,7 +5,7 @@ Onboarding: complete
 
 ## Project
 Situation: New
-Building: A home server on a desktop PC (i5 7th gen, GT 710, 8 GB RAM, 1 TB HDD) that is also used as a normal daily PC
+Building: A home server on a desktop PC (i5 7th gen, GT 710, 8 GB RAM, 1 TB SSD (Acer RE100)) that is also used as a normal daily PC
 Codebase familiarity: Not applicable (new project)
 Learning scope: Entire system (default: end-to-end understanding)
 

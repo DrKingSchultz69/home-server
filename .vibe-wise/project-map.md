@@ -4,7 +4,7 @@
 Turn a desktop PC into a home server that also stays usable as a normal daily PC.
 
 ## Requirements
-- Hardware: Intel i5 7th gen, NVIDIA GT 710, 8 GB RAM, 1 TB HDD.
+- Hardware: Intel i5 7th gen, NVIDIA GT 710, 8 GB RAM, 1 TB SSD (Acer RE100).
 - Dual use: normal desktop PC and always-on server at the same time.
 - Wanted uses: websites/apps, files and media, game server, AI/dev tools.
 - Main remote use: maintain files and projects on the server, and run Claude Code or Netheron in a workspace there.
@@ -42,8 +42,8 @@ Approved AI additions:
 Nothing installed yet. Fedora install steps were given to the learner; not confirmed done.
 
 ## Unknowns
-- Whether Fedora is installed yet; whether the HDD can be wiped; RAM/SSD upgrades.
+- Whether Fedora is installed yet; RAM upgrade. The desktop has one 1 TB SSD (Acer RE100), not an HDD; the earlier "1 TB HDD" was wrong.
 - Tailscale free-plan user limit vs the number of family members.
 - Streaming: custom website vs a ready-made media server; video formats the TV browser can play; home upload speed for away-from-home streaming.
 - Memory: Netheron running several agents on 8 GB alongside other services.
-- Container runtime (Podman vs Docker) and where data lives on the 1 TB HDD.
+- Container runtime (Podman vs Docker) and where data lives on the 1 TB SSD (Acer RE100).

@@ -2,7 +2,7 @@
 
 **Start here:** Phase 0, step 1. Plug a USB stick (8 GB or more) into this laptop.
 
-Machine: desktop PC, Intel i5 7th gen, GT 710, 8 GB RAM, 1 TB HDD.
+Machine: desktop PC, Intel i5 7th gen, GT 710, 8 GB RAM, 1 TB SSD (Acer RE100).
 Use: normal daily PC **and** always-on server.
 OS: Fedora KDE Plasma.
 Remote access: private network (Tailscale), approved devices only, nothing public.
@@ -40,11 +40,11 @@ Tick a box when a phase is done.
 ## Phase 0: Prepare (15 min)
 
 1. Find a USB stick of 8 GB or more. **It will be erased.**
-2. Check the desktop's 1 TB HDD for anything you need. Copy it elsewhere. **Installing Fedora wipes the HDD.**
+2. Check the desktop's 1 TB SSD (Acer RE100) for anything you need. Copy it elsewhere. **Installing Fedora wipes the SSD.**
 3. Decide on the GT 710: remove it and plug the monitor into the motherboard (recommended: its NVIDIA driver no longer works with Fedora), or keep it.
 4. Optional, can wait: buy another 8 GB DDR4 stick and a small SSD (240–500 GB).
 
-**Done when:** the USB is in hand and the HDD has nothing you need.
+**Done when:** the USB is in hand and the SSD has nothing you need.
 
 ---
 
@@ -73,7 +73,7 @@ Tick a box when a phase is done.
 ## Phase 3: Install Fedora (45 min, at the desktop)
 
 1. Plug in the USB. At power-on, press **F12**, **F11** or **F8** for the boot menu and pick the USB.
-2. Click **Install to Hard Drive**. Choose the 1 TB HDD and use the entire disk (default layout).
+2. Click **Install to Hard Drive**. Choose the 1 TB SSD (Acer RE100) and use the entire disk (default layout).
 3. **Leave encryption off.** With it on, the server can't restart by itself after a power cut.
 4. Create your user account and make it an **administrator**.
 5. When it finishes, remove the USB and reboot.
@@ -191,7 +191,7 @@ Already decided:
 - Your API keys stay in your user's files with `chmod 600`.
 
 To decide together before building:
-1. Where your projects live on the server (folder layout on the 1 TB HDD).
+1. Where your projects live on the server (folder layout on the 1 TB SSD (Acer RE100)).
 2. How many agents to run at once on 8 GB of RAM.
 
 **Done when:** `/health` on port 4141 answers from your phone over Tailscale, and not from home Wi-Fi.
@@ -241,7 +241,7 @@ To decide together:
 ## Later (not now)
 
 - Minecraft game server (about 3 GB of RAM: can't run at the same time as heavy AI work).
-- Backups for the single HDD.
+- Backups for the single SSD.
 - Status dashboard and automatic restarts.
 - Upgrades: +8 GB RAM, an SSD for Fedora.
 - Fix the desktop's 100 Mbps Ethernet link (should be 1 Gbps). Already ruled out: the card (Realtek PCIe GBE, gigabit), "Speed & Duplex" (Auto), Energy Efficient Ethernet and Green Ethernet (both now Disabled), and the cable category (Cat 6 and Cat 6e). Next test: reseat the plug at both ends, then try the router port the laptop uses (the laptop gets 1 Gbps there).
