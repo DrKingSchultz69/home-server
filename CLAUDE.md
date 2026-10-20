@@ -23,7 +23,7 @@ This folder is synced through a private GitHub repo, so Claude has the same cont
 
 - Nothing is public. No router ports are opened.
 - Remote access only through Tailscale; only approved devices; owner's laptop and phone reach everything, family devices reach streaming only.
-- Netheron, SSH and files bind to the Tailscale IP, never `0.0.0.0`. Netheron port 4141 must never be reachable from outside.
+- Netheron listens on `127.0.0.1` only; its workspace (4142) reaches the tailnet through Tailscale Serve. Port 4141 (model proxy, no login) is never published anywhere. Files bind to the Tailscale side only, never `0.0.0.0`.
 - The streaming site is isolated: separate `streamer` user, rootless container running as that user, media read-only, own network, its own login.
 - Never commit secrets (API keys, tokens, passwords) to this repo.
 

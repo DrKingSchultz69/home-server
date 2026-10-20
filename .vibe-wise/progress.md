@@ -1,9 +1,5 @@
 # Learning Progress
 
-## Pending decision
-- Decision: Netheron workspace (Phase 8)
-- Stage: awaiting reasoning (Build checkpoint, round 2)
-- Awaiting: the mechanism that keeps laptop and server copies in sync; how many agents fit the 1 GB cap and what should happen when it is hit.
 
 ## Remote access
 - Introduced (AI explained): local network vs internet; router blocks incoming connections by default; three kinds of remote use (command line, web apps, full desktop); private network (Tailscale, WireGuard) vs publishing a service (Cloudflare Tunnel); plain WireGuard needs a forwarded port.
@@ -39,4 +35,6 @@
 
 ## Netheron workspace
 - Learner answers (round 1): projects live in ~/Workspace on the server and also stay on the laptop; Netheron should stay up to date (mechanism not stated); agents together get no more than 1 GB of RAM.
-- Introduced (AI explained): memory limits with systemd (MemoryMax, cgroups); what happens when a limit is hit.
+- Introduced (AI explained): memory limits with systemd (MemoryMax, cgroups); syncing with git (clone, pull, push, conflicts); Netheron ports (4141 proxy always loopback, 4142 workspace); Tailscale Serve vs --lan.
+- Learner choices: box 2 GB now (C2, 3 agents), raise after RAM upgrade to fit 3-4; kill the biggest agent when full; access option A (Tailscale Serve, loopback only). Reasons mostly not stated; the learner needed the sync mechanism taught after two rounds.
+- Outcome: Phase 8 design confirmed (Design checkpoint) with AI additions.
