@@ -31,5 +31,6 @@ This folder is synced through a private GitHub repo, so Claude has the same cont
 
 - Laptop: OMEN 16, Windows 11, folder `C:\Server`.
 - Server: Fedora KDE 44, hostname `homeserver`, user `palani`, LAN IP `192.168.29.218`. GT 710 removed; uses Intel onboard graphics. Clone this repo into `~/Server`.
-- From the laptop: `ssh homeserver` (key `~/.ssh/id_ed25519_homeserver`, no passphrase; defined in `~/.ssh/config`).
+- Tailscale: homeserver = 100.114.125.48, laptop desktop-sb5io1v = 100.91.27.57, phone shais-s24 = 100.100.141.115 (tailnet owner shairaam12@gmail.com).
+- From the laptop: `ssh homeserver` (now via the Tailscale IP) (key `~/.ssh/id_ed25519_homeserver`, no passphrase; defined in `~/.ssh/config`).
 - The folder name `Setup[` contains a bracket. On Linux, quote it: `cd 'Setup['`.

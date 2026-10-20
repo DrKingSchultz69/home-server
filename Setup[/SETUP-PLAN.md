@@ -251,5 +251,5 @@ To decide together:
 ## Notes
 
 - Server local IP: 192.168.29.218 (Ethernet)
-- Server Tailscale name:
+- Server Tailscale name: homeserver (100.114.125.48). Laptop: desktop-sb5io1v (100.91.27.57). Phone: shais-s24 (100.100.141.115).
 - Fedora username: palani
