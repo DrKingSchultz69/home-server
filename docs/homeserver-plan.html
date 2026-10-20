@@ -99,24 +99,24 @@ footer { color: var(--muted); font-size: 14px; }
 <div class="wrap">
 
   <header>
-    <span class="eyebrow">Home server · desktop PC · updated 21 Oct 2026</span>
+    <span class="eyebrow">Home server · desktop PC · updated 21 Oct 2026 · Phase 7 done</span>
     <h1>Homeserver Build Plan</h1>
     <p class="lede">A 7th-gen i5 desktop running Fedora KDE as a daily PC and an always-on private server. Nothing is public: every remote connection goes through your Tailscale network.</p>
     <div class="progress" aria-label="Progress">
       <div class="bar">
-        <span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="todo"></span><span class="done"></span><span class="now"></span><span></span><span></span><span></span><span></span>
+        <span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="now"></span><span class="done"></span><span class="done"></span><span></span><span></span><span></span><span></span>
       </div>
-      <small>7 of 13 phases done · Phase 7 in progress · 5b skipped for now</small>
+      <small>8 of 13 phases done · Phase 5b next · server is reachable and locked down</small>
     </div>
   </header>
 
   <div class="next">
-    <span class="eyebrow">Next action · Phase 7</span>
-    <h3>Pick the SSH setup: A or B</h3>
+    <span class="eyebrow">Next action · Phase 5b · about 15 min</span>
+    <h3>Put this project and Claude Code on the server</h3>
     <ol>
-      <li>Open console.tailscale.com → Access controls.</li>
-      <li>Copy the section that starts with <span class="mono">"ssh"</span> and paste it to Claude.</li>
-      <li>Decide: <b>B</b> keeps Tailscale SSH with check mode (sessions run in a service security context). <b>A</b> uses normal SSH over Tailscale only, with your key as the lock.</li>
+      <li>On the server: <span class="mono">sudo dnf install -y gh git &amp;&amp; gh auth login</span></li>
+      <li>Download the repo: <span class="mono">gh repo clone DrKingSchultz69/home-server ~/Server</span></li>
+      <li>Install Claude Code, then run <span class="mono">claude</span> inside <span class="mono">~/Server</span>.</li>
     </ol>
   </div>
 
@@ -153,9 +153,9 @@ flowchart LR
   internet["Public internet"]
   ts{{"Tailscale<br/>device approval + access rules"}}
   router["Home router<br/>no open ports"]
-  fw["firewalld<br/>home Wi-Fi zone"]:::planned
+  fw["firewalld<br/>home Wi-Fi zone"]
   subgraph server["homeserver · Fedora 44"]
-    ssh["SSH"]
+    ssh["Tailscale SSH<br/>check mode"]
     neth["Netheron :4141"]:::planned
     files["Files"]:::planned
     stream["Streaming site<br/>isolated streamer user"]:::planned
@@ -198,9 +198,9 @@ flowchart LR
       <li class="phase"><span class="num">3</span><div class="body"><h3>Install Fedora</h3><p>Installed on the 1 TB SSD after removing the GT 710, whose driver crashed the installer.</p></div><span class="chip done">Done</span></li>
       <li class="phase"><span class="num">4</span><div class="body"><h3>First boot</h3><p>Updates, hostname <span class="mono">homeserver</span>, sleep disabled, SSH on.</p></div><span class="chip done">Done</span></li>
       <li class="phase"><span class="num">5</span><div class="body"><h3>SSH from the laptop</h3><p>Password-free login with a dedicated key: <span class="mono">ssh homeserver</span>.</p></div><span class="chip done">Done</span></li>
-      <li class="phase"><span class="num">5b</span><div class="body"><h3>Repo + Claude on the server</h3><p>Clone the private <span class="mono">home-server</span> repo to <span class="mono">~/Server</span> and install Claude Code there.</p></div><span class="chip todo">Later</span></li>
+      <li class="phase now"><span class="num">5b</span><div class="body"><h3>Repo + Claude on the server</h3><p>Clone the private <span class="mono">home-server</span> repo to <span class="mono">~/Server</span> and install Claude Code there.</p></div><span class="chip now">Next</span></li>
       <li class="phase"><span class="num">6</span><div class="body"><h3>Tailscale</h3><p>Server, laptop and phone joined. Device approval on. Phone reached the server over mobile data.</p></div><span class="chip done">Done</span></li>
-      <li class="phase now"><span class="num">7</span><div class="body"><h3>Lock it down</h3><p>SSH setup (A or B), access rules, firewalld on home Wi-Fi, automatic security updates, phone screen lock and remote wipe.</p></div><span class="chip now">In progress</span></li>
+      <li class="phase"><span class="num">7</span><div class="body"><h3>Lock it down</h3><p>Tailscale SSH with check mode, root login refused. Home Wi-Fi blocks SSH and all high ports; Tailscale trusted. Daily automatic security updates. Phone lock and remote wipe on.</p></div><span class="chip done">Done</span></li>
       <li class="phase"><span class="num">8</span><div class="body"><h3>Netheron workspace</h3><p>Decide together: project folder layout, how many agents fit in 8 GB.</p></div><span class="chip decide">Decide first</span></li>
       <li class="phase"><span class="num">9</span><div class="body"><h3>File access</h3><p>Decide together: browser, synced folders or network drive, and which folders.</p></div><span class="chip decide">Decide first</span></li>
       <li class="phase"><span class="num">10</span><div class="body"><h3>Streaming site</h3><p>Decide together: build your own or use a ready-made media server, TV video formats, upload speed.</p></div><span class="chip decide">Decide first</span></li>
@@ -212,7 +212,8 @@ flowchart LR
     <span class="eyebrow">Open items</span>
     <h2>Known issues</h2>
     <div class="issues">
-      <div class="issue"><span class="dot"></span><div><h3>Tailscale SSH and SELinux</h3><p>Tailscale SSH works, but sessions run in a service security context instead of the normal user one. Part of the Phase 7 decision.</p></div></div>
+      <div class="issue"><span class="dot info"></span><div><h3>Tailscale SSH and SELinux</h3><p>Accepted trade-off: Tailscale SSH sessions run in a service security context. sudo works. Fallback if it ever breaks: the desktop's own keyboard.</p></div></div>
+      <div class="issue"><span class="dot info"></span><div><h3>Weekly restart</h3><p>Security updates install daily but never reboot on their own. Restart the server about once a week so kernel updates take effect.</p></div></div>
       <div class="issue"><span class="dot"></span><div><h3>Ethernet stuck at 100 Mbps</h3><p>The desktop links at 100 Mbps instead of 1 Gbps. Ruled out: card, settings, cable category. Next test: reseat the plug, try the router port the laptop uses.</p></div></div>
       <div class="issue"><span class="dot info"></span><div><h3>GT 710 still detected</h3><p>The server's hardware list still shows the GT 710. If apps crash or the screen glitches, take the card out completely.</p></div></div>
       <div class="issue"><span class="dot info"></span><div><h3>8 GB of RAM</h3><p>The desktop already uses about 3.4 GB. Netheron agents, streaming and a game server will compete; +8 GB DDR4 is the cheapest upgrade.</p></div></div>
