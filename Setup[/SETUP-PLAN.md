@@ -21,7 +21,7 @@ Tick a box when a phase is done.
 | 2 | BIOS settings | 10 min | You (at desktop) | [x] |
 | 3 | Install Fedora | 45 min | You (at desktop) | [x] |
 | 4 | First boot basics | 30 min | You (at desktop) | [x] |
-| 5 | SSH from the laptop | 15 min | You + Claude | [ ] |
+| 5 | SSH from the laptop | 15 min | You + Claude | [x] |
 | 5b | This repo + Claude on the server | 15 min | You | [ ] |
 | 6 | Tailscale (private network) | 30 min | You + Claude | [ ] |
 | 7 | Lock it down | 40 min | Claude, you approve | [ ] |
