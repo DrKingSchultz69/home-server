@@ -47,3 +47,8 @@ Fedora KDE Plasma 44 installed on the desktop (2026-10-21). Desktop files backed
 - Streaming: custom website vs a ready-made media server; video formats the TV browser can play; home upload speed for away-from-home streaming.
 - Memory: Netheron running several agents on 8 GB alongside other services.
 - Container runtime (Podman vs Docker) and where data lives on the 1 TB SSD (Acer RE100).
+
+## Phase 7 SSH design (confirmed 2026-10-21)
+- Learner chose option B: Tailscale SSH with check mode (Tailscale default rule, 12 h re-check). Trade-off accepted: sessions run in the unconfined_service_t SELinux context.
+- Approved AI additions: remove root from the SSH rule (autogroup:nonroot only); block port 22 on the home Wi-Fi firewalld zone; fallback is the desktop's own keyboard; test sudo in a Tailscale SSH session before closing Wi-Fi SSH.
+- Not yet implemented.

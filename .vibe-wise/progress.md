@@ -26,3 +26,8 @@
 ## Local network access
 - Learner noted: the living-room TV is on the same Wi-Fi as the server, so streaming there is local.
 - Introduced (AI explained): devices on the same Wi-Fi reach the server by its private IP without any tunnel.
+
+## SSH access
+- Introduced (AI explained): Tailscale SSH vs OpenSSH; check mode; SELinux session context; why root login is a bigger target.
+- Learner choice: option B (Tailscale SSH + check mode), reasons not stated. Confirmed at the Design checkpoint with AI additions.
+- Needs reinforcement: what check mode adds over a key alone (asked, not yet answered).
