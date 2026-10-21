@@ -4,190 +4,240 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>homeserver</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
-/* Layout: one column; problem banner, resource meters, service tiles. */
+/* Approved look: Bauhaus control room. Console-black ground, primary red / yellow / blue,
+   geometric gauges (circle = CPU, bars = memory, triangle = disk), shapes as status lights
+   (blue square = up, red triangle = down, open circle = not set up / checking). */
 :root {
-  --bg: #eef1f5; --panel: #ffffff; --ink: #121a26; --muted: #5d6879; --line: #d6dce5;
-  --accent: #2459c8; --up: #17804c; --up-soft: #ddf2e6; --down: #c0352b; --down-soft: #fbe3e0;
-  --planned: #7a8496; --planned-soft: #e9edf3; --meter: #2459c8; --meter-hot: #c0352b; --meter-warm: #b26b00;
-  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
-  --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0d1117; --panel: #151b24; --ink: #e5eaf2; --muted: #95a0b3; --line: #262f3d;
-    --accent: #7fa6ff; --up: #4fd18b; --up-soft: #12301f; --down: #ff7b70; --down-soft: #3b1715;
-    --planned: #8a95a8; --planned-soft: #1d2430; --meter: #7fa6ff; --meter-hot: #ff7b70; --meter-warm: #f0b45c;
-    color-scheme: dark;
-  }
+  --ground: #16161A; --panel: #202026; --line: #34343C; --paper: #EDE8DC; --muted: #A9A49A;
+  --red: #E1251B; --yellow: #F7C600; --blue: #2B5FD9; --ink: #111111;
+  --sans: Jost, "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--sans); }
-.wrap { max-width: 860px; margin: 0 auto; padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 48px max(16px, env(safe-area-inset-left)); display: grid; gap: 24px; }
-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
-h1 { margin: 0; font: 700 26px/1.2 var(--mono); letter-spacing: -0.01em; }
-h2 { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-.who { color: var(--muted); font-size: 14px; }
-.banner { border-radius: 10px; padding: 12px 16px; font-weight: 600; display: flex; gap: 10px; align-items: center; }
-.banner.ok { background: var(--up-soft); color: var(--up); }
-.banner.bad { background: var(--down-soft); color: var(--down); }
-.banner.wait { background: var(--planned-soft); color: var(--muted); }
-section { display: grid; gap: 10px; }
-.meters { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-.meter { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; }
-.meter .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-.meter .label { color: var(--muted); font-size: 14px; }
-.meter .value { font: 700 24px/1 var(--mono); font-variant-numeric: tabular-nums; }
-.meter .sub { color: var(--muted); font: 13px var(--mono); font-variant-numeric: tabular-nums; }
-.bar { height: 8px; border-radius: 4px; background: var(--planned-soft); overflow: hidden; }
-.bar i { display: block; height: 100%; width: 0; background: var(--meter); transition: width .4s ease; }
-.bar i.warm { background: var(--meter-warm); }
-.bar i.hot { background: var(--meter-hot); }
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
-.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 4px; color: inherit; text-decoration: none; min-width: 0; }
-a.tile:hover, a.tile:focus-visible { border-color: var(--accent); outline: none; }
-a.tile:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent); }
-.tile .top { display: flex; align-items: center; gap: 10px; }
-.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--planned); }
-.dot.up { background: var(--up); }
-.dot.down { background: var(--down); }
-.tile .name { font-weight: 700; }
-.tile .state { margin-left: auto; font: 600 12px var(--mono); padding: 2px 8px; border-radius: 999px; background: var(--planned-soft); color: var(--planned); }
-.tile .state.up { background: var(--up-soft); color: var(--up); }
-.tile .state.down { background: var(--down-soft); color: var(--down); }
-.tile .about { color: var(--muted); font-size: 14px; }
-.tile .detail { font: 13px var(--mono); color: var(--muted); overflow-wrap: anywhere; }
-.tile .open { color: var(--accent); font-size: 14px; font-weight: 600; }
-.store { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 10px; }
-.store .sub { color: var(--muted); font: 13px var(--mono); }
-.folders { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.folders li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: baseline; }
-.folders .fname { font: 14px var(--mono); overflow-wrap: anywhere; min-width: 0; }
-.folders .fsize { font: 600 14px var(--mono); font-variant-numeric: tabular-nums; }
-.folders .bar { grid-column: 1 / -1; height: 6px; }
-footer { color: var(--muted); font-size: 13px; }
-@media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+html, body { margin: 0; background: var(--ground); color: var(--paper); font: 500 16px/1.45 var(--sans); }
+.wrap { max-width: 1440px; margin: 0 auto; padding: max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 40px max(16px, env(safe-area-inset-left)); display: grid; gap: 20px; }
+h1, h2 { margin: 0; font-weight: 800; letter-spacing: 0.1em; }
+.mono { font-family: var(--mono); font-weight: 600; }
+.muted { color: var(--muted); }
+.ch { font-family: var(--mono); font-weight: 600; font-size: 12px; letter-spacing: 0.14em; color: var(--muted); }
+a { color: var(--paper); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; border-bottom: 2px solid var(--line); padding-bottom: 14px; }
+header h1 { font-size: clamp(20px, 3vw, 30px); letter-spacing: 0.18em; }
+.sub { font-family: var(--mono); font-weight: 600; font-size: 13px; letter-spacing: 0.12em; color: var(--muted); }
+.who { margin-left: auto; font-family: var(--mono); font-size: 14px; color: var(--muted); }
+.clock { font-family: var(--mono); font-weight: 600; font-size: 20px; background: var(--panel); border: 2px solid var(--line); padding: 4px 12px; font-variant-numeric: tabular-nums; }
+
+.banner { display: flex; align-items: center; gap: 16px; padding: 16px 22px; color: var(--ink); background: var(--yellow); }
+.banner.bad { background: var(--red); color: var(--paper); }
+.banner.wait { background: var(--blue); color: var(--paper); }
+.banner .msg { font-weight: 800; font-size: clamp(17px, 2.2vw, 24px); letter-spacing: 0.08em; text-transform: uppercase; }
+.banner .count { margin-left: auto; font-family: var(--mono); font-weight: 600; font-size: 14px; }
+
+.panel { background: var(--panel); border: 2px solid var(--line); padding: 18px 22px; min-width: 0; }
+.gauges { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.gauge { display: flex; align-items: center; gap: 22px; }
+.gauge .viz { flex: none; width: 150px; height: 150px; }
+.gauge .info { display: grid; gap: 6px; min-width: 0; }
+.gauge .name { font-weight: 800; font-size: 28px; letter-spacing: 0.06em; }
+.gauge .big { font-weight: 800; font-size: 26px; font-variant-numeric: tabular-nums; }
+.bars { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; align-items: end; height: 150px; }
+.bars i { display: block; background: var(--line); height: 100%; }
+.bars i.on { background: var(--blue); }
+
+.row2 { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 20px; }
+.head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+.head h2 { font-size: 22px; letter-spacing: 0.08em; }
+.head .right { margin-left: auto; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.stack { display: flex; height: 34px; background: var(--line); margin-bottom: 14px; }
+.stack i { display: block; height: 100%; }
+.legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 28px; }
+.legend div { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.legend .sw { width: 14px; height: 14px; flex: none; }
+.legend .nm { flex-grow: 1; overflow-wrap: anywhere; }
+.legend .sz { font-family: var(--mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.alerts { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.alerts li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 2px 12px; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 10px; }
+.alerts .t { font-weight: 700; overflow-wrap: anywhere; }
+.alerts .w { grid-column: 2; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.note { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+
+.services { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; }
+.svc { display: flex; flex-direction: column; gap: 6px; text-decoration: none; min-height: 140px; }
+a.svc:hover { border-color: var(--yellow); }
+.svc .top { display: flex; align-items: center; gap: 10px; }
+.svc .nm { font-weight: 800; font-size: 20px; letter-spacing: 0.04em; }
+.svc .ab { font-size: 14px; color: var(--muted); }
+.svc .dt { font-family: var(--mono); font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.svc .open { margin-top: auto; font-weight: 700; color: var(--yellow); }
+footer { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+@media (max-width: 1100px) {
+  .gauges { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .gauge { flex-direction: column; text-align: center; gap: 8px; }
+  .gauge .viz, .bars { width: 90px; height: 90px; }
+  .gauge .name { font-size: 15px; } .gauge .big { font-size: 18px; } .gauge .ch, .gauge .extra { display: none; }
+  .row2 { grid-template-columns: minmax(0, 1fr); }
+  .services { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .panel { padding: 12px 14px; }
+  .svc { min-height: 0; }
+  .legend { grid-template-columns: minmax(0, 1fr); }
+  .who { display: none; }
+}
+@media (max-width: 520px) { .services { grid-template-columns: minmax(0, 1fr); } }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>homeserver</h1>
+    <svg width="64" height="40" viewBox="0 0 64 40" aria-hidden="true"><circle cx="16" cy="20" r="14" fill="#E1251B"/><rect x="26" y="7" width="26" height="26" fill="#F7C600"/><path d="M40 34 L58 6 L64 34 Z" fill="#2B5FD9"/></svg>
+    <h1>HOMESERVER</h1>
+    <span class="sub">CONTROL ROOM</span>
     <span class="who" id="who">Connecting…</span>
+    <span class="clock" id="clock">--:--</span>
   </header>
 
-  <div class="banner wait" id="banner">Checking services…</div>
+  <div class="banner wait" role="status" id="banner">
+    <svg width="26" height="26" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="13" fill="currentColor"/></svg>
+    <span class="msg" id="banner-msg">Checking services</span>
+    <span class="count" id="banner-count"></span>
+  </div>
 
-  <section id="resources" hidden>
-    <h2>Resources</h2>
-    <div class="meters">
-      <div class="meter"><div class="row"><span class="label">CPU</span><span class="value" id="cpu">–</span></div><div class="bar"><i id="cpu-bar"></i></div><div class="sub" id="cpu-sub">&nbsp;</div></div>
-      <div class="meter"><div class="row"><span class="label">Memory</span><span class="value" id="mem">–</span></div><div class="bar"><i id="mem-bar"></i></div><div class="sub" id="mem-sub">&nbsp;</div></div>
-      <div class="meter"><div class="row"><span class="label">Disk</span><span class="value" id="disk">–</span></div><div class="bar"><i id="disk-bar"></i></div><div class="sub" id="disk-sub">&nbsp;</div></div>
+  <section class="gauges" id="resources" aria-label="Resources" hidden>
+    <div class="panel gauge">
+      <svg class="viz" viewBox="0 0 170 170" role="img" aria-label="CPU" id="cpu-viz"><circle cx="85" cy="85" r="70" fill="none" stroke="#34343C" stroke-width="22"/><circle id="cpu-arc" cx="85" cy="85" r="70" fill="none" stroke="#F7C600" stroke-width="22" stroke-dasharray="0 440" transform="rotate(-90 85 85)"/><text id="cpu-txt" x="85" y="96" text-anchor="middle" font-family="Jost, sans-serif" font-weight="800" font-size="34" fill="#EDE8DC">–</text></svg>
+      <div class="info"><span class="ch">CH 01</span><span class="name">CPU</span><span class="mono muted extra" id="cpu-sub"></span></div>
+    </div>
+    <div class="panel gauge">
+      <div class="viz bars" role="img" aria-label="Memory" id="mem-viz"></div>
+      <div class="info"><span class="ch">CH 02</span><span class="name">MEMORY</span><span class="big" id="mem-txt">–</span><span class="mono muted extra" id="mem-sub"></span></div>
+    </div>
+    <div class="panel gauge">
+      <svg class="viz" viewBox="0 0 170 170" role="img" aria-label="Disk" id="disk-viz"><path d="M15 150 L155 150 L85 20 Z" fill="#34343C"/><path id="disk-fill" d="" fill="#E1251B"/></svg>
+      <div class="info"><span class="ch">CH 03</span><span class="name">DISK</span><span class="big" id="disk-txt">–</span><span class="mono muted extra" id="disk-sub"></span></div>
     </div>
   </section>
 
-  <section id="storage" hidden>
-    <h2>Storage</h2>
-    <div class="store">
-      <ol class="folders" id="folders"></ol>
-      <div class="sub" id="storage-sub">&nbsp;</div>
-    </div>
-  </section>
+  <div class="row2" id="row2" hidden>
+    <section class="panel" aria-label="Storage">
+      <div class="head"><span class="ch">CH 04</span><h2>STORAGE</h2><span class="right" id="storage-when"></span></div>
+      <div class="stack" role="img" aria-label="Disk use by folder" id="stack"></div>
+      <div class="legend" id="legend"></div>
+    </section>
+    <section class="panel" aria-label="Alerts">
+      <div class="head"><span class="ch">CH 05</span><h2>ALERTS</h2><span class="right">last 30 days</span></div>
+      <ol class="alerts" id="alerts"></ol>
+      <p class="note">When a service goes down, comes back, or disk passes 90%, it shows here and on your phone.</p>
+    </section>
+  </div>
 
-  <section>
-    <h2>Services</h2>
-    <div class="tiles" id="tiles"></div>
-  </section>
+  <section class="services" id="services" aria-label="Services"></section>
 
   <footer id="footer">Updates every 5 seconds while this page is open.</footer>
 </div>
 
 <script>
 const $ = (id) => document.getElementById(id);
-const gb = (b) => (b / 1024 ** 3).toFixed(1) + " GB";
-const ago = (t, now) => { if (!t) return "not checked yet"; const s = Math.max(0, Math.round((now - t) / 1000)); return s < 60 ? `checked ${s}s ago` : `checked ${Math.round(s / 60)} min ago`; };
-const level = (pct) => (pct >= 90 ? "hot" : pct >= 75 ? "warm" : "");
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+const NS = "http://www.w3.org/2000/svg";
+const gb = (b) => (b >= 1024 ** 3 ? (b / 1024 ** 3).toFixed(1) + " GB" : (b / 1024 ** 2).toFixed(0) + " MB");
+const SWATCH = ["#F7C600", "#E1251B", "#2B5FD9", "#EDE8DC", "#8F8A80", "#6B6760", "#4F4C47", "#3E3C38", "#33312E", "#2A2926"];
 
-function meter(id, pct, text, sub) {
-  $(id).textContent = text;
-  const bar = $(id + "-bar");
-  bar.style.width = Math.min(100, Math.max(0, pct)) + "%";
-  bar.className = level(pct);
-  $(id + "-sub").textContent = sub;
+// Clock (local time on this device)
+function tick() { $("clock").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }
+tick(); setInterval(tick, 10_000);
+
+// Status lights: shape AND colour carry the state.
+function light(state, size = 20) {
+  const s = document.createElementNS(NS, "svg"); s.setAttribute("width", size); s.setAttribute("height", size); s.setAttribute("viewBox", "0 0 20 20");
+  s.setAttribute("role", "img"); s.setAttribute("aria-label", { up: "Up", down: "Down", planned: "Not set up", checking: "Checking" }[state]);
+  let shape;
+  if (state === "up") { shape = document.createElementNS(NS, "rect"); shape.setAttribute("x", 1); shape.setAttribute("y", 1); shape.setAttribute("width", 18); shape.setAttribute("height", 18); shape.setAttribute("fill", "#2B5FD9"); }
+  else if (state === "down") { shape = document.createElementNS(NS, "path"); shape.setAttribute("d", "M10 1 L19 19 L1 19 Z"); shape.setAttribute("fill", "#E1251B"); }
+  else { shape = document.createElementNS(NS, "circle"); shape.setAttribute("cx", 10); shape.setAttribute("cy", 10); shape.setAttribute("r", 8); shape.setAttribute("fill", "none"); shape.setAttribute("stroke", "#A9A49A"); shape.setAttribute("stroke-width", 2.5); }
+  s.append(shape); return s;
+}
+function alertMark(kind) {
+  const s = document.createElementNS(NS, "svg"); s.setAttribute("width", 18); s.setAttribute("height", 18); s.setAttribute("viewBox", "0 0 18 18"); s.setAttribute("aria-hidden", "true");
+  let shape;
+  if (kind === "problem") { shape = document.createElementNS(NS, "path"); shape.setAttribute("d", "M9 1 L17 17 L1 17 Z"); shape.setAttribute("fill", "#E1251B"); }
+  else if (kind === "ok") { shape = document.createElementNS(NS, "rect"); shape.setAttribute("x", 1); shape.setAttribute("y", 1); shape.setAttribute("width", 16); shape.setAttribute("height", 16); shape.setAttribute("fill", "#2B5FD9"); }
+  else { shape = document.createElementNS(NS, "circle"); shape.setAttribute("cx", 9); shape.setAttribute("cy", 9); shape.setAttribute("r", 8); shape.setAttribute("fill", "#F7C600"); }
+  s.append(shape); return s;
 }
 
-function uptime(s) {
-  const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60);
-  return d ? `${d}d ${h}h` : h ? `${h}h ${m}m` : `${m}m`;
+function uptime(s) { const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60); return d ? `${d}d ${h}h` : `${h}h ${String(m).padStart(2, "0")}m`; }
+function ago(t, now) { if (!t) return "not checked yet"; const s = Math.max(0, Math.round((now - t) / 1000)); return s < 60 ? `${s} s ago` : `${Math.round(s / 60)} min ago`; }
+function when(t) { return new Date(t).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); }
+
+function renderResources(r) {
+  const cpu = r.cpu ?? 0;
+  $("cpu-arc").setAttribute("stroke-dasharray", `${(4.398 * Math.min(100, cpu)).toFixed(1)} 440`);
+  $("cpu-txt").textContent = r.cpu == null ? "–" : cpu + "%";
+  $("cpu-viz").setAttribute("aria-label", `CPU ${cpu} percent`);
+  $("cpu-sub").textContent = `load ${r.load.toFixed(2)} · up ${uptime(r.uptime)}`;
+
+  const memPct = Math.round((100 * r.memory.used) / r.memory.total);
+  const bars = []; const tenths = memPct / 10;
+  for (let i = 0; i < 10; i++) { const b = el("i"); const f = Math.min(1, Math.max(0, tenths - i)); if (f > 0) { b.className = "on"; b.style.height = Math.max(8, f * 100) + "%"; } bars.push(b); }
+  $("mem-viz").replaceChildren(...bars); $("mem-viz").setAttribute("aria-label", `Memory ${memPct} percent`);
+  $("mem-txt").textContent = memPct + "%"; $("mem-sub").textContent = `${gb(r.memory.used)} of ${gb(r.memory.total)}`;
+
+  const diskPct = Math.round((100 * r.disk.used) / r.disk.total);
+  // Fill the triangle from the bottom so the filled AREA matches the percentage.
+  const t = 1 - Math.sqrt(1 - Math.min(1, diskPct / 100)); const y = 150 - t * 130; const half = 70 * (1 - t);
+  $("disk-fill").setAttribute("d", diskPct > 0 ? `M15 150 L155 150 L${85 + half} ${y} L${85 - half} ${y} Z` : "");
+  $("disk-viz").setAttribute("aria-label", `Disk ${diskPct} percent`);
+  $("disk-txt").textContent = diskPct + "%"; $("disk-sub").textContent = `${gb(r.disk.used)} of ${gb(r.disk.total)} · alert at 90%`;
 }
 
-function tile(s, now) {
-  const state = s.planned ? "planned" : s.up === true ? "up" : s.up === false ? "down" : "checking";
-  const el = document.createElement(s.link && !s.planned ? "a" : "div");
-  el.className = "tile";
-  if (el.tagName === "A") el.href = s.link;
-  const top = document.createElement("div"); top.className = "top";
-  const dot = document.createElement("span"); dot.className = "dot " + (state === "up" || state === "down" ? state : "");
-  const name = document.createElement("span"); name.className = "name"; name.textContent = s.name;
-  const badge = document.createElement("span"); badge.className = "state " + (state === "up" || state === "down" ? state : ""); badge.textContent = { up: "Up", down: "Down", planned: "Not set up", checking: "Checking" }[state];
-  top.append(dot, name, badge);
-  const about = document.createElement("div"); about.className = "about"; about.textContent = s.about;
-  el.append(top, about);
-  if (!s.planned) {
-    const detail = document.createElement("div"); detail.className = "detail"; detail.textContent = `${s.detail} · ${ago(s.checkedAt, now)}`;
-    el.append(detail);
-  }
-  if (el.tagName === "A") { const open = document.createElement("div"); open.className = "open"; open.textContent = "Open →"; el.append(open); }
-  return el;
+let storageShown = null;
+function renderStorage(st, now, diskTotal) {
+  if (!st) { $("storage-when").textContent = "first measurement a minute after start"; return; }
+  $("storage-when").textContent = `measured ${ago(st.measuredAt, now)} · hourly`;
+  if (storageShown === st.measuredAt) return; storageShown = st.measuredAt;
+  const items = [...st.items].sort((a, b) => b.bytes - a.bytes);
+  $("stack").replaceChildren(...items.map((it, i) => { const seg = el("i"); seg.style.width = (100 * it.bytes / diskTotal).toFixed(2) + "%"; seg.style.background = SWATCH[i % SWATCH.length]; return seg; }));
+  $("legend").replaceChildren(...items.map((it, i) => { const d = el("div"); const sw = el("span", "sw"); sw.style.background = SWATCH[i % SWATCH.length]; d.append(sw, el("span", "nm", it.name), el("span", "sz", gb(it.bytes))); return d; }));
 }
 
-function render(data) {
-  $("who").textContent = data.viewer.role === "owner" ? `Signed in as ${data.viewer.name}` : `Hi ${data.viewer.name}`;
-  const live = data.services.filter((s) => !s.planned);
-  const down = live.filter((s) => s.up === false);
-  const banner = $("banner");
-  if (down.length) { banner.className = "banner bad"; banner.textContent = `Problem: ${down.map((s) => s.name).join(", ")} ${down.length === 1 ? "is" : "are"} down.`; }
-  else if (live.length && live.every((s) => s.up === true)) { banner.className = "banner ok"; banner.textContent = "Everything is running."; }
-  else if (!live.length) { banner.className = "banner wait"; banner.textContent = "Nothing is set up for you yet."; }
-  else { banner.className = "banner wait"; banner.textContent = "Checking services…"; }
-
-  $("tiles").replaceChildren(...data.services.map((s) => tile(s, data.now)));
-
-  const r = data.resources;
-  $("resources").hidden = !r;
-  if (r) {
-    meter("cpu", r.cpu ?? 0, r.cpu == null ? "–" : r.cpu + "%", `load ${r.load.toFixed(2)} · up ${uptime(r.uptime)}`);
-    const memPct = Math.round((100 * r.memory.used) / r.memory.total);
-    meter("mem", memPct, memPct + "%", `${gb(r.memory.used)} of ${gb(r.memory.total)}`);
-    const diskPct = Math.round((100 * r.disk.used) / r.disk.total);
-    meter("disk", diskPct, diskPct + "%", `${gb(r.disk.used)} of ${gb(r.disk.total)}`);
-  }
-  renderStorage(data.storage, data.resources, data.now);
-  $("footer").textContent = "Updates every 5 seconds while this page is open.";
+function renderAlerts(list) {
+  if (!list || !list.length) { $("alerts").replaceChildren(el("li", null, "No alerts in the last 30 days.")); return; }
+  $("alerts").replaceChildren(...list.slice(0, 5).map((a) => { const li = el("li"); li.append(alertMark(a.kind), el("span", "t", a.title), el("span", "w", `${when(a.at)}${a.message ? " · " + a.message : ""}`)); return li; }));
 }
 
-const size = (b) => (b >= 1024 ** 3 ? (b / 1024 ** 3).toFixed(1) + " GB" : (b / 1024 ** 2).toFixed(0) + " MB");
-let storageShownAt = null;
-function renderStorage(st, r, now) {
-  const box = $("storage");
-  if (!r) { box.hidden = true; return; }
-  box.hidden = false;
-  if (!st) { $("folders").replaceChildren(); $("storage-sub").textContent = "First measurement runs a minute after the dashboard starts."; return; }
-  const mins = Math.round((now - st.measuredAt) / 60000);
-  $("storage-sub").textContent = `Measured ${mins < 1 ? "just now" : mins + " min ago"} · refreshed hourly`;
-  if (storageShownAt === st.measuredAt) return; // only rebuild when there is a new measurement
-  storageShownAt = st.measuredAt;
-  const max = Math.max(...st.items.map((i) => i.bytes), 1);
-  $("folders").replaceChildren(...st.items.map((i) => {
-    const li = document.createElement("li");
-    const name = document.createElement("span"); name.className = "fname"; name.textContent = i.name;
-    const sz = document.createElement("span"); sz.className = "fsize"; sz.textContent = size(i.bytes);
-    const bar = document.createElement("div"); bar.className = "bar";
-    const fill = document.createElement("i"); fill.style.width = Math.max(1, Math.round((100 * i.bytes) / max)) + "%";
-    bar.append(fill); li.append(name, sz, bar); return li;
+function renderServices(list, now) {
+  $("services").replaceChildren(...list.map((s) => {
+    const state = s.planned ? "planned" : s.up === true ? "up" : s.up === false ? "down" : "checking";
+    const card = el(s.link && !s.planned ? "a" : "div", "panel svc"); if (card.tagName === "A") card.href = s.link;
+    const top = el("span", "top"); top.append(light(state), el("span", "nm", s.name));
+    card.append(top, el("span", "ab", s.about));
+    card.append(el("span", "dt", s.planned ? "not set up yet" : `${s.detail} · ${ago(s.checkedAt, now)}`));
+    if (card.tagName === "A") card.append(el("span", "open", "Open →"));
+    return card;
   }));
+}
+
+function render(d) {
+  $("who").textContent = d.viewer.role === "owner" ? `Signed in as ${d.viewer.name}` : `Hi ${d.viewer.name}`;
+  const live = d.services.filter((s) => !s.planned); const down = live.filter((s) => s.up === false); const up = live.filter((s) => s.up === true);
+  const b = $("banner");
+  if (down.length) { b.className = "banner bad"; $("banner-msg").textContent = `Problem: ${down.map((s) => s.name).join(", ")} down`; }
+  else if (live.length && up.length === live.length) { b.className = "banner"; $("banner-msg").textContent = "All systems running"; }
+  else { b.className = "banner wait"; $("banner-msg").textContent = live.length ? "Checking services" : "Nothing set up for you yet"; }
+  $("banner-count").textContent = live.length ? `${up.length} of ${live.length} up` : "";
+
+  const owner = Boolean(d.resources);
+  $("resources").hidden = !owner; $("row2").hidden = !owner;
+  if (owner) { renderResources(d.resources); renderStorage(d.storage, d.now, d.resources.disk.total); renderAlerts(d.alerts); }
+  renderServices(d.services, d.now);
+  $("footer").textContent = "Updates every 5 seconds while this page is open.";
 }
 
 let timer = null;
@@ -197,9 +247,8 @@ async function refresh() {
     if (!res.ok) throw new Error(await res.text());
     render(await res.json());
   } catch (err) {
-    $("banner").className = "banner bad";
-    $("banner").textContent = "Can't reach the dashboard. Check that Tailscale is on.";
-    $("footer").textContent = String(err.message || err);
+    $("banner").className = "banner bad"; $("banner-msg").textContent = "Can't reach the server"; $("banner-count").textContent = "";
+    $("footer").textContent = `Check that Tailscale is on. (${err.message || err})`;
   }
 }
 function start() { if (!timer) { refresh(); timer = setInterval(refresh, 5000); } }

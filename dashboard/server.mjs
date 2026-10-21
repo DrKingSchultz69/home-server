@@ -175,6 +175,35 @@ async function checkDisk() {
   }
 }
 
+// ---- Alert history ----------------------------------------------------------
+// ntfy keeps every alert for 30 days (cache-duration in ntfy/server.yml), so the
+// dashboard reads its history from there instead of keeping a second copy.
+
+let alertCache = { at: 0, items: [] };
+async function recentAlerts() {
+  if (!NTFY_URL) return [];
+  if (Date.now() - alertCache.at < 30_000) return alertCache.items;
+  try {
+    const res = await fetch(`${NTFY_URL}/json?poll=1&since=720h`, { signal: AbortSignal.timeout(CHECK_TIMEOUT_MS) });
+    const lines = (await res.text()).trim().split("\n").filter(Boolean);
+    const items = lines
+      .map((l) => JSON.parse(l))
+      .filter((m) => m.event === "message")
+      .map((m) => ({
+        at: m.time * 1000,
+        title: m.title || m.message,
+        message: m.title ? m.message : "",
+        kind: (m.tags ?? []).includes("white_check_mark") ? "ok" : (m.priority ?? 3) >= 4 ? "problem" : "info",
+      }))
+      .sort((a, b) => b.at - a.at)
+      .slice(0, 10);
+    alertCache = { at: Date.now(), items };
+  } catch (err) {
+    console.error(`alert history not read: ${err.message}`);
+  }
+  return alertCache.items;
+}
+
 // ---- What is stored ---------------------------------------------------------
 // Once an hour, at the lowest CPU and disk priority, measure the biggest folders
 // in the home folder. Everything else on the disk is shown as "System and apps".
@@ -267,7 +296,7 @@ function viewer(req) {
 // ---- HTTP -------------------------------------------------------------------
 
 const SECURITY_HEADERS = {
-  "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'",
+  "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; frame-ancestors 'none'",
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "no-referrer",
   "Cache-Control": "no-store",
@@ -307,6 +336,7 @@ const server = http.createServer(async (req, res) => {
       if (who.role === "owner") {
         body.resources = await resources();
         body.storage = storage;
+        body.alerts = await recentAlerts();
       }
       return send(res, 200, JSON.stringify(body), "application/json");
     }
