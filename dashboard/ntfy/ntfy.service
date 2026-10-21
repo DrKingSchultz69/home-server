@@ -1,0 +1,16 @@
+[Unit]
+Description=ntfy alerts for the homeserver dashboard (127.0.0.1:2586; reached through Tailscale Serve :10000)
+After=network-online.target
+
+[Service]
+ExecStartPre=/usr/bin/mkdir -p %h/.local/share/ntfy
+ExecStart=%h/.local/bin/ntfy serve --config %h/Server/dashboard/ntfy/server.yml
+Environment=GOMEMLIMIT=20MiB
+Restart=on-failure
+RestartSec=5
+Nice=10
+MemoryMax=32M
+CPUQuota=5%
+
+[Install]
+WantedBy=default.target

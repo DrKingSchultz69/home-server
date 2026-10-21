@@ -17,8 +17,12 @@ const PORT = Number(process.env.DASH_PORT ?? 8080);
 const OWNER = (process.env.DASH_OWNER ?? "").toLowerCase();
 const NETHERON_URL = process.env.DASH_NETHERON_URL ?? "";
 const NETHERON_TOKEN_FILE = join(homedir(), ".mm", "token");
+const NTFY_URL = process.env.DASH_NTFY_URL ?? ""; // e.g. http://127.0.0.1:2586/homeserver
 const CHECK_EVERY_MS = 30_000;
 const CHECK_TIMEOUT_MS = 3_000;
+const STORAGE_EVERY_MS = 60 * 60_000;
+const DISK_ALERT_PCT = 90;
+const DISK_CLEAR_PCT = 85;
 
 // ---- Services -------------------------------------------------------------
 // `audience`: "owner" tiles are only shown to the owner, "family" tiles to everyone.
@@ -96,6 +100,23 @@ const SERVICES = [
 
 const status = new Map(); // id -> { up, detail, checkedAt }
 
+// ---- Phone alerts (ntfy) ----------------------------------------------------
+// One message per change: down, back up, disk over the limit. Never repeats.
+
+async function alert(title, message, { priority = "default", tags = "" } = {}) {
+  if (!NTFY_URL) return;
+  try {
+    await fetch(NTFY_URL, {
+      method: "POST",
+      body: message,
+      headers: { Title: title, Priority: priority, Tags: tags },
+      signal: AbortSignal.timeout(CHECK_TIMEOUT_MS),
+    });
+  } catch (err) {
+    console.error(`alert not sent: ${title} (${err.message})`);
+  }
+}
+
 async function checkAll() {
   await Promise.all(
     SERVICES.filter((s) => !s.planned).map(async (s) => {
@@ -105,9 +126,64 @@ async function checkAll() {
       } catch {
         result = { up: false, detail: "check failed" };
       }
+      const before = status.get(s.id);
       status.set(s.id, { ...result, checkedAt: Date.now() });
+      // `before` is missing on the very first check: no alert at startup.
+      if (before && before.up !== result.up) {
+        if (result.up) await alert(`${s.name} is back up`, result.detail, { tags: "white_check_mark" });
+        else await alert(`${s.name} is down`, result.detail, { priority: "high", tags: "rotating_light" });
+      }
     }),
   );
+  await checkDisk();
+}
+
+let diskAlerted = false;
+async function checkDisk() {
+  const d = await disk();
+  const pct = Math.round((100 * d.used) / d.total);
+  if (!diskAlerted && pct >= DISK_ALERT_PCT) {
+    diskAlerted = true;
+    await alert(`Disk is ${pct}% full`, `${(d.used / 1024 ** 3).toFixed(0)} of ${(d.total / 1024 ** 3).toFixed(0)} GB used`, { priority: "high", tags: "floppy_disk" });
+  } else if (diskAlerted && pct < DISK_CLEAR_PCT) {
+    diskAlerted = false;
+    await alert(`Disk back to ${pct}%`, "Below the warning level again.", { tags: "white_check_mark" });
+  }
+}
+
+// ---- What is stored ---------------------------------------------------------
+// Once an hour, at the lowest CPU and disk priority, measure the biggest folders
+// in the home folder. Everything else on the disk is shown as "System and apps".
+
+let storage = null; // { items: [{ name, bytes }], measuredAt }
+
+async function scanStorage() {
+  const home = homedir();
+  try {
+    const { stdout } = await run("nice", ["-n", "19", "ionice", "-c3", "du", "-x", "-B1", "-d1", home], {
+      timeout: 15 * 60_000,
+      maxBuffer: 1024 * 1024,
+    }).catch((err) => ({ stdout: err.stdout ?? "" })); // du exits 1 on unreadable folders but still reports the rest
+    const rows = stdout
+      .trim()
+      .split("\n")
+      .map((line) => {
+        const [bytes, path] = line.split("\t");
+        return { bytes: Number(bytes), path };
+      })
+      .filter((r) => r.path && Number.isFinite(r.bytes));
+    const homeTotal = rows.find((r) => r.path === home)?.bytes ?? 0;
+    const folders = rows.filter((r) => r.path !== home).sort((a, b) => b.bytes - a.bytes);
+    const top = folders.slice(0, 8).map((r) => ({ name: "~/" + r.path.slice(home.length + 1), bytes: r.bytes }));
+    const otherHome = homeTotal - top.reduce((a, r) => a + r.bytes, 0);
+    if (otherHome > 0) top.push({ name: "Other home files", bytes: otherHome });
+    const d = await disk();
+    const system = d.used - homeTotal;
+    if (system > 0) top.push({ name: "System and apps", bytes: system });
+    storage = { items: top, measuredAt: Date.now() };
+  } catch (err) {
+    console.error(`storage scan failed: ${err.message}`);
+  }
 }
 
 // ---- Resources ------------------------------------------------------------
@@ -204,7 +280,10 @@ const server = http.createServer(async (req, res) => {
         ...(s.planned ? {} : status.get(s.id) ?? { up: null, detail: "first check pending", checkedAt: null }),
       }));
       const body = { viewer: who, services: tiles, now: Date.now() };
-      if (who.role === "owner") body.resources = await resources();
+      if (who.role === "owner") {
+        body.resources = await resources();
+        body.storage = storage;
+      }
       return send(res, 200, JSON.stringify(body), "application/json");
     }
 
@@ -227,6 +306,12 @@ const server = http.createServer(async (req, res) => {
 });
 
 if (!OWNER) console.warn("DASH_OWNER is not set: everyone gets the family view.");
+if (!NTFY_URL) console.warn("DASH_NTFY_URL is not set: no phone alerts.");
+server.listen(PORT, HOST, () => console.log(`dashboard on http://${HOST}:${PORT}`));
 await checkAll();
 setInterval(checkAll, CHECK_EVERY_MS).unref();
-server.listen(PORT, HOST, () => console.log(`dashboard on http://${HOST}:${PORT}`));
+// First storage scan a minute after start, so a reboot isn't slowed down.
+setTimeout(() => {
+  scanStorage();
+  setInterval(scanStorage, STORAGE_EVERY_MS).unref();
+}, 60_000).unref();

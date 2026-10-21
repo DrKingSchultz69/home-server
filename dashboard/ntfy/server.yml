@@ -1,0 +1,8 @@
+# ntfy: phone alerts for the homeserver dashboard.
+# Listens on 127.0.0.1 only; Tailscale Serve publishes it to the tailnet on :10000.
+base-url: "https://homeserver.tailaf7058.ts.net:10000"
+listen-http: "127.0.0.1:2586"
+behind-proxy: true
+cache-file: "/home/palani/.local/share/ntfy/cache.db"
+cache-duration: "24h"
+attachment-cache-dir: ""

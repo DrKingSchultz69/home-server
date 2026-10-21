@@ -59,6 +59,13 @@ a.tile:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35
 .tile .about { color: var(--muted); font-size: 14px; }
 .tile .detail { font: 13px var(--mono); color: var(--muted); overflow-wrap: anywhere; }
 .tile .open { color: var(--accent); font-size: 14px; font-weight: 600; }
+.store { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 10px; }
+.store .sub { color: var(--muted); font: 13px var(--mono); }
+.folders { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.folders li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: baseline; }
+.folders .fname { font: 14px var(--mono); overflow-wrap: anywhere; min-width: 0; }
+.folders .fsize { font: 600 14px var(--mono); font-variant-numeric: tabular-nums; }
+.folders .bar { grid-column: 1 / -1; height: 6px; }
 footer { color: var(--muted); font-size: 13px; }
 @media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
 </style>
@@ -78,6 +85,14 @@ footer { color: var(--muted); font-size: 13px; }
       <div class="meter"><div class="row"><span class="label">CPU</span><span class="value" id="cpu">–</span></div><div class="bar"><i id="cpu-bar"></i></div><div class="sub" id="cpu-sub">&nbsp;</div></div>
       <div class="meter"><div class="row"><span class="label">Memory</span><span class="value" id="mem">–</span></div><div class="bar"><i id="mem-bar"></i></div><div class="sub" id="mem-sub">&nbsp;</div></div>
       <div class="meter"><div class="row"><span class="label">Disk</span><span class="value" id="disk">–</span></div><div class="bar"><i id="disk-bar"></i></div><div class="sub" id="disk-sub">&nbsp;</div></div>
+    </div>
+  </section>
+
+  <section id="storage" hidden>
+    <h2>Storage</h2>
+    <div class="store">
+      <ol class="folders" id="folders"></ol>
+      <div class="sub" id="storage-sub">&nbsp;</div>
     </div>
   </section>
 
@@ -149,7 +164,30 @@ function render(data) {
     const diskPct = Math.round((100 * r.disk.used) / r.disk.total);
     meter("disk", diskPct, diskPct + "%", `${gb(r.disk.used)} of ${gb(r.disk.total)}`);
   }
+  renderStorage(data.storage, data.resources, data.now);
   $("footer").textContent = "Updates every 5 seconds while this page is open.";
+}
+
+const size = (b) => (b >= 1024 ** 3 ? (b / 1024 ** 3).toFixed(1) + " GB" : (b / 1024 ** 2).toFixed(0) + " MB");
+let storageShownAt = null;
+function renderStorage(st, r, now) {
+  const box = $("storage");
+  if (!r) { box.hidden = true; return; }
+  box.hidden = false;
+  if (!st) { $("folders").replaceChildren(); $("storage-sub").textContent = "First measurement runs a minute after the dashboard starts."; return; }
+  const mins = Math.round((now - st.measuredAt) / 60000);
+  $("storage-sub").textContent = `Measured ${mins < 1 ? "just now" : mins + " min ago"} · refreshed hourly`;
+  if (storageShownAt === st.measuredAt) return; // only rebuild when there is a new measurement
+  storageShownAt = st.measuredAt;
+  const max = Math.max(...st.items.map((i) => i.bytes), 1);
+  $("folders").replaceChildren(...st.items.map((i) => {
+    const li = document.createElement("li");
+    const name = document.createElement("span"); name.className = "fname"; name.textContent = i.name;
+    const sz = document.createElement("span"); sz.className = "fsize"; sz.textContent = size(i.bytes);
+    const bar = document.createElement("div"); bar.className = "bar";
+    const fill = document.createElement("i"); fill.style.width = Math.max(1, Math.round((100 * i.bytes) / max)) + "%";
+    bar.append(fill); li.append(name, sz, bar); return li;
+  }));
 }
 
 let timer = null;
