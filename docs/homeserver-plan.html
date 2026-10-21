@@ -99,24 +99,23 @@ footer { color: var(--muted); font-size: 14px; }
 <div class="wrap">
 
   <header>
-    <span class="eyebrow">Home server · desktop PC · updated 21 Oct 2026 · Phase 7 done</span>
+    <span class="eyebrow">Home server · desktop PC · updated 21 Oct 2026 · Phase 8 done</span>
     <h1>Homeserver Build Plan</h1>
     <p class="lede">A 7th-gen i5 desktop running Fedora KDE as a daily PC and an always-on private server. Nothing is public: every remote connection goes through your Tailscale network.</p>
     <div class="progress" aria-label="Progress">
       <div class="bar">
-        <span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="now"></span><span></span><span></span><span></span>
+        <span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="now"></span><span></span><span></span>
       </div>
-      <small>9 of 13 phases done · Phase 8 next: design first · Claude Code runs on the server</small>
+      <small>10 of 13 phases done · Phase 9 next: design first · Netheron runs on the tailnet</small>
     </div>
   </header>
 
   <div class="next">
-    <span class="eyebrow">Next action · Phase 8 · design first</span>
-    <h3>Design the Netheron workspace</h3>
+    <span class="eyebrow">Next action · Phase 9 · design first</span>
+    <h3>Design file access</h3>
     <ol>
-      <li>Decide where your projects live on the server.</li>
-      <li>Decide how many agents run at once in 8 GB of RAM.</li>
-      <li>Then Netheron gets installed, bound to the Tailscale address only.</li>
+      <li>Decide how you reach your files: in a browser, synced folders, or a network drive in Windows.</li>
+      <li>Decide which folders, and whether any are shared with family.</li>
     </ol>
   </div>
 
@@ -156,7 +155,7 @@ flowchart LR
   fw["firewalld<br/>home Wi-Fi zone"]
   subgraph server["homeserver · Fedora 44"]
     ssh["Tailscale SSH<br/>check mode"]
-    neth["Netheron :4141"]:::planned
+    neth["Netheron workspace<br/>Tailscale Serve → 127.0.0.1:4142"]
     files["Files"]:::planned
     stream["Streaming site<br/>isolated streamer user"]:::planned
   end
@@ -164,7 +163,7 @@ flowchart LR
   phone --> ts
   family -. "streaming only" .-> ts
   ts --> ssh
-  ts -.-> neth
+  ts --> neth
   ts -.-> files
   ts -.-> stream
   tv -. "LAN" .-> fw -.-> stream
@@ -201,8 +200,8 @@ flowchart LR
       <li class="phase"><span class="num">5b</span><div class="body"><h3>Repo + Claude on the server</h3><p>Private <span class="mono">home-server</span> repo cloned to <span class="mono">~/Server</span>. Claude Code 2.1.305 installed and signed in. Sync with git pull / git push.</p></div><span class="chip done">Done</span></li>
       <li class="phase"><span class="num">6</span><div class="body"><h3>Tailscale</h3><p>Server, laptop and phone joined. Device approval on. Phone reached the server over mobile data.</p></div><span class="chip done">Done</span></li>
       <li class="phase"><span class="num">7</span><div class="body"><h3>Lock it down</h3><p>Tailscale SSH with check mode, root login refused. Home Wi-Fi blocks SSH and all high ports; Tailscale trusted. Daily automatic security updates. Phone lock and remote wipe on.</p></div><span class="chip done">Done</span></li>
-      <li class="phase now"><span class="num">8</span><div class="body"><h3>Netheron workspace</h3><p>Decide together: project folder layout, how many agents fit in 8 GB.</p></div><span class="chip decide">Decide first</span></li>
-      <li class="phase"><span class="num">9</span><div class="body"><h3>File access</h3><p>Decide together: browser, synced folders or network drive, and which folders.</p></div><span class="chip decide">Decide first</span></li>
+      <li class="phase"><span class="num">8</span><div class="body"><h3>Netheron workspace</h3><p>Runs as an auto-start service from <span class="mono">~/Workspace/Netheron</span> (branch <span class="mono">relay-redesign</span>, Node 24) in a 2 GB memory box. Listens on 127.0.0.1 only; reached at <span class="mono">https://homeserver.tailaf7058.ts.net</span> through Tailscale Serve, with its own token.</p></div><span class="chip done">Done</span></li>
+      <li class="phase now"><span class="num">9</span><div class="body"><h3>File access</h3><p>Decide together: browser, synced folders or network drive, and which folders.</p></div><span class="chip decide">Decide first</span></li>
       <li class="phase"><span class="num">10</span><div class="body"><h3>Streaming site</h3><p>Decide together: build your own or use a ready-made media server, TV video formats, upload speed.</p></div><span class="chip decide">Decide first</span></li>
       <li class="phase"><span class="num">11</span><div class="body"><h3>Family access</h3><p>Invite family, approve their devices, streaming-only access rule, test from mobile data.</p></div><span class="chip todo">Later</span></li>
     </ol>
