@@ -2,8 +2,8 @@
 
 ## Pending decision
 - Decision: Server dashboard (new request, before Phase 9)
-- Stage: awaiting reasoning (Build checkpoint)
-- Awaiting: what the dashboard shows, who can open it and at what address, ready-made app vs own page, and how sign-in should work (today Netheron needs its token once per browser).
+- Stage: awaiting reasoning (Build checkpoint, round 2)
+- Awaiting: (1) family view: separate family page or one page filtered by who is viewing; (2) whether services should skip their own logins after the dashboard sign-in (conflicts with Netheron's token rule); (3) how a page gets live status and RAM/CPU/disk (frontend vs backend).
 
 
 ## Remote access
@@ -43,3 +43,7 @@
 - Introduced (AI explained): memory limits with systemd (MemoryMax, cgroups); syncing with git (clone, pull, push, conflicts); Netheron ports (4141 proxy always loopback, 4142 workspace); Tailscale Serve vs --lan.
 - Learner choices: box 2 GB now (C2, 3 agents), raise after RAM upgrade to fit 3-4; kill the biggest agent when full; access option A (Tailscale Serve, loopback only). Reasons mostly not stated; the learner needed the sync mechanism taught after two rounds.
 - Outcome: Phase 8 design confirmed (Design checkpoint) with AI additions.
+
+## Server dashboard
+- Learner answers (round 1): show up/down per service plus RAM, CPU and disk; laptop and phone see it, family devices see only family things; build own page (option B); sign-in only for the dashboard, not for the services (meaning to clarify).
+- Introduced (AI explained): what a dashboard is; frontend vs backend; why a static page cannot read RAM/CPU; service logins as defense in depth.
