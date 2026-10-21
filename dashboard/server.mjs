@@ -94,7 +94,21 @@ const SERVICES = [
         (out) => (out.trim() === "active" ? "Daily timer active" : out.trim()),
       ),
   },
-  { id: "files", name: "Files", about: "Phase 9", audience: "owner", planned: true },
+  {
+    id: "files",
+    name: "Files",
+    about: "Browse, upload, download · also drive Z:",
+    audience: "owner",
+    link: process.env.DASH_FILES_URL || null,
+    check: async () => {
+      const [web, smb] = await Promise.all([
+        httpAnswers("http://127.0.0.1:8091/health", [200]),
+        commandSays("systemctl", ["is-active", "smb"], (out) => out.trim() === "active", (out) => out.trim()),
+      ]);
+      const up = web.up && smb.up;
+      return { up, detail: up ? "File Browser and Z: drive answering" : `Browser: ${web.detail} · Z: drive: ${smb.detail}` };
+    },
+  },
   { id: "streaming", name: "Streaming", about: "Phase 10", audience: "family", planned: true },
 ];
 

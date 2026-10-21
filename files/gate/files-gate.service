@@ -1,0 +1,16 @@
+[Unit]
+Description=Owner-only gate for File Browser (127.0.0.1:8092 -> 8091; reached through Tailscale Serve :8444)
+After=network-online.target filebrowser.service
+
+[Service]
+WorkingDirectory=%h/Server/files/gate
+Environment=GATE_OWNER=shairaam12@gmail.com
+ExecStart=%h/.local/node24/bin/node --max-old-space-size=24 gate.mjs
+Restart=on-failure
+RestartSec=5
+Nice=10
+MemoryMax=64M
+CPUQuota=50%
+
+[Install]
+WantedBy=default.target
