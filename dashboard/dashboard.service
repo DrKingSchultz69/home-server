@@ -1,0 +1,19 @@
+[Unit]
+Description=Homeserver dashboard (127.0.0.1:8080; reached through Tailscale Serve)
+After=network-online.target
+
+[Service]
+WorkingDirectory=%h/Server/dashboard
+Environment=PATH=%h/.local/node24/bin:/usr/local/bin:/usr/bin:/bin
+Environment=DASH_OWNER=shairaam12@gmail.com
+Environment=DASH_NETHERON_URL=https://homeserver.tailaf7058.ts.net:8443
+ExecStart=%h/.local/node24/bin/node --max-old-space-size=24 server.mjs
+Restart=on-failure
+RestartSec=5
+Nice=10
+# Keep it light: it can never take more than this.
+MemoryMax=64M
+CPUQuota=5%
+
+[Install]
+WantedBy=default.target
