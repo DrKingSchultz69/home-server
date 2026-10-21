@@ -151,12 +151,21 @@ function tile(item, i, icon, onOpen) {
   return t;
 }
 
-function sectionOf(title, items, icon, emptyText) {
+// On Home each section shows its first few tiles; "See all" opens the section.
+const HOME_LIMIT = 8;
+function sectionOf(title, items, icon, emptyText, sectionView) {
   const s = el("section");
-  s.append(el("h2", null, title));
+  s.append(el("h2", null, `${title} (${items.length})`));
   if (!items.length) { s.append(el("div", "empty", emptyText)); return s; }
   const g = el("div", "grid");
-  items.forEach((it, i) => g.append(tile(it.tile, i, icon, it.open)));
+  const shown = view === "home" ? items.slice(0, HOME_LIMIT) : items;
+  shown.forEach((it, i) => g.append(tile(it.tile, i, icon, it.open)));
+  if (view === "home" && items.length > HOME_LIMIT) {
+    const more = el("button", "tile c3"); more.type = "button";
+    more.append(el("span", "title", `See all ${items.length} →`));
+    more.addEventListener("click", () => go(sectionView));
+    g.append(more);
+  }
   s.append(g);
   return s;
 }
@@ -167,9 +176,9 @@ function renderList() {
   const family = lib.family.map((v) => ({ tile: { title: v.title, meta: v.folder, playable: v.playable }, open: () => play(v, "Family") }));
   const movies = lib.movies.map((v) => ({ tile: { title: v.title, meta: "Movie", playable: v.playable }, open: () => play(v, "Movie") }));
   const shows = lib.shows.map((s) => ({ tile: { title: s.name, meta: `${s.episodes.length} episode${s.episodes.length === 1 ? "" : "s"}` }, open: () => showPage(s) }));
-  if (view === "home" || view === "family") main.append(sectionOf("Family videos", family, "vhs", "No family videos yet. Add them to the family folder on the server."));
-  if (view === "home" || view === "movies") main.append(sectionOf("Movies", movies, "clap", "No movies yet. Copy them into Z:\\Movies."));
-  if (view === "home" || view === "shows") main.append(sectionOf("Shows", shows, "tv", "No shows yet. Copy them into Z:\\Shows\\<Show name>."));
+  if (view === "home" || view === "family") main.append(sectionOf("Family videos", family, "vhs", "No family videos yet. Add them to the family folder on the server.", "family"));
+  if (view === "home" || view === "movies") main.append(sectionOf("Movies", movies, "clap", "No movies yet. Copy them into Z:\\Movies.", "movies"));
+  if (view === "home" || view === "shows") main.append(sectionOf("Shows", shows, "tv", "No shows yet. Copy them into Z:\\Shows\\<Show name>.", "shows"));
   for (const a of document.querySelectorAll("#sections .pill")) {
     if (a.dataset.view === view) a.setAttribute("aria-current", "page");
     else a.removeAttribute("aria-current");
