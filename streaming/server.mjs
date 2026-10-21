@@ -139,11 +139,17 @@ async function entry(path, root, subs) {
   return item;
 }
 
+const BIG_FOLDER = 60; // a folder with more videos than this is treated like a camera dump
+
 function albumsOf(family) {
+  const perTop = new Map();
+  for (const v of family) perTop.set(v.top, (perTop.get(v.top) ?? 0) + 1);
+  const isDump = (top) => DUMP_FOLDER.test(top) || perTop.get(top) > BIG_FOLDER;
   const groups = new Map();
   for (const v of family) {
-    const name = !v.top ? "Unsorted" : DUMP_FOLDER.test(v.top) ? `${v.top} ${v.year}` : v.top;
-    if (!groups.has(name)) groups.set(name, { name, dump: DUMP_FOLDER.test(v.top), year: v.year, items: [] });
+    const dump = Boolean(v.top) && isDump(v.top);
+    const name = !v.top ? "Unsorted" : dump ? `${v.top} ${v.year}` : v.top;
+    if (!groups.has(name)) groups.set(name, { name, dump, year: v.year, items: [] });
     groups.get(name).items.push(v);
   }
   const byTitle = (a, b) => a.title.localeCompare(b.title, undefined, { numeric: true });
