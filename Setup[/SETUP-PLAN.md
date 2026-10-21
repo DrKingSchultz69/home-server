@@ -27,7 +27,7 @@ Tick a box when a phase is done.
 | 7 | Lock it down | 40 min | Claude, you approve | [x] |
 | 8 | Netheron workspace | 1 hour | Decide together, then Claude | [x] |
 | 8b | Server dashboard | 2 sessions | Decided together, Claude builds | [x] |
-| 9 | File access | 30–60 min | Decide together, then Claude | [ ] |
+| 9 | File access | 30–60 min | Decide together, then Claude | [x] |
 | 10 | Streaming site | 1–2 evenings | Decide together, then build | [ ] |
 | 11 | Family access | 20 min per person | You + Claude | [ ] |
 
