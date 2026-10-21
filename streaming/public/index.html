@@ -70,6 +70,15 @@ video { display: block; width: 100%; max-height: 62vh; background: var(--ink); }
 .stage { display: grid; gap: 16px; position: relative; }
 .overlay { display: grid; gap: 14px; }
 .toast { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); background: var(--yellow); border: var(--b) solid var(--ink); box-shadow: var(--shadow); padding: 6px 14px; font-family: var(--mono); font-weight: 700; z-index: 3; }
+.resume { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; background: rgba(17, 17, 17, 0.72); }
+.resume-title { background: var(--paper); border: var(--b) solid var(--ink); box-shadow: var(--shadow); padding: 8px 16px; font-family: var(--display); font-size: 22px; }
+.resume-btns { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+.btn-back.yes { background: var(--yellow); }
+.btn.small[aria-pressed="true"] { background: var(--yellow); }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; }
+video::cue { background: #111111; color: #FFD93D; font: 700 1.1em Archivo, sans-serif; }
+.prog { display: block; height: 8px; border: 2px solid var(--ink); background: var(--paper); }
+.prog i { display: block; height: 100%; background: var(--hot); }
 .lockpad { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 10px; padding-bottom: 32px; background: transparent; }
 .lockpad .mono { background: var(--paper); border: 3px solid var(--ink); padding: 4px 10px; font-size: 13px; }
 .lockpad.quiet > * { opacity: 0; }
@@ -131,11 +140,19 @@ video { display: block; width: 100%; max-height: 62vh; background: var(--ink); }
         <button type="button" class="btn big" id="toggle" aria-label="Play"></button>
         <button type="button" class="btn" id="fwd" aria-label="Forward 10 seconds"></button>
         <button type="button" class="btn small" id="mute" aria-label="Mute"></button>
+        <button type="button" class="btn small" id="cc" aria-label="Subtitles off" aria-pressed="false">CC</button>
         <button type="button" class="btn small" id="full" aria-label="Full screen"></button>
       </div>
-      <div class="hint" id="hint">Space/OK play · ◀ ▶ 10 s · ▲ ▼ volume · M mute · [ ] speed · F full screen</div>
+      <div class="hint" id="hint">Space/OK play · ◀ ▶ 10 s · ▲ ▼ volume · M mute · C subtitles · [ ] speed · F full screen</div>
     </div>
     <div class="toast" id="toast" hidden></div>
+    <div class="resume" id="resume" hidden>
+      <span class="resume-title">You stopped at <span id="resume-at">0:00</span></span>
+      <div class="resume-btns">
+        <button type="button" class="btn-back yes" id="resume-yes">▶ Resume</button>
+        <button type="button" class="btn-back" id="resume-no">↺ Start over</button>
+      </div>
+    </div>
     <div class="lockpad" id="lockpad" hidden>
       <button type="button" class="btn big" id="unlock" aria-label="Unlock the screen"></button>
       <span class="mono" id="lock-hint">Locked · tap the lock to unlock</span>
@@ -178,9 +195,29 @@ function tile(item, i, icon, onOpen) {
   label.append(el("span", "title", item.title));
   if (item.meta) label.append(el("span", "meta", item.meta));
   t.append(label);
+  if (item.progress != null) { const p = el("span", "prog"); const f = el("i"); f.style.width = Math.round(item.progress * 100) + "%"; p.append(f); t.append(p); }
   if (item.playable === false) t.append(el("span", "chip", "MAY NOT PLAY YET"));
   t.addEventListener("click", onOpen);
   return t;
+}
+
+// Albums (family videos grouped by folder; camera dumps by year) and their pages.
+function albumPage(album) {
+  const main = $("list");
+  main.replaceChildren();
+  const back = el("button", "btn-back", "← Family"); back.type = "button"; back.addEventListener("click", () => history.back());
+  const head = el("div", "player-top"); head.append(back, el("h1", null, album.name), el("span", "mono", `${album.count} videos`));
+  const g = el("div", "grid");
+  album.items.forEach((v, i) => g.append(tile({ title: v.title, meta: v.folder !== album.name ? v.folder : "", playable: v.playable, progress: fraction(v.id) }, i, "vhs", () => play(v, album.name))));
+  const s = el("section"); s.style.display = "grid"; s.style.gap = "16px"; s.append(head, g);
+  main.append(s);
+  history.pushState({ album: album.name }, "", "#album");
+  focusFirst(main);
+}
+
+function fraction(id) {
+  const p = lib.progress && lib.progress[id];
+  return p && p.position > 30 && p.position < p.duration - 30 ? p.position / p.duration : null;
 }
 
 // On Home each section shows its first few tiles; "See all" opens the section.
@@ -205,10 +242,16 @@ function sectionOf(title, items, icon, emptyText, sectionView) {
 function renderList() {
   const main = $("list");
   main.replaceChildren();
-  const family = lib.family.map((v) => ({ tile: { title: v.title, meta: v.folder, playable: v.playable }, open: () => play(v, "Family") }));
-  const movies = lib.movies.map((v) => ({ tile: { title: v.title, meta: "Movie", playable: v.playable }, open: () => play(v, "Movie") }));
+  const family = lib.albums.map((a) => ({ tile: { title: a.name, meta: `${a.count} video${a.count === 1 ? "" : "s"}` }, open: () => albumPage(a) }));
+  const movies = lib.movies.map((v) => ({ tile: { title: v.title, meta: "Movie", playable: v.playable, progress: fraction(v.id) }, open: () => play(v, "Movie") }));
+  if (view === "home" && lib.continue.length) {
+    const s = el("section"); s.append(el("h2", null, "Continue watching"));
+    const g = el("div", "grid");
+    lib.continue.forEach((v, i) => g.append(tile({ title: v.title, meta: `${clock(v.duration - v.position)} left`, progress: v.position / v.duration }, i + 3, "vhs", () => play(v, v.folder || "Continue"))));
+    s.append(g); main.append(s);
+  }
   const shows = lib.shows.map((s) => ({ tile: { title: s.name, meta: `${s.episodes.length} episode${s.episodes.length === 1 ? "" : "s"}` }, open: () => showPage(s) }));
-  if (view === "home" || view === "family") main.append(sectionOf("Family videos", family, "vhs", "No family videos yet. Add them to the family folder on the server.", "family"));
+  if (view === "home" || view === "family") main.append(sectionOf("Family albums", family, "vhs", "No family videos yet. Add them to the family folder on the server.", "family"));
   if (view === "home" || view === "movies") main.append(sectionOf("Movies", movies, "clap", "No movies yet. Copy them into Z:\\Movies.", "movies"));
   if (view === "home" || view === "shows") main.append(sectionOf("Shows", shows, "tv", "No shows yet. Copy them into Z:\\Shows\\<Show name>.", "shows"));
   for (const a of document.querySelectorAll("#sections .pill")) {
@@ -241,19 +284,56 @@ function showPage(show) {
 const video = $("video");
 function setToggleIcon() { $("toggle").replaceChildren(svg(video.paused ? "play" : "pause")); $("toggle").setAttribute("aria-label", video.paused ? "Play" : "Pause"); }
 
+let current = null;
 function play(item, meta) {
+  current = item;
   $("p-title").textContent = item.title;
   $("p-meta").textContent = meta;
   $("p-warn").hidden = item.playable !== false;
+  for (const t of [...video.querySelectorAll("track")]) t.remove();
+  (item.subs || []).forEach((s) => { const t = document.createElement("track"); t.kind = "subtitles"; t.src = `/subs/${item.id}/${s.n}.vtt`; t.srclang = s.lang === "und" ? "en" : s.lang; t.label = s.label; video.append(t); });
+  setCc(false); $("cc").disabled = !(item.subs && item.subs.length);
   video.src = `/video/${item.id}`;
   $("list").hidden = true; $("player").hidden = false;
   history.pushState({ player: item.id }, "", "#play");
-  video.play().catch(() => {});
+  const saved = lib.progress && lib.progress[item.id];
+  if (saved && saved.position > 30 && saved.position < saved.duration - 30) {
+    $("resume-at").textContent = clock(saved.position);
+    $("resume").hidden = false; $("resume-yes").focus();
+    $("resume-yes").onclick = () => startAt(saved.position);
+    $("resume-no").onclick = () => startAt(0);
+  } else { $("resume").hidden = true; startAt(0); }
   setToggleIcon();
-  $("toggle").focus();
+}
+function startAt(t) {
+  $("resume").hidden = true;
+  const go = () => { if (t > 0) video.currentTime = t; video.play().catch(() => {}); $("toggle").focus(); };
+  if (video.readyState >= 1) go(); else video.addEventListener("loadedmetadata", go, { once: true });
 }
 
-function closePlayer() { setLocked(false); if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); video.pause(); video.removeAttribute("src"); video.load(); $("player").hidden = true; $("list").hidden = false; focusFirst($("list")); }
+// Save the position every 10 s while playing, on pause, at the end and when leaving.
+let lastSave = 0;
+function saveProgress(force) {
+  if (!current || !isFinite(video.duration) || video.duration <= 0) return;
+  const now = Date.now(); if (!force && now - lastSave < 10_000) return; lastSave = now;
+  const body = { id: current.id, position: video.ended ? video.duration : video.currentTime, duration: video.duration };
+  if (lib.progress) lib.progress[current.id] = { ...body, updated: now };
+  fetch("/api/progress", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), keepalive: true }).catch(() => {});
+}
+video.addEventListener("timeupdate", () => { if (!video.paused) saveProgress(false); });
+video.addEventListener("pause", () => saveProgress(true));
+video.addEventListener("ended", () => saveProgress(true));
+window.addEventListener("pagehide", () => saveProgress(true));
+
+function setCc(on) {
+  const tr = video.textTracks[0];
+  if (tr) tr.mode = on ? "showing" : "hidden";
+  $("cc").setAttribute("aria-pressed", on ? "true" : "false");
+  $("cc").setAttribute("aria-label", on ? "Subtitles on" : "Subtitles off");
+}
+$("cc").addEventListener("click", () => { const on = $("cc").getAttribute("aria-pressed") !== "true"; setCc(on); toast(on ? "Subtitles on" : "Subtitles off"); });
+
+function closePlayer() { saveProgress(true); current = null; $("resume").hidden = true; setLocked(false); if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); video.pause(); video.removeAttribute("src"); video.load(); $("player").hidden = true; $("list").hidden = false; focusFirst($("list")); }
 const seek = (d) => { if (isFinite(video.duration)) { video.currentTime = Math.min(video.duration, Math.max(0, video.currentTime + d)); toast(`${d > 0 ? "+" : ""}${d} s · ${clock(video.currentTime)}`); } };
 const togglePlay = () => (video.paused ? video.play() : video.pause());
 
@@ -323,9 +403,13 @@ video.addEventListener("timeupdate", () => {
 function go(v) { view = v; history.pushState({ view: v }, "", `#${v}`); if (!$("player").hidden) closePlayer(); renderList(); }
 for (const a of document.querySelectorAll("#sections .pill")) a.addEventListener("click", (e) => { e.preventDefault(); go(a.dataset.view); });
 window.addEventListener("popstate", (e) => {
-  if (!$("player").hidden) return closePlayer();
+  if (!$("player").hidden) { closePlayer(); refreshLibrary(); return; }
   view = (e.state && e.state.view) || "home"; renderList();
 });
+// After watching, fetch again so "Continue watching" and progress bars are current.
+async function refreshLibrary() {
+  try { const res = await fetch("/api/library", { cache: "no-store" }); if (res.ok) { lib = await res.json(); if ($("player").hidden && !/^#(album|show)$/.test(location.hash)) renderList(); } } catch {}
+}
 
 function focusables() { return [...document.querySelectorAll("button, a.pill")].filter((n) => n.offsetParent !== null); }
 function focusFirst(root) { const f = root.querySelector("button"); if (f) f.focus({ preventScroll: false }); }
@@ -353,7 +437,8 @@ function moveFocus(dir) {
 
 document.addEventListener("keydown", (e) => {
   const inPlayer = !$("player").hidden;
-  if (e.key === "Escape" || e.key === "Backspace" || e.key === "BrowserBack" || e.key === "GoBack") { e.preventDefault(); if (inPlayer || location.hash === "#show") history.back(); return; }
+  if (e.key === "Escape" || e.key === "Backspace" || e.key === "BrowserBack" || e.key === "GoBack") { e.preventDefault(); if (inPlayer || location.hash === "#show" || location.hash === "#album") history.back(); return; }
+  if (inPlayer && !$("resume").hidden) { const dir = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" }[e.key]; if (dir) { e.preventDefault(); moveFocus(dir); } return; }
   if (inPlayer) {
     if (locked) { quietLock(); if (e.key !== "Enter") e.preventDefault(); return; } // remote/keys pause while locked; OK on the lock unlocks
     wake();
@@ -364,6 +449,7 @@ document.addEventListener("keydown", (e) => {
     if (k === "Enter" && !(document.activeElement && document.activeElement.tagName === "BUTTON")) { e.preventDefault(); togglePlay(); return; }
     if (k === "f" || k === "F") { e.preventDefault(); toggleFull(); return; }
     if (k === "m" || k === "M") { e.preventDefault(); toggleMute(); return; }
+    if ((k === "c" || k === "C") && !$("cc").disabled) { e.preventDefault(); $("cc").click(); return; }
     if (k === "]" || k === "+") { e.preventDefault(); speed(1); return; }
     if (k === "[" || k === "-") { e.preventDefault(); speed(-1); return; }
     if (k === "MediaFastForward") { e.preventDefault(); seek(30); return; }
