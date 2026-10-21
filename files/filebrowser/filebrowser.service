@@ -1,0 +1,15 @@
+[Unit]
+Description=File Browser for ~/Files (127.0.0.1:8091; reached through Tailscale Serve :8444)
+After=network-online.target
+
+[Service]
+ExecStart=%h/.local/bin/filebrowser -d %h/.local/share/filebrowser/filebrowser.db
+Environment=GOMEMLIMIT=40MiB
+Restart=on-failure
+RestartSec=5
+Nice=10
+MemoryMax=64M
+CPUQuota=25%
+
+[Install]
+WantedBy=default.target
