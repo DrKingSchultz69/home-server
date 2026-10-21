@@ -1,5 +1,10 @@
 # Learning Progress
 
+## Pending decision
+- Decision: File access (Phase 9)
+- Stage: awaiting reasoning (Build checkpoint, round 2)
+- Awaiting: which sync pairs and folders (and keeping git-managed Workspace out of folder sync); what family gets (which folder, read-only or not) given the streaming-only rule; moving C:\DesktopBackup (150.8 GB) to the server and where.
+
 
 
 ## Remote access
@@ -46,3 +51,7 @@
 - Learner answers (round 3): keep Netheron's login (signed-in link instead); problems on the dashboard and as phone alerts; 5 s refresh but the process must stay light.
 - Outcome: dashboard design confirmed (Design checkpoint) with AI additions; becomes Phase 8b.
 - Learner answers (round 2): one page that changes by viewer; remove Netheron's login (later reversed); backend checks each service, reports problems to the user, and shows what is stored on disk; asked for an ideal refresh rate.
+
+## File access
+- Learner answers (round 1): all three ways: browser (open/upload/download from the dashboard), synced folders, and a Windows network drive Z:. Desktop backup should move to the server; some sharing with family (details open).
+- Introduced (AI explained): web file manager vs folder sync vs network drive (SMB); each is another service and door; sync conflicts with git-managed folders.
