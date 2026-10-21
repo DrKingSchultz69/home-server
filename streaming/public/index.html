@@ -65,6 +65,21 @@ video { display: block; width: 100%; max-height: 62vh; background: var(--ink); }
 .btn.big { width: 88px; height: 88px; background: var(--yellow); box-shadow: 0 8px 0 var(--ink); }
 .btn:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--ink); }
 .hint { text-align: center; font-family: var(--mono); font-weight: 700; font-size: 13px; }
+.btn.small { width: 52px; height: 52px; font-family: var(--mono); font-weight: 700; font-size: 14px; }
+.controls { flex-wrap: wrap; }
+.stage { display: grid; gap: 16px; position: relative; }
+.overlay { display: grid; gap: 14px; }
+.toast { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); background: var(--yellow); border: var(--b) solid var(--ink); box-shadow: var(--shadow); padding: 6px 14px; font-family: var(--mono); font-weight: 700; z-index: 3; }
+.lockpad { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 10px; padding-bottom: 32px; background: transparent; }
+.lockpad .mono { background: var(--paper); border: 3px solid var(--ink); padding: 4px 10px; font-size: 13px; }
+.lockpad.quiet > * { opacity: 0; }
+/* Full screen: the video fills the screen, controls float over it and hide when idle. */
+.stage:fullscreen { background: var(--ink); display: block; width: 100vw; height: 100vh; }
+.stage:fullscreen .screen { border: 0; box-shadow: none; height: 100%; }
+.stage:fullscreen video { max-height: none; height: 100%; object-fit: contain; }
+.stage:fullscreen .overlay { position: absolute; left: 24px; right: 24px; bottom: 20px; background: var(--ground); border: var(--b) solid var(--ink); box-shadow: var(--shadow); padding: 14px 16px; transition: opacity .25s; }
+.stage:fullscreen.idle .overlay { opacity: 0; pointer-events: none; }
+.stage:fullscreen.idle { cursor: none; }
 .warn { background: var(--yellow); border: 3px solid var(--ink); padding: 10px 12px; font-weight: 700; }
 
 /* Show page */
@@ -105,14 +120,27 @@ video { display: block; width: 100%; max-height: 62vh; background: var(--ink); }
     <span class="mono" id="p-meta"></span>
   </div>
   <div class="warn" id="p-warn" hidden>This file is a format the TV may not play yet. Nightly conversion (milestone 3) will fix it.</div>
-  <div class="screen"><video id="video" playsinline preload="metadata"></video></div>
-  <div class="bar"><span class="time" id="t-now">0:00</span><div class="track" role="progressbar" aria-label="Playback position" aria-valuemin="0" aria-valuemax="100" id="track"><i id="track-fill"></i></div><span class="time" id="t-end">0:00</span></div>
-  <div class="controls">
-    <button type="button" class="btn" id="rew" aria-label="Back 10 seconds"></button>
-    <button type="button" class="btn big" id="toggle" aria-label="Play"></button>
-    <button type="button" class="btn" id="fwd" aria-label="Forward 10 seconds"></button>
+  <div class="stage" id="stage">
+    <div class="screen"><video id="video" playsinline preload="metadata"></video></div>
+    <div class="overlay" id="overlay">
+      <div class="bar"><span class="time" id="t-now">0:00</span><div class="track" role="progressbar" aria-label="Playback position" aria-valuemin="0" aria-valuemax="100" id="track"><i id="track-fill"></i></div><span class="time" id="t-end">0:00</span></div>
+      <div class="controls">
+        <button type="button" class="btn small" id="lock" aria-label="Lock the screen"></button>
+        <button type="button" class="btn small" id="speed" aria-label="Playback speed">1×</button>
+        <button type="button" class="btn" id="rew" aria-label="Back 10 seconds"></button>
+        <button type="button" class="btn big" id="toggle" aria-label="Play"></button>
+        <button type="button" class="btn" id="fwd" aria-label="Forward 10 seconds"></button>
+        <button type="button" class="btn small" id="mute" aria-label="Mute"></button>
+        <button type="button" class="btn small" id="full" aria-label="Full screen"></button>
+      </div>
+      <div class="hint" id="hint">Space/OK play · ◀ ▶ 10 s · ▲ ▼ volume · M mute · [ ] speed · F full screen</div>
+    </div>
+    <div class="toast" id="toast" hidden></div>
+    <div class="lockpad" id="lockpad" hidden>
+      <button type="button" class="btn big" id="unlock" aria-label="Unlock the screen"></button>
+      <span class="mono" id="lock-hint">Locked · tap the lock to unlock</span>
+    </div>
   </div>
-  <div class="hint">◀ ▶ seek 10 s · OK play/pause · BACK to the list</div>
 </main>
 
 <script>
@@ -125,6 +153,10 @@ const ICON = {
   pause: '<svg width="64" height="64" viewBox="0 0 76 76" aria-hidden="true"><defs><radialGradient id="kp2" cx=".4" cy=".3" r=".85"><stop offset="0" stop-color="#ff9ccb"/><stop offset=".55" stop-color="#ff4f97"/><stop offset="1" stop-color="#b0145a"/></radialGradient></defs><circle cx="38" cy="41" r="34" fill="#000"/><circle cx="38" cy="37" r="34" fill="url(#kp2)" stroke="#000" stroke-width="3"/><rect x="26" y="24" width="9" height="26" rx="2" fill="#fff" stroke="#000" stroke-width="2"/><rect x="41" y="24" width="9" height="26" rx="2" fill="#fff" stroke="#000" stroke-width="2"/><ellipse cx="30" cy="17" rx="15" ry="6" fill="#fff" opacity=".35"/></svg>',
   rew: '<svg width="42" height="42" viewBox="0 0 44 44" aria-hidden="true"><defs><radialGradient id="kb1" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#c9ccd6"/></radialGradient></defs><circle cx="22" cy="22" r="20" fill="url(#kb1)" stroke="#000" stroke-width="2"/><path d="M22 11a11 11 0 1 1-10.4 7.4" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round"/><path d="M8 13l3.6 5.6 5.6-3" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="22" y="26.5" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#111">10</text></svg>',
   fwd: '<svg width="42" height="42" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="20" fill="url(#kb1)" stroke="#000" stroke-width="2"/><path d="M22 11a11 11 0 1 0 10.4 7.4" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round"/><path d="M36 13l-3.6 5.6-5.6-3" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="22" y="26.5" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#111">10</text></svg>',
+  lock: '<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lk1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe27a"/><stop offset="1" stop-color="#c9971a"/></linearGradient></defs><path d="M10 14V10a6 6 0 0 1 12 0v4" fill="none" stroke="#000" stroke-width="5"/><path d="M10 14V10a6 6 0 0 1 12 0v4" fill="none" stroke="#c9ccd6" stroke-width="2.5"/><rect x="5" y="13" width="22" height="16" rx="3" fill="url(#lk1)" stroke="#000" stroke-width="2"/><circle cx="16" cy="20" r="2.5" fill="#111"/><rect x="15" y="21" width="2" height="4" fill="#111"/><rect x="7" y="15" width="18" height="2" rx="1" fill="#fff" opacity=".45"/></svg>',
+  full: '<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="5" width="26" height="22" rx="3" fill="#2a2a30" stroke="#000" stroke-width="2"/><path d="M8 13V10h3M24 13V10h-3M8 19v3h3M24 19v3h-3" fill="none" stroke="#FFD93D" stroke-width="2.5" stroke-linecap="square"/></svg>',
+  sound: '<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="sp1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5a5a62"/><stop offset="1" stop-color="#18181c"/></linearGradient></defs><path d="M5 12h5l7-6v20l-7-6H5z" fill="url(#sp1)" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M21 11c2 1.5 2 8.5 0 10M24 8c4 3 4 13 0 16" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round"/></svg>',
+  muted: '<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12h5l7-6v20l-7-6H5z" fill="#2a2a30" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M21 12l7 8M28 12l-7 8" stroke="#FF4F97" stroke-width="3" stroke-linecap="round"/></svg>',
   set: '<svg width="34" height="30" viewBox="0 0 40 36" aria-hidden="true"><defs><linearGradient id="tv1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c58a4a"/><stop offset="1" stop-color="#7a4a1f"/></linearGradient><radialGradient id="tv2" cx=".45" cy=".4" r=".8"><stop offset="0" stop-color="#9ef0ff"/><stop offset="1" stop-color="#1c5f8a"/></radialGradient></defs><path d="M14 2l6 7 6-7" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"/><rect x="2" y="9" width="36" height="25" rx="5" fill="url(#tv1)" stroke="#000" stroke-width="2"/><rect x="6" y="13" width="22" height="17" rx="4" fill="url(#tv2)" stroke="#000" stroke-width="1.5"/><circle cx="33" cy="17" r="2.2" fill="#2b2b2b" stroke="#000"/><circle cx="33" cy="24" r="2.2" fill="#2b2b2b" stroke="#000"/></svg>',
 };
 
@@ -221,13 +253,63 @@ function play(item, meta) {
   $("toggle").focus();
 }
 
-function closePlayer() { video.pause(); video.removeAttribute("src"); video.load(); $("player").hidden = true; $("list").hidden = false; focusFirst($("list")); }
-const seek = (d) => { if (isFinite(video.duration)) video.currentTime = Math.min(video.duration, Math.max(0, video.currentTime + d)); };
+function closePlayer() { setLocked(false); if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); video.pause(); video.removeAttribute("src"); video.load(); $("player").hidden = true; $("list").hidden = false; focusFirst($("list")); }
+const seek = (d) => { if (isFinite(video.duration)) { video.currentTime = Math.min(video.duration, Math.max(0, video.currentTime + d)); toast(`${d > 0 ? "+" : ""}${d} s · ${clock(video.currentTime)}`); } };
+const togglePlay = () => (video.paused ? video.play() : video.pause());
 
-$("rew").append(svg("rew")); $("fwd").append(svg("fwd")); setToggleIcon();
+// VLC-style extras: toast, volume, mute, speed, full screen, screen lock.
+let toastTimer = null;
+function toast(text) { const t = $("toast"); t.textContent = text; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.hidden = true), 1200); wake(); }
+function volume(d) { video.muted = false; video.volume = Math.min(1, Math.max(0, Math.round((video.volume + d) * 10) / 10)); toast(`Volume ${Math.round(video.volume * 100)}%`); setMuteIcon(); }
+function setMuteIcon() { $("mute").replaceChildren(svg(video.muted || video.volume === 0 ? "muted" : "sound")); $("mute").setAttribute("aria-label", video.muted ? "Unmute" : "Mute"); }
+function toggleMute() { video.muted = !video.muted; toast(video.muted ? "Muted" : `Volume ${Math.round(video.volume * 100)}%`); setMuteIcon(); }
+const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
+function speed(step) { const i = SPEEDS.indexOf(video.playbackRate); const n = SPEEDS[Math.min(SPEEDS.length - 1, Math.max(0, (i < 0 ? 2 : i) + step))]; video.playbackRate = n; $("speed").textContent = `${n}×`; toast(`Speed ${n}×`); }
+
+async function toggleFull() {
+  try {
+    if (document.fullscreenElement) { await document.exitFullscreen(); return; }
+    await $("stage").requestFullscreen();
+    // On a phone, turn the picture sideways like VLC does. Not every device allows it.
+    if (screen.orientation && screen.orientation.lock && matchMedia("(pointer: coarse)").matches) screen.orientation.lock("landscape").catch(() => {});
+  } catch { toast("Full screen isn't available here"); }
+}
+document.addEventListener("fullscreenchange", () => {
+  const on = Boolean(document.fullscreenElement);
+  $("full").setAttribute("aria-label", on ? "Exit full screen" : "Full screen");
+  if (!on && screen.orientation && screen.orientation.unlock) try { screen.orientation.unlock(); } catch {}
+  wake();
+});
+
+// Controls hide after 3 s in full screen; any tap, mouse move or key brings them back.
+let idleTimer = null;
+function wake() {
+  $("stage").classList.remove("idle"); clearTimeout(idleTimer);
+  if (document.fullscreenElement && !video.paused) idleTimer = setTimeout(() => $("stage").classList.add("idle"), 3000);
+}
+["mousemove", "pointerdown", "touchstart"].forEach((t) => $("stage").addEventListener(t, wake, { passive: true }));
+video.addEventListener("pause", wake); video.addEventListener("play", wake);
+video.addEventListener("dblclick", toggleFull);
+
+// Screen lock: taps are ignored until you tap the lock again.
+let locked = false, lockQuiet = null;
+function setLocked(on) {
+  locked = on; $("lockpad").hidden = !on; $("overlay").style.visibility = on ? "hidden" : "";
+  if (on) { quietLock(); $("unlock").focus(); } else $("lock").focus({ preventScroll: true });
+}
+function quietLock() { $("lockpad").classList.remove("quiet"); clearTimeout(lockQuiet); lockQuiet = setTimeout(() => $("lockpad").classList.add("quiet"), 2500); }
+$("lockpad").addEventListener("pointerdown", (e) => { if (e.target.closest("#unlock")) return; e.preventDefault(); quietLock(); });
+$("unlock").addEventListener("click", () => { if ($("lockpad").classList.contains("quiet")) return quietLock(); setLocked(false); toast("Unlocked"); });
+
+$("rew").append(svg("rew")); $("fwd").append(svg("fwd")); $("lock").append(svg("lock")); $("unlock").append(svg("lock")); $("full").append(svg("full")); setMuteIcon(); setToggleIcon();
 $("rew").addEventListener("click", () => seek(-10));
 $("fwd").addEventListener("click", () => seek(10));
-$("toggle").addEventListener("click", () => (video.paused ? video.play() : video.pause()));
+$("toggle").addEventListener("click", togglePlay);
+$("mute").addEventListener("click", toggleMute);
+$("speed").addEventListener("click", () => speed(video.playbackRate >= 2 ? -5 : 1));
+$("full").addEventListener("click", toggleFull);
+$("lock").addEventListener("click", () => { setLocked(true); toast("Locked"); });
+video.addEventListener("volumechange", setMuteIcon);
 $("back").addEventListener("click", () => history.back());
 video.addEventListener("play", setToggleIcon); video.addEventListener("pause", setToggleIcon);
 video.addEventListener("timeupdate", () => {
@@ -272,8 +354,21 @@ function moveFocus(dir) {
 document.addEventListener("keydown", (e) => {
   const inPlayer = !$("player").hidden;
   if (e.key === "Escape" || e.key === "Backspace" || e.key === "BrowserBack" || e.key === "GoBack") { e.preventDefault(); if (inPlayer || location.hash === "#show") history.back(); return; }
-  if (inPlayer && (e.key === "ArrowLeft" || e.key === "ArrowRight")) { e.preventDefault(); seek(e.key === "ArrowLeft" ? -10 : 10); return; }
-  if (inPlayer && (e.key === "MediaPlayPause" || e.key === " ")) { e.preventDefault(); video.paused ? video.play() : video.pause(); return; }
+  if (inPlayer) {
+    if (locked) { quietLock(); if (e.key !== "Enter") e.preventDefault(); return; } // remote/keys pause while locked; OK on the lock unlocks
+    wake();
+    const k = e.key;
+    if (k === "ArrowLeft" || k === "ArrowRight") { e.preventDefault(); seek(k === "ArrowLeft" ? -10 : 10); return; }
+    if (k === "ArrowUp" || k === "ArrowDown") { e.preventDefault(); volume(k === "ArrowUp" ? 0.1 : -0.1); return; }
+    if (k === " " || k === "MediaPlayPause" || k === "MediaPlay" || k === "MediaPause") { e.preventDefault(); togglePlay(); return; }
+    if (k === "Enter" && !(document.activeElement && document.activeElement.tagName === "BUTTON")) { e.preventDefault(); togglePlay(); return; }
+    if (k === "f" || k === "F") { e.preventDefault(); toggleFull(); return; }
+    if (k === "m" || k === "M") { e.preventDefault(); toggleMute(); return; }
+    if (k === "]" || k === "+") { e.preventDefault(); speed(1); return; }
+    if (k === "[" || k === "-") { e.preventDefault(); speed(-1); return; }
+    if (k === "MediaFastForward") { e.preventDefault(); seek(30); return; }
+    if (k === "MediaRewind") { e.preventDefault(); seek(-30); return; }
+  }
   const dir = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" }[e.key];
   if (dir) { e.preventDefault(); moveFocus(dir); }
 });
