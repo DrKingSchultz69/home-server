@@ -1,9 +1,5 @@
 # Learning Progress
 
-## Pending decision
-- Decision: Streaming site (Phase 10)
-- Stage: awaiting reasoning (Build checkpoint, round 2)
-- Awaiting: fully own build vs own design on Jellyfin's engine; how videos are converted (ahead of time vs live); how the Bravia opens it; media folder layout.
 
 
 
@@ -62,4 +58,6 @@
 
 ## Streaming site
 - Learner answers (round 1): library = family videos plus movies and shows; build their own so it can have a neo-brutalist look with skeuomorphic icons; TV is a Sony Bravia X80G (Android TV).
-- Introduced (AI explained): library, player page, format fit; direct play vs transcoding; Intel Quick Sync; TV remote (D-pad) navigation.
+- Introduced (AI explained): library, player page, format fit; direct play vs transcoding vs ahead-of-time conversion; Intel Quick Sync; TV remote (D-pad) navigation; the parts a full build includes.
+- Learner answers (rounds 2-3): build everything (A) because they want to own every part plus the look; unsure about formats (AI recommended ahead-of-time conversion); TV = simple app on the Bravia; v1 features: posters, resume, subtitles, seasons, search.
+- Outcome: Phase 10 design confirmed (Design checkpoint) with AI additions; built in 3 milestones.
