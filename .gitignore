@@ -7,3 +7,4 @@ diagrams/*.visual-check.*
 *.key
 *.pem
 id_*
+desktop-copy.log
