@@ -25,7 +25,7 @@ Tick a box when a phase is done.
 | 5b | This repo + Claude on the server | 15 min | You | [x] |
 | 6 | Tailscale (private network) | 30 min | You + Claude | [x] |
 | 7 | Lock it down | 40 min | Claude, you approve | [x] |
-| 8 | Netheron workspace | 1 hour | Decide together, then Claude | [ ] |
+| 8 | Netheron workspace | 1 hour | Decide together, then Claude | [x] |
 | 9 | File access | 30–60 min | Decide together, then Claude | [ ] |
 | 10 | Streaming site | 1–2 evenings | Decide together, then build | [ ] |
 | 11 | Family access | 20 min per person | You + Claude | [ ] |
