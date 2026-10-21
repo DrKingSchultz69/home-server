@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>homeserver access</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Same Bauhaus control-room look as the dashboard. View-only: approving happens in Tailscale. */
+:root { --ground: #16161A; --panel: #202026; --line: #34343C; --paper: #EDE8DC; --muted: #A9A49A; --red: #E1251B; --yellow: #F7C600; --blue: #2B5FD9; --ink: #111111; --sans: Jost, "Segoe UI", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace; color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--ground); color: var(--paper); font: 500 16px/1.45 var(--sans); }
+.wrap { max-width: 1100px; margin: 0 auto; padding: max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 40px max(16px, env(safe-area-inset-left)); display: grid; gap: 20px; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; border-bottom: 2px solid var(--line); padding-bottom: 14px; }
+h1, h2 { margin: 0; font-weight: 800; letter-spacing: 0.1em; }
+header h1 { font-size: clamp(20px, 3vw, 28px); letter-spacing: 0.16em; }
+.back { margin-left: auto; color: var(--yellow); font-weight: 700; text-decoration: none; }
+.panel { background: var(--panel); border: 2px solid var(--line); padding: 18px 22px; }
+.head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+.ch { font-family: var(--mono); font-weight: 600; font-size: 12px; letter-spacing: 0.14em; color: var(--muted); }
+.right { margin-left: auto; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.cta { display: inline-block; background: var(--yellow); color: var(--ink); font-weight: 800; letter-spacing: 0.04em; padding: 10px 16px; text-decoration: none; }
+.rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.rows li { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 10px; }
+.nm { font-weight: 800; overflow-wrap: anywhere; }
+.meta { grid-column: 2 / -1; font-family: var(--mono); font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+.tag { font-family: var(--mono); font-size: 12px; font-weight: 600; padding: 2px 8px; border: 2px solid var(--line); }
+.tag.owner { background: var(--yellow); color: var(--ink); border-color: var(--yellow); }
+.empty { color: var(--muted); }
+.steps { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.warn { background: var(--red); color: var(--paper); padding: 12px 16px; font-weight: 700; }
+a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <svg width="54" height="34" viewBox="0 0 64 40" aria-hidden="true"><circle cx="16" cy="20" r="14" fill="#E1251B"/><rect x="26" y="7" width="26" height="26" fill="#F7C600"/><path d="M40 34 L58 6 L64 34 Z" fill="#2B5FD9"/></svg>
+    <h1>ACCESS</h1>
+    <a class="back" href="/">← Control room</a>
+  </header>
+
+  <div class="warn" id="warn" hidden></div>
+
+  <section class="panel" aria-label="Waiting for approval">
+    <div class="head"><span class="ch">CH 06</span><h2>WAITING</h2><span class="right" id="checked"></span></div>
+    <ul class="rows" id="waiting"></ul>
+    <p style="margin: 14px 0 0"><a class="cta" href="https://login.tailscale.com/admin/machines" target="_blank" rel="noopener">Approve or remove in Tailscale →</a></p>
+  </section>
+
+  <section class="panel" aria-label="People">
+    <div class="head"><span class="ch">CH 07</span><h2>PEOPLE</h2></div>
+    <ul class="rows" id="people"></ul>
+  </section>
+
+  <section class="panel" aria-label="How someone asks for access">
+    <div class="head"><span class="ch">CH 08</span><h2>ADD SOMEONE</h2></div>
+    <ol class="steps">
+      <li>Tailscale console → <b>Users</b> → <b>Invite users</b>, and send them the link.</li>
+      <li>They install Tailscale, open the link and sign in. Their device shows up under <b>Waiting</b>.</li>
+      <li>Approve their device in Tailscale. They then get Streaming and their own files folder.</li>
+    </ol>
+  </section>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+const NS = "http://www.w3.org/2000/svg";
+function mark(kind) {
+  const s = document.createElementNS(NS, "svg"); s.setAttribute("width", 18); s.setAttribute("height", 18); s.setAttribute("viewBox", "0 0 18 18"); s.setAttribute("role", "img");
+  let sh;
+  if (kind === "waiting") { sh = document.createElementNS(NS, "path"); sh.setAttribute("d", "M9 1 L17 17 L1 17 Z"); sh.setAttribute("fill", "#F7C600"); s.setAttribute("aria-label", "Waiting"); }
+  else if (kind === "online") { sh = document.createElementNS(NS, "rect"); sh.setAttribute("x", 1); sh.setAttribute("y", 1); sh.setAttribute("width", 16); sh.setAttribute("height", 16); sh.setAttribute("fill", "#2B5FD9"); s.setAttribute("aria-label", "Approved"); }
+  else { sh = document.createElementNS(NS, "circle"); sh.setAttribute("cx", 9); sh.setAttribute("cy", 9); sh.setAttribute("r", 7); sh.setAttribute("fill", "none"); sh.setAttribute("stroke", "#A9A49A"); sh.setAttribute("stroke-width", 2.5); s.setAttribute("aria-label", "Inactive"); }
+  s.append(sh); return s;
+}
+const when = (t) => (t ? new Date(t).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "never");
+
+async function load() {
+  try {
+    const res = await fetch("/api/access", { cache: "no-store" });
+    if (!res.ok) throw new Error(await res.text());
+    const d = await res.json();
+    $("warn").hidden = !d.error; if (d.error) $("warn").textContent = d.error;
+    $("checked").textContent = `checked ${new Date(d.checkedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+    $("waiting").replaceChildren(...(d.waiting.length ? d.waiting.map((dv) => { const li = el("li"); li.append(mark("waiting"), el("span", "nm", dv.name), el("span", "tag", dv.os || "device"), el("span", "meta", `${dv.user} · last seen ${when(dv.lastSeen)}`)); return li; }) : [el("li", "empty", "Nobody is waiting.")]));
+    $("people").replaceChildren(...(d.people.length ? d.people.map((p) => {
+      const li = el("li");
+      const tag = el("span", `tag${p.role === "owner" ? " owner" : ""}`, p.role === "owner" ? "YOU" : "FAMILY");
+      const devs = p.devices.map((dv) => `${dv.name}${dv.authorized === false ? " (waiting)" : ""}`).join(", ") || "no devices yet";
+      li.append(mark(p.status === "active" ? "online" : "idle"), el("span", "nm", p.name), tag, el("span", "meta", `${p.login} · ${devs} · last seen ${when(p.lastSeen)}`));
+      return li;
+    }) : [el("li", "empty", "No people listed.")]));
+  } catch (err) {
+    $("warn").hidden = false; $("warn").textContent = `Can't load the access list: ${err.message}`;
+  }
+}
+load(); setInterval(() => { if (!document.hidden) load(); }, 60_000);
+</script>
+</body>
+</html>

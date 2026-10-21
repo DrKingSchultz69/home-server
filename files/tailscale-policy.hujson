@@ -1,0 +1,33 @@
+// Tailscale access rules for the homeserver tailnet (Phase 11).
+// Paste into: Tailscale console -> Access controls -> JSON editor (replace everything), then Save.
+//   Owner (you):  every device, every port.
+//   Family:       only the dashboard (443), their files (8444) and streaming (8445) on homeserver.
+//                 Netheron (8443), alerts (10000), SSH and the Z: drive (445) stay closed to them.
+{
+	"hosts": {
+		"homeserver": "100.114.125.48",
+	},
+
+	"acls": [
+		{"action": "accept", "src": ["autogroup:owner", "autogroup:admin"], "dst": ["*:*"]},
+		{"action": "accept", "src": ["autogroup:member"], "dst": ["homeserver:443,8444,8445"]},
+	],
+
+	// Tailscale SSH: each person only into their own devices, never as root, re-check sign-in.
+	"ssh": [
+		{
+			"action": "check",
+			"src":    ["autogroup:member"],
+			"dst":    ["autogroup:self"],
+			"users":  ["autogroup:nonroot"],
+		},
+	],
+
+	// The console runs these when you save; a failing test blocks the save.
+	"tests": [
+		{
+			"src":    "shairaam12@gmail.com",
+			"accept": ["homeserver:443", "homeserver:8443", "homeserver:8444", "homeserver:8445", "homeserver:10000", "homeserver:22"],
+		},
+	],
+}

@@ -110,6 +110,14 @@ const SERVICES = [
     },
   },
   {
+    id: "myfiles",
+    name: "My files",
+    about: "Upload and download your own files",
+    audience: "family-only",
+    link: process.env.DASH_FILES_URL || null,
+    check: () => httpAnswers("http://127.0.0.1:8091/health", [200]),
+  },
+  {
     id: "streaming",
     name: "Streaming",
     about: "Family videos, movies, shows",
@@ -322,6 +330,72 @@ async function page() {
   pageHtml ??= await readFile(new URL("./public/index.html", import.meta.url), "utf8");
   return pageHtml;
 }
+let accessHtml = null;
+async function accessPage() {
+  accessHtml ??= await readFile(new URL("./public/access.html", import.meta.url), "utf8");
+  return accessHtml;
+}
+
+// ---- Access list (owner only, read-only) --------------------------------------
+// Reads the tailnet's people and devices with a READ-ONLY Tailscale OAuth client.
+// Approving and removing stay in the Tailscale admin console.
+
+const TS_OAUTH_FILE = process.env.DASH_TS_OAUTH ?? join(homedir(), ".config", "homeserver", "tailscale-oauth.json");
+let tsToken = { value: null, until: 0 };
+let accessCache = { at: 0, value: null };
+
+async function tsApi(path) {
+  if (!tsToken.value || Date.now() > tsToken.until) {
+    const creds = JSON.parse(await readFile(TS_OAUTH_FILE, "utf8"));
+    const res = await fetch("https://api.tailscale.com/api/v2/oauth/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ client_id: creds.client_id, client_secret: creds.client_secret, grant_type: "client_credentials" }),
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!res.ok) throw new Error(`Tailscale sign-in failed (HTTP ${res.status})`);
+    const t = await res.json();
+    tsToken = { value: t.access_token, until: Date.now() + Math.max(60, (t.expires_in ?? 3600) - 120) * 1000 };
+  }
+  const res = await fetch(`https://api.tailscale.com/api/v2${path}`, { headers: { Authorization: `Bearer ${tsToken.value}` }, signal: AbortSignal.timeout(10_000) });
+  if (!res.ok) throw new Error(`Tailscale API ${path} answered HTTP ${res.status}`);
+  return res.json();
+}
+
+async function accessList() {
+  if (accessCache.value && Date.now() - accessCache.at < 60_000) return accessCache.value;
+  let value;
+  try {
+    const [d, u] = await Promise.all([tsApi("/tailnet/-/devices?fields=all"), tsApi("/tailnet/-/users")]);
+    const users = new Map((u.users ?? []).map((x) => [x.id, x]));
+    const devices = (d.devices ?? []).map((x) => ({
+      name: x.hostname || x.name,
+      os: x.os,
+      user: x.user,
+      authorized: x.authorized,
+      lastSeen: x.lastSeen,
+      online: x.connectedToControl ?? null,
+    }));
+    const people = [...users.values()].map((x) => ({
+      name: x.displayName || x.loginName,
+      login: x.loginName,
+      role: x.role,
+      status: x.status,
+      lastSeen: x.lastSeen,
+      devices: devices.filter((dv) => dv.user === x.loginName),
+    }));
+    value = {
+      configured: true,
+      waiting: devices.filter((dv) => dv.authorized === false),
+      people: people.sort((a, b) => (a.role === "owner" ? -1 : b.role === "owner" ? 1 : a.name.localeCompare(b.name))),
+      checkedAt: Date.now(),
+    };
+  } catch (err) {
+    value = { configured: err.code !== "ENOENT", error: err.code === "ENOENT" ? "No read-only Tailscale key on the server yet." : err.message, waiting: [], people: [], checkedAt: Date.now() };
+  }
+  accessCache = { at: Date.now(), value };
+  return value;
+}
 
 const server = http.createServer(async (req, res) => {
   try {
@@ -333,8 +407,18 @@ const server = http.createServer(async (req, res) => {
 
     if (path === "/") return send(res, 200, await page(), "text/html; charset=utf-8");
 
+    if (path === "/access") {
+      if (who.role !== "owner") return send(res, 403, "Not available.");
+      return send(res, 200, await accessPage(), "text/html; charset=utf-8");
+    }
+    if (path === "/api/access") {
+      if (who.role !== "owner") return send(res, 403, "Not available.");
+      return send(res, 200, JSON.stringify(await accessList()), "application/json");
+    }
+
     if (path === "/api/status") {
-      const tiles = SERVICES.filter((s) => who.role === "owner" || s.audience === "family").map((s) => ({
+      const shown = (s) => (who.role === "owner" ? s.audience !== "family-only" : s.audience === "family" || s.audience === "family-only");
+      const tiles = SERVICES.filter(shown).map((s) => ({
         id: s.id,
         name: s.name,
         about: s.about,

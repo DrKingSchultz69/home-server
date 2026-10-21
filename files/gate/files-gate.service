@@ -5,6 +5,7 @@ After=network-online.target filebrowser.service
 [Service]
 WorkingDirectory=%h/Server/files/gate
 Environment=GATE_OWNER=shairaam12@gmail.com
+Environment=GATE_FILES_ROOT=%h/Files
 ExecStart=%h/.local/node24/bin/node --max-old-space-size=24 gate.mjs
 Restart=on-failure
 RestartSec=5
