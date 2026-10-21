@@ -123,6 +123,8 @@ const SERVICES = [
 ];
 
 const status = new Map(); // id -> { up, detail, checkedAt }
+const failures = new Map(); // id -> failed checks in a row
+const DOWN_AFTER = 2; // a service is "down" only after this many failed checks in a row
 
 // ---- Phone alerts (ntfy) ----------------------------------------------------
 // One message per change: down, back up, disk over the limit. Never repeats.
@@ -150,10 +152,18 @@ async function checkAll() {
       } catch {
         result = { up: false, detail: "check failed" };
       }
+      // One slow or failed answer is not an outage (e.g. right after a restart, under the
+      // CPU cap): keep the last state until DOWN_AFTER checks in a row have failed.
+      const fails = result.up ? 0 : (failures.get(s.id) ?? 0) + 1;
+      failures.set(s.id, fails);
       const before = status.get(s.id);
+      if (!result.up && fails < DOWN_AFTER) {
+        status.set(s.id, before ? { ...before, checkedAt: Date.now() } : { up: null, detail: "checking again", checkedAt: Date.now() });
+        return;
+      }
       status.set(s.id, { ...result, checkedAt: Date.now() });
-      // `before` is missing on the very first check: no alert at startup.
-      if (before && before.up !== result.up) {
+      // No alert when there was no earlier known state (startup).
+      if (before && before.up !== null && before.up !== result.up) {
         if (result.up) await alert(`${s.name} is back up`, result.detail, { tags: "white_check_mark" });
         else await alert(`${s.name} is down`, result.detail, { priority: "high", tags: "rotating_light" });
       }
