@@ -24,7 +24,12 @@ header h1 { font-size: clamp(20px, 3vw, 28px); letter-spacing: 0.16em; }
 .rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .rows li { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 10px; }
 .nm { font-weight: 800; overflow-wrap: anywhere; }
-.meta { grid-column: 2 / -1; font-family: var(--mono); font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+.meta { grid-column: 2 / -1; font-size: 16px; color: #D8D2C6; overflow-wrap: anywhere; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.meta .login { font-family: var(--mono); font-size: 15px; }
+.chips { grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { background: var(--ground); border: 2px solid var(--line); color: var(--paper); padding: 4px 10px; font-weight: 700; font-size: 15px; }
+.chip.wait { border-color: var(--yellow); color: var(--yellow); }
+.rows li.empty { display: block; }
 .tag { font-family: var(--mono); font-size: 12px; font-weight: 600; padding: 2px 8px; border: 2px solid var(--line); }
 .tag.owner { background: var(--yellow); color: var(--ink); border-color: var(--yellow); }
 .empty { color: var(--muted); }
@@ -84,12 +89,15 @@ async function load() {
     const d = await res.json();
     $("warn").hidden = !d.error; if (d.error) $("warn").textContent = d.error;
     $("checked").textContent = `checked ${new Date(d.checkedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
-    $("waiting").replaceChildren(...(d.waiting.length ? d.waiting.map((dv) => { const li = el("li"); li.append(mark("waiting"), el("span", "nm", dv.name), el("span", "tag", dv.os || "device"), el("span", "meta", `${dv.user} · last seen ${when(dv.lastSeen)}`)); return li; }) : [el("li", "empty", "Nobody is waiting.")]));
+    const meta = (login, seen) => { const m = el("span", "meta"); m.append(el("span", "login", login), el("span", null, `Last seen ${when(seen)}`)); return m; };
+    $("waiting").replaceChildren(...(d.waiting.length ? d.waiting.map((dv) => { const li = el("li"); li.append(mark("waiting"), el("span", "nm", dv.name), el("span", "tag", dv.os || "device"), meta(dv.user, dv.lastSeen)); return li; }) : [el("li", "empty", "Nobody is waiting.")]));
     $("people").replaceChildren(...(d.people.length ? d.people.map((p) => {
       const li = el("li");
       const tag = el("span", `tag${p.role === "owner" ? " owner" : ""}`, p.role === "owner" ? "YOU" : "FAMILY");
-      const devs = p.devices.map((dv) => `${dv.name}${dv.authorized === false ? " (waiting)" : ""}`).join(", ") || "no devices yet";
-      li.append(mark(p.status === "active" ? "online" : "idle"), el("span", "nm", p.name), tag, el("span", "meta", `${p.login} · ${devs} · last seen ${when(p.lastSeen)}`));
+      const chips = el("span", "chips");
+      if (p.devices.length) p.devices.forEach((dv) => chips.append(el("span", `chip${dv.authorized === false ? " wait" : ""}`, dv.authorized === false ? `${dv.name} · waiting` : dv.name)));
+      else chips.append(el("span", "chip", "No devices yet"));
+      li.append(mark(p.status === "active" ? "online" : "idle"), el("span", "nm", p.name), tag, meta(p.login, p.lastSeen), chips);
       return li;
     }) : [el("li", "empty", "No people listed.")]));
   } catch (err) {
