@@ -109,7 +109,14 @@ const SERVICES = [
       return { up, detail: up ? "File Browser and Z: drive answering" : `Browser: ${web.detail} · Z: drive: ${smb.detail}` };
     },
   },
-  { id: "streaming", name: "Streaming", about: "Phase 10", audience: "family", planned: true },
+  {
+    id: "streaming",
+    name: "Streaming",
+    about: "Family videos, movies, shows",
+    audience: "family",
+    link: process.env.DASH_STREAM_URL || null,
+    check: () => httpAnswers("http://127.0.0.1:8095/health", [200, 403]),
+  },
 ];
 
 const status = new Map(); // id -> { up, detail, checkedAt }

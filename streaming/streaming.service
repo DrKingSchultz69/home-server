@@ -1,0 +1,53 @@
+# Home stream: family streaming site, hardened (isolation option C1).
+# Installed to /etc/systemd/system/streaming.service.
+# Runs as the `streamer` user, which can see ONLY the folders bound below, read-only.
+[Unit]
+Description=Home stream (tailnet 127.0.0.1:8095 via Tailscale Serve :8445; living-room TV on :8096)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=streamer
+Group=streamer
+WorkingDirectory=/home/palani/Server/streaming
+ExecStart=/usr/bin/node-24 --max-old-space-size=96 server.mjs
+Environment=STREAM_OWNER=shairaam12@gmail.com
+Environment="STREAM_FAMILY_DIR=/home/palani/Files/Desktop backup/family phots and video"
+Environment=STREAM_MOVIES_DIR=/home/palani/Files/Movies
+Environment=STREAM_SHOWS_DIR=/home/palani/Files/Shows
+Restart=on-failure
+RestartSec=5
+
+# Everything in /home is hidden; only these folders appear, read-only.
+TemporaryFileSystem=/home:ro
+BindReadOnlyPaths=/home/palani/Server/streaming "/home/palani/Files/Desktop backup/family phots and video" /home/palani/Files/Movies /home/palani/Files/Shows
+StateDirectory=streaming
+
+# Lock-down
+NoNewPrivileges=yes
+ProtectSystem=strict
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+UMask=0077
+
+# Light
+MemoryMax=256M
+CPUQuota=50%
+Nice=5
+
+[Install]
+WantedBy=multi-user.target

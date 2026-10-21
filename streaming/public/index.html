@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Home stream</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Approved look: neo-brutalism (thick ink borders, hard offset shadows, flat bright fills)
+   with skeuomorphic icons. One page for the TV (arrow keys + OK) and the phone (touch). */
+:root {
+  --ground: #EDEBFF; --ink: #111111; --paper: #FFFFFF;
+  --yellow: #FFD93D; --pink: #FF6FA8; --hot: #FF4F97; --blue: #5B8CFF; --mint: #3EE0A0;
+  --focus: #5B8CFF;
+  --display: "Archivo Black", Archivo, "Segoe UI", sans-serif;
+  --body: Archivo, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  --b: 4px; --shadow: 6px 6px 0 var(--ink);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--ground); color: var(--ink); font: 600 17px/1.4 var(--body); }
+body { padding: max(20px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) 96px max(18px, env(safe-area-inset-left)); }
+a, button { color: inherit; font: inherit; }
+button { cursor: pointer; }
+h1, h2 { margin: 0; font-family: var(--display); font-weight: 400; letter-spacing: -0.01em; }
+.mono { font-family: var(--mono); font-weight: 700; }
+[hidden] { display: none !important; }
+
+/* Focus that reads from across the room. */
+:focus { outline: none; }
+:focus-visible, .tile:focus, .btn:focus, .pill:focus, .ep:focus { outline: 5px solid var(--focus); outline-offset: 6px; }
+
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 22px; }
+.logo { background: var(--yellow); border: var(--b) solid var(--ink); box-shadow: var(--shadow); padding: 4px 12px; font-family: var(--display); font-size: 22px; }
+.who { margin-left: auto; display: flex; align-items: center; gap: 8px; background: var(--paper); border: 3px solid var(--ink); padding: 4px 12px 4px 6px; font-weight: 700; }
+nav.sections { display: flex; flex-wrap: wrap; gap: 10px; }
+.pill { background: var(--paper); border: 3px solid var(--ink); padding: 8px 16px; font-weight: 800; text-decoration: none; min-height: 44px; }
+.pill[aria-current="page"] { background: var(--ink); color: var(--paper); }
+
+section { margin-bottom: 26px; }
+section > h2 { font-size: 20px; margin-bottom: 12px; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.tile { display: flex; flex-direction: column; justify-content: space-between; gap: 8px; min-height: 104px; padding: 12px; border: var(--b) solid var(--ink); box-shadow: var(--shadow); background: var(--paper); text-decoration: none; text-align: left; }
+.tile .title { font-weight: 800; font-size: 17px; overflow-wrap: anywhere; }
+.tile .meta { font-family: var(--mono); font-weight: 700; font-size: 12px; }
+.tile .chip { align-self: flex-start; background: var(--paper); border: 2px solid var(--ink); padding: 0 6px; font-family: var(--mono); font-size: 11px; font-weight: 700; }
+.c0 { background: var(--pink); } .c1 { background: var(--blue); } .c2 { background: var(--mint); } .c3 { background: var(--yellow); }
+.empty { background: var(--paper); border: 3px dashed var(--ink); padding: 16px; font-weight: 700; }
+
+/* Player */
+.player { display: grid; gap: 16px; }
+.player-top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.player-top h1 { font-size: 28px; }
+.btn-back { background: var(--paper); border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); padding: 8px 14px; font-weight: 800; min-height: 44px; }
+.screen { background: var(--ink); border: var(--b) solid var(--ink); box-shadow: 10px 10px 0 var(--ink); }
+video { display: block; width: 100%; max-height: 62vh; background: var(--ink); }
+.bar { display: flex; align-items: center; gap: 12px; }
+.track { flex-grow: 1; height: 18px; border: var(--b) solid var(--ink); background: var(--paper); position: relative; }
+.track i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--hot); }
+.time { font-family: var(--mono); font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; }
+.controls { display: flex; justify-content: center; align-items: center; gap: 18px; }
+.btn { width: 64px; height: 64px; border-radius: 50%; border: var(--b) solid var(--ink); background: var(--paper); box-shadow: 0 6px 0 var(--ink); display: flex; align-items: center; justify-content: center; padding: 0; }
+.btn.big { width: 88px; height: 88px; background: var(--yellow); box-shadow: 0 8px 0 var(--ink); }
+.btn:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--ink); }
+.hint { text-align: center; font-family: var(--mono); font-weight: 700; font-size: 13px; }
+.warn { background: var(--yellow); border: 3px solid var(--ink); padding: 10px 12px; font-weight: 700; }
+
+/* Show page */
+.eps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ep { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 10px; align-items: center; min-height: 56px; padding: 8px 12px; background: var(--paper); border: 3px solid var(--ink); text-decoration: none; text-align: left; width: 100%; }
+
+/* TV and other wide screens */
+@media (min-width: 900px) {
+  body { padding: 32px 44px; font-size: 19px; }
+  .logo { font-size: 26px; }
+  .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+  .tile { min-height: 118px; }
+  .tile .title { font-size: 20px; }
+  section > h2 { font-size: 22px; }
+  .player-top h1 { font-size: 34px; }
+}
+@media (prefers-reduced-motion: reduce) { .btn:active { transform: none; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">HOME/STREAM</div>
+  <nav class="sections" aria-label="Sections" id="sections">
+    <a class="pill" href="#home" data-view="home" aria-current="page">Home</a>
+    <a class="pill" href="#family" data-view="family">Family</a>
+    <a class="pill" href="#movies" data-view="movies">Movies</a>
+    <a class="pill" href="#shows" data-view="shows">Shows</a>
+  </nav>
+  <div class="who" id="who"><span id="who-icon"></span><span id="who-name">…</span></div>
+</header>
+
+<main id="list"></main>
+
+<main id="player" class="player" hidden>
+  <div class="player-top">
+    <button type="button" class="btn-back" id="back">← Back</button>
+    <h1 id="p-title"></h1>
+    <span class="mono" id="p-meta"></span>
+  </div>
+  <div class="warn" id="p-warn" hidden>This file is a format the TV may not play yet. Nightly conversion (milestone 3) will fix it.</div>
+  <div class="screen"><video id="video" playsinline preload="metadata"></video></div>
+  <div class="bar"><span class="time" id="t-now">0:00</span><div class="track" role="progressbar" aria-label="Playback position" aria-valuemin="0" aria-valuemax="100" id="track"><i id="track-fill"></i></div><span class="time" id="t-end">0:00</span></div>
+  <div class="controls">
+    <button type="button" class="btn" id="rew" aria-label="Back 10 seconds"></button>
+    <button type="button" class="btn big" id="toggle" aria-label="Play"></button>
+    <button type="button" class="btn" id="fwd" aria-label="Forward 10 seconds"></button>
+  </div>
+  <div class="hint">◀ ▶ seek 10 s · OK play/pause · BACK to the list</div>
+</main>
+
+<script>
+// ---- Skeuomorphic icons (inline SVG strings, our own artwork) -----------------
+const ICON = {
+  vhs: '<svg width="56" height="35" viewBox="0 0 64 40" aria-hidden="true"><defs><linearGradient id="vh1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a4a52"/><stop offset="1" stop-color="#17171b"/></linearGradient><radialGradient id="vh2" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#9aa0a8"/></radialGradient></defs><rect x="1" y="1" width="62" height="38" rx="4" fill="url(#vh1)" stroke="#000" stroke-width="2"/><rect x="8" y="5" width="48" height="11" rx="2" fill="#f6f1e4" stroke="#000" stroke-width="1.5"/><rect x="18" y="21" width="28" height="13" rx="3" fill="#0b0b0d" stroke="#000"/><circle cx="25" cy="27.5" r="4.5" fill="url(#vh2)" stroke="#000"/><circle cx="39" cy="27.5" r="4.5" fill="url(#vh2)" stroke="#000"/></svg>',
+  clap: '<svg width="48" height="41" viewBox="0 0 56 48" aria-hidden="true"><defs><linearGradient id="cl1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b3b42"/><stop offset="1" stop-color="#121215"/></linearGradient></defs><rect x="3" y="16" width="50" height="30" rx="3" fill="url(#cl1)" stroke="#000" stroke-width="2"/><g transform="rotate(-12 3 16)"><rect x="3" y="6" width="50" height="10" rx="2" fill="#f4f4f4" stroke="#000" stroke-width="2"/><path d="M10 6l6 10M22 6l6 10M34 6l6 10M46 6l5 8" stroke="#111" stroke-width="5"/></g></svg>',
+  tv: '<svg width="48" height="41" viewBox="0 0 56 48" aria-hidden="true"><defs><linearGradient id="tvs1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c58a4a"/><stop offset="1" stop-color="#7a4a1f"/></linearGradient><radialGradient id="tvs2" cx=".45" cy=".4" r=".8"><stop offset="0" stop-color="#9ef0ff"/><stop offset="1" stop-color="#1c5f8a"/></radialGradient></defs><path d="M20 4l8 8 8-8" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round"/><rect x="3" y="12" width="50" height="33" rx="6" fill="url(#tvs1)" stroke="#000" stroke-width="2"/><rect x="8" y="17" width="31" height="23" rx="5" fill="url(#tvs2)" stroke="#000" stroke-width="1.5"/><circle cx="46" cy="22" r="3" fill="#2b2b2b" stroke="#000"/><circle cx="46" cy="32" r="3" fill="#2b2b2b" stroke="#000"/></svg>',
+  play: '<svg width="64" height="64" viewBox="0 0 76 76" aria-hidden="true"><defs><radialGradient id="kp1" cx=".4" cy=".3" r=".85"><stop offset="0" stop-color="#ff9ccb"/><stop offset=".55" stop-color="#ff4f97"/><stop offset="1" stop-color="#b0145a"/></radialGradient></defs><circle cx="38" cy="41" r="34" fill="#000"/><circle cx="38" cy="37" r="34" fill="url(#kp1)" stroke="#000" stroke-width="3"/><path d="M30 22l24 15-24 15z" fill="#fff" stroke="#000" stroke-width="2.5" stroke-linejoin="round"/><ellipse cx="30" cy="17" rx="15" ry="6" fill="#fff" opacity=".35"/></svg>',
+  pause: '<svg width="64" height="64" viewBox="0 0 76 76" aria-hidden="true"><defs><radialGradient id="kp2" cx=".4" cy=".3" r=".85"><stop offset="0" stop-color="#ff9ccb"/><stop offset=".55" stop-color="#ff4f97"/><stop offset="1" stop-color="#b0145a"/></radialGradient></defs><circle cx="38" cy="41" r="34" fill="#000"/><circle cx="38" cy="37" r="34" fill="url(#kp2)" stroke="#000" stroke-width="3"/><rect x="26" y="24" width="9" height="26" rx="2" fill="#fff" stroke="#000" stroke-width="2"/><rect x="41" y="24" width="9" height="26" rx="2" fill="#fff" stroke="#000" stroke-width="2"/><ellipse cx="30" cy="17" rx="15" ry="6" fill="#fff" opacity=".35"/></svg>',
+  rew: '<svg width="42" height="42" viewBox="0 0 44 44" aria-hidden="true"><defs><radialGradient id="kb1" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#c9ccd6"/></radialGradient></defs><circle cx="22" cy="22" r="20" fill="url(#kb1)" stroke="#000" stroke-width="2"/><path d="M22 11a11 11 0 1 1-10.4 7.4" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round"/><path d="M8 13l3.6 5.6 5.6-3" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="22" y="26.5" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#111">10</text></svg>',
+  fwd: '<svg width="42" height="42" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="20" fill="url(#kb1)" stroke="#000" stroke-width="2"/><path d="M22 11a11 11 0 1 0 10.4 7.4" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round"/><path d="M36 13l-3.6 5.6-5.6-3" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="22" y="26.5" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#111">10</text></svg>',
+  set: '<svg width="34" height="30" viewBox="0 0 40 36" aria-hidden="true"><defs><linearGradient id="tv1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c58a4a"/><stop offset="1" stop-color="#7a4a1f"/></linearGradient><radialGradient id="tv2" cx=".45" cy=".4" r=".8"><stop offset="0" stop-color="#9ef0ff"/><stop offset="1" stop-color="#1c5f8a"/></radialGradient></defs><path d="M14 2l6 7 6-7" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"/><rect x="2" y="9" width="36" height="25" rx="5" fill="url(#tv1)" stroke="#000" stroke-width="2"/><rect x="6" y="13" width="22" height="17" rx="4" fill="url(#tv2)" stroke="#000" stroke-width="1.5"/><circle cx="33" cy="17" r="2.2" fill="#2b2b2b" stroke="#000"/><circle cx="33" cy="24" r="2.2" fill="#2b2b2b" stroke="#000"/></svg>',
+};
+
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+const svg = (name) => { const t = document.createElement("template"); t.innerHTML = ICON[name]; return t.content.firstChild; };
+const clock = (s) => { if (!isFinite(s)) return "0:00"; s = Math.floor(s); const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = String(s % 60).padStart(2, "0"); return h ? `${h}:${String(m).padStart(2, "0")}:${x}` : `${m}:${x}`; };
+
+let lib = null;
+let view = "home";
+
+// ---- Lists --------------------------------------------------------------------
+
+function tile(item, i, icon, onOpen) {
+  const t = el("button", `tile c${i % 4}`);
+  t.type = "button";
+  t.append(svg(icon));
+  const label = el("span"); label.style.display = "grid"; label.style.gap = "2px";
+  label.append(el("span", "title", item.title));
+  if (item.meta) label.append(el("span", "meta", item.meta));
+  t.append(label);
+  if (item.playable === false) t.append(el("span", "chip", "MAY NOT PLAY YET"));
+  t.addEventListener("click", onOpen);
+  return t;
+}
+
+function sectionOf(title, items, icon, emptyText) {
+  const s = el("section");
+  s.append(el("h2", null, title));
+  if (!items.length) { s.append(el("div", "empty", emptyText)); return s; }
+  const g = el("div", "grid");
+  items.forEach((it, i) => g.append(tile(it.tile, i, icon, it.open)));
+  s.append(g);
+  return s;
+}
+
+function renderList() {
+  const main = $("list");
+  main.replaceChildren();
+  const family = lib.family.map((v) => ({ tile: { title: v.title, meta: v.folder, playable: v.playable }, open: () => play(v, "Family") }));
+  const movies = lib.movies.map((v) => ({ tile: { title: v.title, meta: "Movie", playable: v.playable }, open: () => play(v, "Movie") }));
+  const shows = lib.shows.map((s) => ({ tile: { title: s.name, meta: `${s.episodes.length} episode${s.episodes.length === 1 ? "" : "s"}` }, open: () => showPage(s) }));
+  if (view === "home" || view === "family") main.append(sectionOf("Family videos", family, "vhs", "No family videos yet. Add them to the family folder on the server."));
+  if (view === "home" || view === "movies") main.append(sectionOf("Movies", movies, "clap", "No movies yet. Copy them into Z:\\Movies."));
+  if (view === "home" || view === "shows") main.append(sectionOf("Shows", shows, "tv", "No shows yet. Copy them into Z:\\Shows\\<Show name>."));
+  for (const a of document.querySelectorAll("#sections .pill")) {
+    if (a.dataset.view === view) a.setAttribute("aria-current", "page");
+    else a.removeAttribute("aria-current");
+  }
+  focusFirst(main);
+}
+
+function showPage(show) {
+  const main = $("list");
+  main.replaceChildren();
+  const back = el("button", "btn-back", "← Shows"); back.type = "button"; back.addEventListener("click", () => go("shows"));
+  const head = el("div", "player-top"); head.append(back, el("h1", null, show.name));
+  const ol = el("ol", "eps");
+  show.episodes.forEach((ep, i) => {
+    const li = el("li"); const b = el("button", "ep"); b.type = "button";
+    b.append(el("span", "mono", `E${i + 1}`), el("span", null, ep.title));
+    b.addEventListener("click", () => play(ep, show.name));
+    li.append(b); ol.append(li);
+  });
+  const s = el("section"); s.style.display = "grid"; s.style.gap = "16px"; s.append(head, ol);
+  main.append(s);
+  history.pushState({ show: show.name }, "", `#show`);
+  focusFirst(main);
+}
+
+// ---- Player -------------------------------------------------------------------
+
+const video = $("video");
+function setToggleIcon() { $("toggle").replaceChildren(svg(video.paused ? "play" : "pause")); $("toggle").setAttribute("aria-label", video.paused ? "Play" : "Pause"); }
+
+function play(item, meta) {
+  $("p-title").textContent = item.title;
+  $("p-meta").textContent = meta;
+  $("p-warn").hidden = item.playable !== false;
+  video.src = `/video/${item.id}`;
+  $("list").hidden = true; $("player").hidden = false;
+  history.pushState({ player: item.id }, "", "#play");
+  video.play().catch(() => {});
+  setToggleIcon();
+  $("toggle").focus();
+}
+
+function closePlayer() { video.pause(); video.removeAttribute("src"); video.load(); $("player").hidden = true; $("list").hidden = false; focusFirst($("list")); }
+const seek = (d) => { if (isFinite(video.duration)) video.currentTime = Math.min(video.duration, Math.max(0, video.currentTime + d)); };
+
+$("rew").append(svg("rew")); $("fwd").append(svg("fwd")); setToggleIcon();
+$("rew").addEventListener("click", () => seek(-10));
+$("fwd").addEventListener("click", () => seek(10));
+$("toggle").addEventListener("click", () => (video.paused ? video.play() : video.pause()));
+$("back").addEventListener("click", () => history.back());
+video.addEventListener("play", setToggleIcon); video.addEventListener("pause", setToggleIcon);
+video.addEventListener("timeupdate", () => {
+  const pct = video.duration ? (100 * video.currentTime) / video.duration : 0;
+  $("track-fill").style.width = pct + "%"; $("track").setAttribute("aria-valuenow", Math.round(pct));
+  $("t-now").textContent = clock(video.currentTime); $("t-end").textContent = clock(video.duration);
+});
+
+// ---- Navigation: history (BACK on the remote) and arrow keys -------------------
+
+function go(v) { view = v; history.pushState({ view: v }, "", `#${v}`); if (!$("player").hidden) closePlayer(); renderList(); }
+for (const a of document.querySelectorAll("#sections .pill")) a.addEventListener("click", (e) => { e.preventDefault(); go(a.dataset.view); });
+window.addEventListener("popstate", (e) => {
+  if (!$("player").hidden) return closePlayer();
+  view = (e.state && e.state.view) || "home"; renderList();
+});
+
+function focusables() { return [...document.querySelectorAll("button, a.pill")].filter((n) => n.offsetParent !== null); }
+function focusFirst(root) { const f = root.querySelector("button"); if (f) f.focus({ preventScroll: false }); }
+
+// Move focus to the nearest control in the pressed direction (spatial navigation).
+function moveFocus(dir) {
+  const cur = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+  const all = focusables();
+  if (!cur) return all[0]?.focus();
+  const a = cur.getBoundingClientRect(); const ax = a.left + a.width / 2, ay = a.top + a.height / 2;
+  let best = null, bestScore = Infinity;
+  for (const n of all) {
+    if (n === cur) continue;
+    const b = n.getBoundingClientRect(); const bx = b.left + b.width / 2, by = b.top + b.height / 2;
+    const dx = bx - ax, dy = by - ay;
+    const ok = dir === "left" ? dx < -4 : dir === "right" ? dx > 4 : dir === "up" ? dy < -4 : dy > 4;
+    if (!ok) continue;
+    const along = dir === "left" || dir === "right" ? Math.abs(dx) : Math.abs(dy);
+    const across = dir === "left" || dir === "right" ? Math.abs(dy) : Math.abs(dx);
+    const score = along + across * 2.5;
+    if (score < bestScore) { bestScore = score; best = n; }
+  }
+  if (best) { best.focus(); best.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
+}
+
+document.addEventListener("keydown", (e) => {
+  const inPlayer = !$("player").hidden;
+  if (e.key === "Escape" || e.key === "Backspace" || e.key === "BrowserBack" || e.key === "GoBack") { e.preventDefault(); if (inPlayer || location.hash === "#show") history.back(); return; }
+  if (inPlayer && (e.key === "ArrowLeft" || e.key === "ArrowRight")) { e.preventDefault(); seek(e.key === "ArrowLeft" ? -10 : 10); return; }
+  if (inPlayer && (e.key === "MediaPlayPause" || e.key === " ")) { e.preventDefault(); video.paused ? video.play() : video.pause(); return; }
+  const dir = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" }[e.key];
+  if (dir) { e.preventDefault(); moveFocus(dir); }
+});
+
+// ---- Start ----------------------------------------------------------------------
+
+async function load() {
+  try {
+    const res = await fetch("/api/library", { cache: "no-store" });
+    if (!res.ok) throw new Error(await res.text());
+    lib = await res.json();
+    $("who-name").textContent = lib.viewer.name;
+    $("who-icon").replaceChildren(svg("set"));
+    history.replaceState({ view: "home" }, "", "#home");
+    renderList();
+  } catch (err) {
+    $("list").replaceChildren(el("div", "empty", `Can't load the library: ${err.message}`));
+  }
+}
+load();
+</script>
+</body>
+</html>
