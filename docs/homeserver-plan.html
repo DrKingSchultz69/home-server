@@ -99,23 +99,24 @@ footer { color: var(--muted); font-size: 14px; }
 <div class="wrap">
 
   <header>
-    <span class="eyebrow">Home server · desktop PC · updated 21 Oct 2026 · dashboard done</span>
+    <span class="eyebrow">Home server · desktop PC · updated 22 Oct 2026 · files done, streaming and family built</span>
     <h1>Homeserver Build Plan</h1>
     <p class="lede">A 7th-gen i5 desktop running Fedora KDE as a daily PC and an always-on private server. Nothing is public: every remote connection goes through your Tailscale network.</p>
     <div class="progress" aria-label="Progress">
       <div class="bar">
-        <span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="now"></span><span></span><span></span>
+        <span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="now"></span><span class="now"></span>
       </div>
-      <small>10 of 13 phases + dashboard done · Phase 9 next: design first</small>
+      <small>11 of 13 phases + dashboard done · Phases 10 and 11 each have one last step</small>
     </div>
   </header>
 
   <div class="next">
-    <span class="eyebrow">Your dashboard: https://homeserver.tahr-triggerfish.ts.net · Next action · Phase 9 · design first</span>
-    <h3>Design file access</h3>
+    <span class="eyebrow">Your dashboard: https://homeserver.tahr-triggerfish.ts.net · Next action · Phase 11</span>
+    <h3>Invite the first family member</h3>
     <ol>
-      <li>Decide how you reach your files: in a browser, synced folders, or a network drive in Windows.</li>
-      <li>Decide which folders, and whether any are shared with family.</li>
+      <li>Tailscale console → Users → Invite users. Role: <b>Member</b>, never Admin.</li>
+      <li>They install Tailscale, open the link, accept and sign in.</li>
+      <li>Approve their phone in Machines, then check their access with Claude.</li>
     </ol>
   </div>
 
@@ -129,7 +130,7 @@ footer { color: var(--muted); font-size: 14px; }
           <tr><td><b>homeserver</b></td><td>Server + daily PC</td><td>i5 7th gen, Intel HD 630, 8 GB RAM, 1 TB Acer SSD · Fedora 44 KDE · user <span class="mono">palani</span></td><td><span class="mono">100.114.125.48</span> Tailscale<br><span class="mono">192.168.29.218</span> home LAN</td></tr>
           <tr><td><b>Laptop</b></td><td>Admin machine</td><td>OMEN 16 · Windows 11 · <span class="mono">ssh homeserver</span></td><td><span class="mono">100.91.27.57</span> Tailscale</td></tr>
           <tr><td><b>Galaxy S24</b></td><td>Your phone</td><td>Android · Tailscale app</td><td><span class="mono">100.100.141.115</span> Tailscale</td></tr>
-          <tr><td>Family devices</td><td>Streaming only</td><td>Join later (Phase 11)</td><td>—</td></tr>
+          <tr><td>Family devices</td><td>Streaming + own files folder</td><td>Invited by you, approved one by one (Phase 11)</td><td>—</td></tr>
           <tr><td>Living-room TV</td><td>Streaming at home</td><td>Home Wi-Fi only</td><td>—</td></tr>
         </tbody>
       </table>
@@ -157,17 +158,17 @@ flowchart LR
     ssh["Tailscale SSH<br/>check mode"]
       dash["Dashboard :443<br/>127.0.0.1:8080"]
   neth["Netheron :8443<br/>127.0.0.1:4142"]
-    files["Files"]:::planned
-    stream["Streaming site<br/>isolated streamer user"]:::planned
+    files["Files :8444<br/>gate → File Browser<br/>+ Samba for the laptop"]
+    stream["Streaming :8445<br/>isolated streamer user"]
   end
   laptop --> ts
   phone --> ts
-  family -. "streaming only" .-> ts
+  family -. "dashboard, own folder, streaming" .-> ts
   ts --> ssh
   ts --> dash
   dash -- "owner tile" --> neth
-  ts -.-> files
-  ts -.-> stream
+  ts --> files
+  ts --> stream
   tv -. "LAN" .-> fw -.-> stream
   internet -- "blocked" --x router
   classDef planned stroke-dasharray: 5 4
@@ -182,9 +183,9 @@ flowchart LR
     <div class="rules">
       <div class="rule"><h3>Nothing public</h3><p>No router ports are opened. Remote access only through Tailscale.</p></div>
       <div class="rule"><h3>Approved devices only</h3><p>Device approval is on. Only approve devices you know are safe. Key expiry stays on.</p></div>
-      <div class="rule"><h3>You vs family</h3><p>Your laptop and phone reach everything. Family devices reach streaming only.</p></div>
-      <div class="rule"><h3>Private services stay private</h3><p>Netheron, SSH and files listen on the Tailscale address, never 0.0.0.0. Port 4141 is never reachable from outside.</p></div>
-      <div class="rule"><h3>Streaming is isolated</h3><p>Separate streamer user, rootless container running as that user, media read-only, own network, own login. No VM.</p></div>
+      <div class="rule"><h3>You vs family</h3><p>Your laptop and phone reach everything. Family devices reach the dashboard, their own files folder and streaming: ports 443, 8444 and 8445 only.</p></div>
+      <div class="rule"><h3>Private services stay private</h3><p>Services listen on 127.0.0.1 and reach the tailnet only through Tailscale Serve. Port 4141 is never published.</p></div>
+      <div class="rule"><h3>Streaming is isolated</h3><p>Separate streamer user in a hardened systemd service: sees only the media folders, read-only, 256 MB memory box. No VM.</p></div>
       <div class="rule"><h3>Lost device plan</h3><p>Remove it in the Tailscale admin console, sign out all sessions, remote-wipe, rotate keys and tokens.</p></div>
     </div>
   </section>
@@ -204,9 +205,9 @@ flowchart LR
       <li class="phase"><span class="num">7</span><div class="body"><h3>Lock it down</h3><p>Tailscale SSH with check mode, root login refused. Home Wi-Fi blocks SSH and all high ports; Tailscale trusted. Daily automatic security updates. Phone lock and remote wipe on.</p></div><span class="chip done">Done</span></li>
       <li class="phase"><span class="num">8</span><div class="body"><h3>Netheron workspace</h3><p>Runs as an auto-start service from <span class="mono">~/Workspace/Netheron</span> (branch <span class="mono">relay-redesign</span>, Node 24) in a 2 GB memory box. Listens on 127.0.0.1 only; reached at <span class="mono">https://homeserver.tahr-triggerfish.ts.net</span> through Tailscale Serve, with its own token.</p></div><span class="chip done">Done</span></li>
       <li class="phase"><span class="num">8b</span><div class="body"><h3>Server dashboard</h3><p>Live at <span class="mono">https://homeserver.tahr-triggerfish.ts.net</span>: up/down per service, CPU, memory, disk, hourly storage breakdown; changes by viewer; Netheron tile signs you in. Phone alerts through ntfy when a service goes down or disk passes 90%.</p></div><span class="chip done">Done</span></li>
-      <li class="phase now"><span class="num">9</span><div class="body"><h3>File access</h3><p>Decide together: browser, synced folders or network drive, and which folders.</p></div><span class="chip decide">Decide first</span></li>
-      <li class="phase"><span class="num">10</span><div class="body"><h3>Streaming site</h3><p>Decide together: build your own or use a ready-made media server, TV video formats, upload speed.</p></div><span class="chip decide">Decide first</span></li>
-      <li class="phase"><span class="num">11</span><div class="body"><h3>Family access</h3><p>Invite family, approve their devices, streaming-only access rule, test from mobile data.</p></div><span class="chip todo">Later</span></li>
+      <li class="phase"><span class="num">9</span><div class="body"><h3>File access</h3><p>Browser (File Browser behind an owner/family gate on :8444), Windows drive over Samba, and a one-way laptop Workspace backup. Opens from the phone over Tailscale.</p></div><span class="chip done">Done</span></li>
+      <li class="phase now"><span class="num">10</span><div class="body"><h3>Streaming site</h3><p>Own neo-brutal site on :8445: albums, movies, shows, resume, subtitles, full-screen player with VLC keys. Left: the Bravia TV app.</p></div><span class="chip todo">TV left</span></li>
+      <li class="phase now"><span class="num">11</span><div class="body"><h3>Family access</h3><p>Built: per-person folders, recycle bin, Access page, Tailscale rule applied. Left: invite the first family member and test.</p></div><span class="chip todo">Invite left</span></li>
     </ol>
   </section>
 
@@ -214,6 +215,7 @@ flowchart LR
     <span class="eyebrow">Open items</span>
     <h2>Known issues</h2>
     <div class="issues">
+      <div class="issue"><span class="dot"></span><div><h3>No server backup yet</h3><p>Everything lives on one SSD. Pick a backup destination (USB drive, the laptop, or cloud) before family photos are only on the server.</p></div></div>
       <div class="issue"><span class="dot info"></span><div><h3>Tailscale SSH and SELinux</h3><p>Accepted trade-off: Tailscale SSH sessions run in a service security context. sudo works. Fallback if it ever breaks: the desktop's own keyboard.</p></div></div>
       <div class="issue"><span class="dot info"></span><div><h3>Weekly restart</h3><p>Security updates install daily but never reboot on their own. Restart the server about once a week so kernel updates take effect.</p></div></div>
       <div class="issue"><span class="dot"></span><div><h3>Ethernet stuck at 100 Mbps</h3><p>The desktop links at 100 Mbps instead of 1 Gbps. Ruled out: card, settings, cable category. Next test: reseat the plug, try the router port the laptop uses.</p></div></div>
