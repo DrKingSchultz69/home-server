@@ -29,4 +29,13 @@ tailscale serve --bg --https=8443 http://127.0.0.1:4142
 
 Add an entry to `SERVICES` in `server.mjs` with an `id`, `name`, `about`, `audience` (`"owner"` or `"family"`), an optional `link`, and a `check` that resolves to `{ up, detail }`. Planned services use `planned: true` instead of a check.
 
-Version 2 (planned): storage breakdown per folder and phone alerts through ntfy.
+## Version 2: storage and phone alerts
+
+- **Storage:** once an hour, at the lowest CPU and disk priority, `du` measures the biggest folders in the home folder; the owner sees them on the page.
+- **Alerts:** ntfy (`ntfy/`) runs as a user service on `127.0.0.1:2586`, published on the tailnet at `:10000`. The backend posts to topic `homeserver` when a service goes down or comes back, and when disk passes 90%. Install ntfy from its official GitHub release and check the sha256 against `checksums.txt`.
+
+```bash
+ln -sf ~/Server/dashboard/ntfy/ntfy.service ~/.config/systemd/user/ntfy.service
+systemctl --user daemon-reload && systemctl --user enable --now ntfy
+tailscale serve --bg --https=10000 http://127.0.0.1:2586
+```
