@@ -1,9 +1,5 @@
 # Learning Progress
 
-## Pending decision
-- Decision: File access (Phase 9)
-- Stage: awaiting reasoning (Build checkpoint, round 3)
-- Awaiting: Workspace automatic copy as one-way backup into a separate server folder vs two-way sync of the live Workspace; confirm the server folder for the desktop backup.
 
 
 
@@ -55,4 +51,6 @@
 ## File access
 - Learner answers (round 1): all three ways: browser (open/upload/download from the dashboard), synced folders, and a Windows network drive Z:. Desktop backup should move to the server; some sharing with family (details open).
 - Introduced (AI explained): web file manager vs folder sync vs network drive (SMB); each is another service and door; sync conflicts with git-managed folders; backup (one-way) vs sync (two-way); platform-specific folders like node_modules.
+- Learner answers (round 3): Workspace = one-way backup (A); desktop backup folder ~/Files/Desktop backup; backup tool = hourly robocopy (R) over Samba.
+- Outcome: Phase 9 design confirmed (Design checkpoint) with AI additions.
 - Learner answers (round 2): automatic copy only for the Workspace folder; family gets family videos through the streaming site (rule unchanged, no shared file folder); after the desktop backup is on the server, the laptop copy is deleted.
