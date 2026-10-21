@@ -2,8 +2,8 @@
 
 ## Pending decision
 - Decision: Server dashboard (new request, before Phase 9)
-- Stage: awaiting reasoning (Build checkpoint, round 2)
-- Awaiting: (1) family view: separate family page or one page filtered by who is viewing; (2) whether services should skip their own logins after the dashboard sign-in (conflicts with Netheron's token rule); (3) how a page gets live status and RAM/CPU/disk (frontend vs backend).
+- Stage: awaiting reasoning (Build checkpoint, round 3)
+- Awaiting: (1) final call on removing Netheron's login after the risks (no setting exists; would need a Netheron code change; conflicts with the confirmed design rule); (2) how problems reach the owner (on the page only, or phone alert); (3) refresh intervals (AI proposed defaults).
 
 
 ## Remote access
@@ -46,4 +46,5 @@
 
 ## Server dashboard
 - Learner answers (round 1): show up/down per service plus RAM, CPU and disk; laptop and phone see it, family devices see only family things; build own page (option B); sign-in only for the dashboard, not for the services (meaning to clarify).
-- Introduced (AI explained): what a dashboard is; frontend vs backend; why a static page cannot read RAM/CPU; service logins as defense in depth.
+- Introduced (AI explained): what a dashboard is; frontend vs backend; why a static page cannot read RAM/CPU; service logins as defense in depth; Tailscale identity headers as the dashboard login; process-running vs health checks; polling cost vs freshness.
+- Learner answers (round 2): one page that changes by viewer; remove Netheron's login; backend checks each service, reports problems to the user, and shows what is stored on disk; asked for an ideal refresh rate.
