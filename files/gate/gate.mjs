@@ -99,7 +99,9 @@ async function recycle(folder, urlPath) {
   await stat(target); // 404 if missing
   const bin = join(FILES_ROOT, FAMILY_DIR, RECYCLE_DIR, folder);
   await mkdir(bin, { recursive: true });
-  const stamp = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 19);
+  const d = new Date(); // server's local time, e.g. "2026-10-22 01-30-05"
+  const p = (n) => String(n).padStart(2, "0");
+  const stamp = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}-${p(d.getMinutes())}-${p(d.getSeconds())}`;
   await rename(target, join(bin, `${stamp} ${basename(target)}`));
 }
 
