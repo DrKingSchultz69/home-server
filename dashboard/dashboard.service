@@ -6,10 +6,10 @@ After=network-online.target
 WorkingDirectory=%h/Server/dashboard
 Environment=PATH=%h/.local/node24/bin:/usr/local/bin:/usr/bin:/bin
 Environment=DASH_OWNER=shairaam12@gmail.com
-Environment=DASH_NETHERON_URL=https://homeserver.tailaf7058.ts.net:8443
+Environment=DASH_NETHERON_URL=https://homeserver.tahr-triggerfish.ts.net:8443
 Environment=DASH_NTFY_URL=http://127.0.0.1:2586/homeserver
-Environment=DASH_FILES_URL=https://homeserver.tailaf7058.ts.net:8444
-Environment=DASH_STREAM_URL=https://homeserver.tailaf7058.ts.net:8445
+Environment=DASH_FILES_URL=https://homeserver.tahr-triggerfish.ts.net:8444
+Environment=DASH_STREAM_URL=https://homeserver.tahr-triggerfish.ts.net:8445
 ExecStart=%h/.local/node24/bin/node --max-old-space-size=24 server.mjs
 Restart=on-failure
 RestartSec=5

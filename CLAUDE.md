@@ -33,8 +33,8 @@ This folder is synced through a private GitHub repo, so Claude has the same cont
 - Server: Fedora KDE 44, hostname `homeserver`, user `palani`, LAN IP `192.168.29.218`. GT 710 removed; uses Intel onboard graphics. Clone this repo into `~/Server`.
 - Tailscale: homeserver = 100.114.125.48, laptop desktop-sb5io1v = 100.91.27.57, phone shais-s24 = 100.100.141.115 (tailnet owner shairaam12@gmail.com).
 - From the laptop: `ssh homeserver` (now via the Tailscale IP) (key `~/.ssh/id_ed25519_homeserver`, no passphrase; defined in `~/.ssh/config`).
-- Netheron: user service `netheron.service` (`systemctl --user status netheron`), MemoryMax 2G, repo `~/Workspace/Netheron` on branch `relay-redesign`. Workspace: https://homeserver.tailaf7058.ts.net:8443 (tailnet only; the dashboard tile signs the owner in; token in `~/.mm/token`, never paste it into chat).
-- Dashboard: https://homeserver.tailaf7058.ts.net (code in `dashboard/`, user service `dashboard`, see `dashboard/README.md`). Phone alerts: ntfy user service, https://homeserver.tailaf7058.ts.net:10000, topic `homeserver`.
+- Netheron: user service `netheron.service` (`systemctl --user status netheron`), MemoryMax 2G, repo `~/Workspace/Netheron` on branch `relay-redesign`. Workspace: https://homeserver.tahr-triggerfish.ts.net:8443 (tailnet only; the dashboard tile signs the owner in; token in `~/.mm/token`, never paste it into chat).
+- Dashboard: https://homeserver.tahr-triggerfish.ts.net (code in `dashboard/`, user service `dashboard`, see `dashboard/README.md`). Phone alerts: ntfy user service, https://homeserver.tahr-triggerfish.ts.net:10000, topic `homeserver`.
 - The folder name `Setup[` contains a bracket. On Linux, quote it: `cd 'Setup['`.
 
 ## Status page

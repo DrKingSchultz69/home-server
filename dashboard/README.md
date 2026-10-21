@@ -2,7 +2,7 @@
 
 One page that shows every service on the server, whether it is up, and the server's CPU, memory and disk.
 
-- **Address:** https://homeserver.tailaf7058.ts.net (tailnet only). Netheron moved to `:8443`.
+- **Address:** https://homeserver.tahr-triggerfish.ts.net (tailnet only). Netheron moved to `:8443`.
 - **Who sees what:** Tailscale tells the dashboard who is visiting. The owner (`DASH_OWNER`) sees everything; other tailnet users see the family tiles only; requests without a Tailscale identity are refused.
 - **Netheron tile:** `/go/netheron` sets Netheron's own login cookie for the owner only, then opens Netheron. Netheron still checks it.
 - **Light:** runs as a user service boxed to 64 MB RAM and 5% CPU. Services are checked every 30 s; the page refreshes every 5 s and stops while hidden.
