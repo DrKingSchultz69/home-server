@@ -12,6 +12,7 @@ Turn a desktop PC into a home server that also stays usable as a normal daily PC
 - Devices: OMEN laptop and Galaxy S24 (learner), family members' phones and other devices, living-room TV.
 - Family streams at home (TV on the same Wi-Fi) and away from home. Learner's idea: build their own streaming website on the server.
 - Requirements stated by learner: no ports opened on the router; traffic encrypted; the streaming site must not become a way into Netheron, SSH or files; approve only devices known to be safe; follow Cloudflare's terms if Cloudflare is used.
+- Learner request (2026-10-21): one dashboard page that lists every service the server provides, instead of copying links/tokens by hand. Design not yet decided.
 - Management laptop: OMEN 16 (Windows 11), used to set up and reach the server.
 
 ## Components

@@ -1,5 +1,10 @@
 # Learning Progress
 
+## Pending decision
+- Decision: Server dashboard (new request, before Phase 9)
+- Stage: awaiting reasoning (Build checkpoint)
+- Awaiting: what the dashboard shows, who can open it and at what address, ready-made app vs own page, and how sign-in should work (today Netheron needs its token once per browser).
+
 
 ## Remote access
 - Introduced (AI explained): local network vs internet; router blocks incoming connections by default; three kinds of remote use (command line, web apps, full desktop); private network (Tailscale, WireGuard) vs publishing a service (Cloudflare Tunnel); plain WireGuard needs a forwarded port.
