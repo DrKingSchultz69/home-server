@@ -366,8 +366,16 @@ async function accessList() {
   if (accessCache.value && Date.now() - accessCache.at < 60_000) return accessCache.value;
   let value;
   try {
-    const [d, u] = await Promise.all([tsApi("/tailnet/-/devices?fields=all"), tsApi("/tailnet/-/users")]);
-    const users = new Map((u.users ?? []).map((x) => [x.id, x]));
+    const d = await tsApi("/tailnet/-/devices?fields=all");
+    // Users is optional: with only device-read access, people come from the devices' owners.
+    let userList = [];
+    try {
+      userList = (await tsApi("/tailnet/-/users")).users ?? [];
+    } catch {
+      const logins = [...new Set((d.devices ?? []).map((x) => x.user).filter(Boolean))];
+      userList = logins.map((login) => ({ id: login, loginName: login, displayName: login.split("@")[0], role: login.toLowerCase() === OWNER ? "owner" : "member", status: "active" }));
+    }
+    const users = new Map(userList.map((x) => [x.id, x]));
     const devices = (d.devices ?? []).map((x) => ({
       name: x.hostname || x.name,
       os: x.os,
