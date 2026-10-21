@@ -150,10 +150,12 @@ async function page() {
 function handler(identify) {
   return async (req, res) => {
     try {
+      const path = new URL(req.url ?? "/", "http://x").pathname;
+      // Health answers without identity so the dashboard can check it; it reveals nothing.
+      if (path === "/health") return send(res, 200, "ok");
       const who = identify(req);
       if (!who) return send(res, 403, "This page is only for the family.");
       if (req.method !== "GET" && req.method !== "HEAD") return send(res, 405, "Method not allowed");
-      const path = new URL(req.url ?? "/", "http://x").pathname;
 
       if (path === "/" || path === "/index.html") return send(res, 200, await page(), "text/html; charset=utf-8");
       if (path === "/api/library") return send(res, 200, JSON.stringify({ viewer: who, ...library }), "application/json");
@@ -161,7 +163,6 @@ function handler(identify) {
         const file = files.get(path.slice(7));
         return file ? sendVideo(req, res, file) : send(res, 404, "Video not found");
       }
-      if (path === "/health") return send(res, 200, "ok");
       return send(res, 404, "Not found");
     } catch (err) {
       console.error(err);

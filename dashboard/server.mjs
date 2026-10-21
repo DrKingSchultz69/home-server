@@ -115,7 +115,10 @@ const SERVICES = [
     about: "Family videos, movies, shows",
     audience: "family",
     link: process.env.DASH_STREAM_URL || null,
-    check: () => httpAnswers("http://127.0.0.1:8095/health", [200, 403]),
+    check: async () => {
+      const r = await httpAnswers("http://127.0.0.1:8095/health", [200]);
+      return { up: r.up, detail: r.up ? "Library and player answering" : r.detail };
+    },
   },
 ];
 
