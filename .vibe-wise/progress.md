@@ -1,5 +1,10 @@
 # Learning Progress
 
+## Pending decision
+- Decision: Streaming site (Phase 10)
+- Stage: awaiting reasoning (Build checkpoint, round 2)
+- Awaiting: fully own build vs own design on Jellyfin's engine; how videos are converted (ahead of time vs live); how the Bravia opens it; media folder layout.
+
 
 
 
@@ -54,3 +59,7 @@
 - Learner answers (round 3): Workspace = one-way backup (A); desktop backup folder ~/Files/Desktop backup; backup tool = hourly robocopy (R) over Samba.
 - Outcome: Phase 9 design confirmed (Design checkpoint) with AI additions.
 - Learner answers (round 2): automatic copy only for the Workspace folder; family gets family videos through the streaming site (rule unchanged, no shared file folder); after the desktop backup is on the server, the laptop copy is deleted.
+
+## Streaming site
+- Learner answers (round 1): library = family videos plus movies and shows; build their own so it can have a neo-brutalist look with skeuomorphic icons; TV is a Sony Bravia X80G (Android TV).
+- Introduced (AI explained): library, player page, format fit; direct play vs transcoding; Intel Quick Sync; TV remote (D-pad) navigation.
