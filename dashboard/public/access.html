@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
-/* Same Bauhaus control-room look as the dashboard. View-only: approving happens in Tailscale. */
+/* Same Bauhaus control-room look as the dashboard. Join requests are approved here; devices in Tailscale. */
 :root { --ground: #16161A; --panel: #202026; --line: #34343C; --paper: #EDE8DC; --muted: #A9A49A; --red: #E1251B; --yellow: #F7C600; --blue: #2B5FD9; --ink: #111111; --sans: Jost, "Segoe UI", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace; color-scheme: dark; }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--ground); color: var(--paper); font: 500 16px/1.45 var(--sans); }
@@ -35,7 +35,14 @@ header h1 { font-size: clamp(20px, 3vw, 28px); letter-spacing: 0.16em; }
 .empty { color: var(--muted); }
 .steps { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
 .warn { background: var(--red); color: var(--paper); padding: 12px 16px; font-weight: 700; }
-a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+.acts { grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { font: 800 15px/1 var(--sans); letter-spacing: 0.04em; padding: 10px 16px; border: 0; cursor: pointer; }
+.btn.yes { background: var(--yellow); color: var(--ink); }
+.btn.no { background: none; color: var(--paper); border: 2px solid var(--line); }
+.btn:disabled { opacity: 0.5; cursor: wait; }
+.tag.approved { border-color: var(--blue); color: #7FA4FF; }
+.tag.rejected { border-color: var(--red); color: #FF7A72; }
+a:focus-visible, .btn:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
 </style>
 </head>
 <body>
@@ -48,10 +55,15 @@ a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
 
   <div class="warn" id="warn" hidden></div>
 
-  <section class="panel" aria-label="Waiting for approval">
-    <div class="head"><span class="ch">CH 06</span><h2>WAITING</h2><span class="right" id="checked"></span></div>
+  <section class="panel" aria-label="Join requests">
+    <div class="head"><span class="ch">CH 05</span><h2>REQUESTS</h2></div>
+    <ul class="rows" id="requests"></ul>
+  </section>
+
+  <section class="panel" aria-label="Devices waiting for approval">
+    <div class="head"><span class="ch">CH 06</span><h2>DEVICES WAITING</h2><span class="right" id="checked"></span></div>
     <ul class="rows" id="waiting"></ul>
-    <p style="margin: 14px 0 0"><a class="cta" href="https://login.tailscale.com/admin/machines" target="_blank" rel="noopener">Approve or remove in Tailscale →</a></p>
+    <p style="margin: 14px 0 0"><a class="cta" href="https://login.tailscale.com/admin/machines" target="_blank" rel="noopener">Approve or remove devices in Tailscale →</a></p>
   </section>
 
   <section class="panel" aria-label="People">
@@ -62,9 +74,9 @@ a:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
   <section class="panel" aria-label="How someone asks for access">
     <div class="head"><span class="ch">CH 08</span><h2>ADD SOMEONE</h2></div>
     <ol class="steps">
-      <li>Tailscale console → <b>Users</b> → <b>Invite users</b>, and send them the link.</li>
-      <li>They install Tailscale, open the link and sign in. Their device shows up under <b>Waiting</b>.</li>
-      <li>Approve their device in Tailscale. They then get Streaming and their own files folder.</li>
+      <li>Send them <b class="login">https://homeserver.tahr-triggerfish.ts.net/request</b>. They enter their name and email.</li>
+      <li>Their request shows up under <b>Requests</b> and your phone gets an alert. Press <b>Approve</b>.</li>
+      <li>Tailscale emails them an invite. They install Tailscale, sign in, and get Streaming and their own files folder.</li>
     </ol>
   </section>
 </div>
@@ -104,7 +116,48 @@ async function load() {
     $("warn").hidden = false; $("warn").textContent = `Can't load the access list: ${err.message}`;
   }
 }
-load(); setInterval(() => { if (!document.hidden) load(); }, 60_000);
+async function loadRequests() {
+  try {
+    const res = await fetch("/api/requests", { cache: "no-store" });
+    if (!res.ok) throw new Error(await res.text());
+    const d = await res.json();
+    if (d.error) { $("requests").replaceChildren(el("li", "empty", d.error)); return; }
+    const shown = d.requests.filter((r) => r.status === "waiting" || Date.now() - r.decidedAt < 7 * 864e5);
+    $("requests").replaceChildren(...(shown.length ? shown.map((r) => {
+      const li = el("li");
+      const label = { waiting: "WAITING", approved: "APPROVED", rejected: "NOT APPROVED" }[r.status];
+      const m = el("span", "meta"); m.append(el("span", "login", r.email), el("span", null, `Asked ${when(r.createdAt)}`));
+      li.append(mark(r.status === "waiting" ? "waiting" : r.status === "approved" ? "online" : "idle"), el("span", "nm", r.name), el("span", `tag ${r.status}`, label), m);
+      if (r.status === "waiting") {
+        const acts = el("span", "acts");
+        const yes = el("button", "btn yes", "Approve"), no = el("button", "btn no", "Reject");
+        yes.onclick = () => decide(r, "approve", [yes, no]);
+        no.onclick = () => { if (confirm(`Reject ${r.name}? They will see "Not approved".`)) decide(r, "reject", [yes, no]); };
+        acts.append(yes, no); li.append(acts);
+      }
+      return li;
+    }) : [el("li", "empty", "No requests. Family can ask at /request.")]));
+  } catch (err) {
+    $("requests").replaceChildren(el("li", "empty", `Can't load requests: ${err.message}`));
+  }
+}
+
+async function decide(r, action, buttons) {
+  buttons.forEach((b) => (b.disabled = true));
+  try {
+    const res = await fetch(`/api/requests/${r.id}/${action}`, { method: "POST", headers: { "X-Dashboard": "1" } });
+    if (!res.ok) throw new Error(await res.text());
+    const d = await res.json();
+    $("warn").hidden = true;
+    if (action === "approve") alert(`${r.name} approved: ${d.how}.`);
+  } catch (err) {
+    $("warn").hidden = false; $("warn").textContent = `Couldn't ${action} ${r.name}: ${err.message}`;
+  }
+  loadRequests(); load();
+}
+
+load(); loadRequests();
+setInterval(() => { if (!document.hidden) { load(); loadRequests(); } }, 60_000);
 </script>
 </body>
 </html>

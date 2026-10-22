@@ -9,8 +9,9 @@
 // No Tailscale identity: refused.
 
 import http from "node:http";
-import { mkdir, rename, stat } from "node:fs/promises";
+import { mkdir, readFile, rename, stat } from "node:fs/promises";
 import { randomBytes } from "node:crypto";
+import { homedir } from "node:os";
 import { join, resolve, basename, sep } from "node:path";
 
 const OWNER = (process.env.GATE_OWNER ?? "").toLowerCase();
@@ -52,17 +53,33 @@ function fb(method, path, { body, token, login = OWNER } = {}) {
 // A safe folder name from a login: "Anitha.R@gmail.com" -> "anitha.r".
 const folderFor = (login) => login.split("@")[0].toLowerCase().replace(/[^a-z0-9._-]+/g, "-").replace(/^[.-]+/, "") || "member";
 
+// The name they typed on the join request page (the dashboard saves it on Approve), made safe:
+// "Anitha R" stays "Anitha R"; anything but letters, digits, spaces, dots and dashes is dropped.
+const NAMES_FILE = process.env.GATE_NAMES_FILE ?? join(homedir(), ".config", "homeserver", "family-names.json");
+async function requestedName(login) {
+  try {
+    const name = JSON.parse(await readFile(NAMES_FILE, "utf8"))[login] ?? "";
+    return name.normalize("NFC").replace(/[^\p{L}\p{M}\p{N} ._-]+/gu, "").replace(/^[\s.-]+|\s+$/g, "").slice(0, 40);
+  } catch {
+    return "";
+  }
+}
+
 const ready = new Map(); // login -> folder name, once their account exists
 async function ensureFamilyMember(login) {
   if (ready.has(login)) return ready.get(login);
-  const folder = folderFor(login);
-  await mkdir(join(FILES_ROOT, FAMILY_DIR, folder), { recursive: true });
   const auth = await fb("POST", "/api/login");
   if (auth.status !== 200) throw new Error(`owner login to File Browser failed (${auth.status})`);
   const token = auth.text.trim();
   const list = await fb("GET", "/api/users", { token });
   const users = list.status === 200 ? JSON.parse(list.text) : [];
-  if (!users.some((u) => u.username === login)) {
+  const existing = users.find((u) => u.username === login);
+  // Existing accounts keep their folder; new ones get their requested name unless it's taken.
+  let folder = existing ? basename(existing.scope) : await requestedName(login);
+  const taken = new Set(users.map((u) => basename(u.scope ?? "").toLowerCase()));
+  if (!existing && (!folder || folder.toLowerCase() === RECYCLE_DIR.toLowerCase() || taken.has(folder.toLowerCase()))) folder = folderFor(login);
+  await mkdir(join(FILES_ROOT, FAMILY_DIR, folder), { recursive: true });
+  if (!existing) {
     const created = await fb("POST", "/api/users", {
       token,
       body: {

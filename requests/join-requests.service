@@ -1,0 +1,56 @@
+# Join requests: the one public page (Tailscale Funnel :443 -> 127.0.0.1:8097).
+# Installed to /etc/systemd/system/join-requests.service.
+# Runs as the `joinreq` user, which sees no home folders at all: only its own code, read-only,
+# and its own state folder /var/lib/join-requests.
+[Unit]
+Description=Join requests (public via Tailscale Funnel :443 -> 127.0.0.1:8097; admin 127.0.0.1:8098)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=joinreq
+Group=joinreq
+WorkingDirectory=/home/palani/Server/requests
+ExecStart=/usr/bin/node-24 --max-old-space-size=32 server.mjs
+Environment=REQ_DASHBOARD_URL=https://homeserver.tahr-triggerfish.ts.net:8446/
+# The dashboard's shared secret, handed over by systemd (root reads it before the lock-down).
+LoadCredential=admin-secret:/home/palani/.config/homeserver/join-requests.secret
+Restart=on-failure
+RestartSec=5
+
+# Everything in /home is hidden; only the code folder appears, read-only.
+TemporaryFileSystem=/home:ro
+BindReadOnlyPaths=/home/palani/Server/requests
+StateDirectory=join-requests
+
+# Lock-down
+NoNewPrivileges=yes
+ProtectSystem=strict
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+AmbientCapabilities=
+# Only local connections: it never needs the internet itself.
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+IPAddressDeny=any
+IPAddressAllow=localhost
+UMask=0077
+
+# Light
+MemoryMax=64M
+CPUQuota=10%
+Nice=10
+
+[Install]
+WantedBy=multi-user.target

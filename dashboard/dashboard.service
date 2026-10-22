@@ -1,5 +1,5 @@
 [Unit]
-Description=Homeserver dashboard (127.0.0.1:8080; reached through Tailscale Serve)
+Description=Homeserver dashboard (127.0.0.1:8080; reached through Tailscale Serve :8446)
 After=network-online.target
 
 [Service]
@@ -10,6 +10,8 @@ Environment=DASH_NETHERON_URL=https://homeserver.tahr-triggerfish.ts.net:8443
 Environment=DASH_NTFY_URL=http://127.0.0.1:2586/homeserver
 Environment=DASH_FILES_URL=https://homeserver.tahr-triggerfish.ts.net:8444
 Environment=DASH_STREAM_URL=https://homeserver.tahr-triggerfish.ts.net:8445
+Environment=DASH_ORIGIN=https://homeserver.tahr-triggerfish.ts.net:8446
+Environment=DASH_ACCESS_URL=https://homeserver.tahr-triggerfish.ts.net:8446/access
 ExecStart=%h/.local/node24/bin/node --max-old-space-size=24 server.mjs
 Restart=on-failure
 RestartSec=5

@@ -4,7 +4,7 @@
 // other tailnet users see the family view, requests without an identity are refused.
 
 import http from "node:http";
-import { readFile, statfs } from "node:fs/promises";
+import { readFile, writeFile, rename, statfs } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { homedir, loadavg } from "node:os";
@@ -137,13 +137,13 @@ const DOWN_AFTER = 2; // a service is "down" only after this many failed checks 
 // ---- Phone alerts (ntfy) ----------------------------------------------------
 // One message per change: down, back up, disk over the limit. Never repeats.
 
-async function alert(title, message, { priority = "default", tags = "" } = {}) {
+async function alert(title, message, { priority = "default", tags = "", click = "" } = {}) {
   if (!NTFY_URL) return;
   try {
     await fetch(NTFY_URL, {
       method: "POST",
       body: message,
-      headers: { Title: title, Priority: priority, Tags: tags },
+      headers: { Title: title, Priority: priority, Tags: tags, ...(click ? { Click: click } : {}) },
       signal: AbortSignal.timeout(CHECK_TIMEOUT_MS),
     });
   } catch (err) {
@@ -178,6 +178,7 @@ async function checkAll() {
     }),
   );
   await checkDisk();
+  await checkJoinRequests();
 }
 
 let diskAlerted = false;
@@ -336,15 +337,15 @@ async function accessPage() {
   return accessHtml;
 }
 
-// ---- Access list (owner only, read-only) --------------------------------------
-// Reads the tailnet's people and devices with a READ-ONLY Tailscale OAuth client.
-// Approving and removing stay in the Tailscale admin console.
+// ---- Access list (owner only) ---------------------------------------------------
+// Reads the tailnet's people and devices with a Tailscale OAuth client (scopes: users,
+// devices:core:read). Its only write use is approving join requests (invite or approve a user).
 
 const TS_OAUTH_FILE = process.env.DASH_TS_OAUTH ?? join(homedir(), ".config", "homeserver", "tailscale-oauth.json");
 let tsToken = { value: null, until: 0 };
 let accessCache = { at: 0, value: null };
 
-async function tsApi(path) {
+async function tsApi(path, { method = "GET", body } = {}) {
   if (!tsToken.value || Date.now() > tsToken.until) {
     const creds = JSON.parse(await readFile(TS_OAUTH_FILE, "utf8"));
     const res = await fetch("https://api.tailscale.com/api/v2/oauth/token", {
@@ -357,9 +358,18 @@ async function tsApi(path) {
     const t = await res.json();
     tsToken = { value: t.access_token, until: Date.now() + Math.max(60, (t.expires_in ?? 3600) - 120) * 1000 };
   }
-  const res = await fetch(`https://api.tailscale.com/api/v2${path}`, { headers: { Authorization: `Bearer ${tsToken.value}` }, signal: AbortSignal.timeout(10_000) });
-  if (!res.ok) throw new Error(`Tailscale API ${path} answered HTTP ${res.status}`);
-  return res.json();
+  const res = await fetch(`https://api.tailscale.com/api/v2${path}`, {
+    method,
+    headers: { Authorization: `Bearer ${tsToken.value}`, ...(body ? { "Content-Type": "application/json" } : {}) },
+    body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (!res.ok) {
+    const why = (await res.text().catch(() => "")).slice(0, 200);
+    throw new Error(`Tailscale API ${method} ${path} answered HTTP ${res.status}${why ? `: ${why}` : ""}`);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : {};
 }
 
 async function accessList() {
@@ -405,11 +415,125 @@ async function accessList() {
   return value;
 }
 
+// ---- Join requests (owner only) ---------------------------------------------------
+// Family ask to join on the public request page (requests/, its own locked-down service).
+// The dashboard reads that list over its local admin door, alerts the phone about new ones,
+// and on Approve asks Tailscale to invite them (or approves them if they already signed in).
+
+const REQ_ADMIN_URL = process.env.DASH_REQUESTS_ADMIN ?? "http://127.0.0.1:8098";
+const REQ_SECRET_FILE = join(homedir(), ".config", "homeserver", "join-requests.secret");
+const NAMES_FILE = join(homedir(), ".config", "homeserver", "family-names.json"); // login -> name; the files gate names folders from it
+const ACCESS_URL = process.env.DASH_ACCESS_URL ?? "";
+
+let reqSecret = null;
+async function requestsApi(path, { method = "GET", body } = {}) {
+  reqSecret ??= (await readFile(REQ_SECRET_FILE, "utf8")).trim();
+  const res = await fetch(`${REQ_ADMIN_URL}${path}`, {
+    method,
+    headers: { Authorization: `Bearer ${reqSecret}`, ...(body ? { "Content-Type": "application/json" } : {}) },
+    body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(CHECK_TIMEOUT_MS),
+  });
+  if (!res.ok) throw new Error(`join requests service answered HTTP ${res.status}`);
+  return res.status === 204 ? null : res.json();
+}
+
+let seenRequests = null; // ids already alerted; null until the first read (no alerts for old ones at startup)
+async function checkJoinRequests() {
+  let list;
+  try {
+    list = await requestsApi("/admin/requests");
+  } catch {
+    return; // the Join requests tile isn't a service check; a missed poll just waits for the next one
+  }
+  const waiting = list.filter((r) => r.status === "waiting");
+  if (seenRequests) {
+    for (const r of waiting.filter((x) => !seenRequests.has(x.id))) {
+      // Name goes in the body: headers can't carry non-Latin letters.
+    await alert("New join request", `${r.name} (${r.email}) wants to join. Approve or reject on the dashboard's Access page.`, { tags: "wave", click: ACCESS_URL });
+    }
+  }
+  seenRequests = new Set(list.map((r) => r.id));
+}
+
+async function rememberName(login, name) {
+  let names = {};
+  try {
+    names = JSON.parse(await readFile(NAMES_FILE, "utf8"));
+  } catch {}
+  names[login] = name;
+  await writeFile(NAMES_FILE + ".tmp", JSON.stringify(names, null, 1), { mode: 0o600 });
+  await rename(NAMES_FILE + ".tmp", NAMES_FILE);
+}
+
+async function decide(id, approve) {
+  const list = await requestsApi("/admin/requests");
+  const r = list.find((x) => x.id === id);
+  if (!r) throw Object.assign(new Error("That request no longer exists."), { code: 404 });
+  if (r.status !== "waiting") throw Object.assign(new Error("That request was already decided."), { code: 409 });
+  let how = "rejected";
+  if (approve) {
+    // Already signed in to the tailnet and waiting for approval? Approve that user.
+    // Otherwise send a Tailscale invite to their email; joining through it needs no extra approval.
+    const users = (await tsApi("/tailnet/-/users")).users ?? [];
+    const existing = users.find((u) => u.loginName?.toLowerCase() === r.email);
+    if (existing?.status === "needs-approval") {
+      await tsApi(`/users/${existing.id}/approve`, { method: "POST" });
+      how = "approved their waiting Tailscale account";
+    } else if (existing) {
+      how = "already in the tailnet";
+    } else {
+      await tsApi("/tailnet/-/user-invites", { method: "POST", body: [{ role: "member", email: r.email }] });
+      how = "Tailscale invite emailed";
+    }
+    await rememberName(r.email, r.name);
+  }
+  await requestsApi(`/admin/requests/${id}`, { method: "POST", body: { status: approve ? "approved" : "rejected" } });
+  accessCache.at = 0;
+  return { ok: true, how };
+}
+
+// The dashboard trusts Tailscale identity per connection, so a page on another site could make
+// the owner's browser send a POST here. Only accept POSTs from this page itself.
+// A custom header can't be sent cross-site without a CORS preflight, which this server never allows.
+const DASH_ORIGIN = process.env.DASH_ORIGIN ?? "";
+function sameSite(req) {
+  return req.headers["x-dashboard"] === "1" && (!DASH_ORIGIN || req.headers.origin === DASH_ORIGIN);
+}
+
+function readJson(req) {
+  return new Promise((resolve, reject) => {
+    let data = "";
+    req.on("data", (c) => {
+      data += c;
+      if (data.length > 1024) req.destroy();
+    });
+    req.on("end", () => {
+      try {
+        resolve(data ? JSON.parse(data) : {});
+      } catch (err) {
+        reject(err);
+      }
+    });
+    req.on("error", reject);
+  });
+}
+
 const server = http.createServer(async (req, res) => {
   try {
     const who = viewer(req);
     if (!who) return send(res, 403, "Open this page through Tailscale.");
     const path = new URL(req.url ?? "/", "http://x").pathname;
+
+    const decision = path.match(/^\/api\/requests\/([0-9a-f-]{36})\/(approve|reject)$/);
+    if (decision && req.method === "POST") {
+      if (who.role !== "owner" || !sameSite(req)) return send(res, 403, "Not available.");
+      try {
+        return send(res, 200, JSON.stringify(await decide(decision[1], decision[2] === "approve")), "application/json");
+      } catch (err) {
+        return send(res, err.code === 404 || err.code === 409 ? err.code : 502, err.message);
+      }
+    }
 
     if (req.method !== "GET") return send(res, 405, "Method not allowed");
 
@@ -422,6 +546,15 @@ const server = http.createServer(async (req, res) => {
     if (path === "/api/access") {
       if (who.role !== "owner") return send(res, 403, "Not available.");
       return send(res, 200, JSON.stringify(await accessList()), "application/json");
+    }
+    if (path === "/api/requests") {
+      if (who.role !== "owner") return send(res, 403, "Not available.");
+      try {
+        const list = await requestsApi("/admin/requests");
+        return send(res, 200, JSON.stringify({ requests: list.sort((a, b) => b.createdAt - a.createdAt) }), "application/json");
+      } catch (err) {
+        return send(res, 200, JSON.stringify({ requests: [], error: err.code === "ENOENT" ? "The join requests secret isn't set up yet." : `Can't reach the join requests service (${err.message}).` }), "application/json");
+      }
     }
 
     if (path === "/api/status") {
