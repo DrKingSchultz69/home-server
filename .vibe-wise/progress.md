@@ -61,3 +61,11 @@
 - Introduced (AI explained): library, player page, format fit; direct play vs transcoding vs ahead-of-time conversion; Intel Quick Sync; TV remote (D-pad) navigation; the parts a full build includes.
 - Learner answers (rounds 2-3): build everything (A) because they want to own every part plus the look; unsure about formats (AI recommended ahead-of-time conversion); TV = simple app on the Bravia; v1 features: posters, resume, subtitles, seasons, search.
 - Outcome: Phase 10 design confirmed (Design checkpoint) with AI additions; built in 3 milestones.
+
+## Family join requests
+- Learner request (2026-10-22): family should not need the owner to invite them; they type a web address, enter details, and the owner approves on the dashboard instead of the Tailscale console.
+- Introduced (AI explained): a page reachable without Tailscale is public, conflicting with the "nothing is public" rule; Tailscale Funnel (public without router ports, only ports 443/8443/10000, whole port public); invites count as approval; dashboard key needs write access.
+- Learner answers: option A (public request page, accepting a rule change for it); address https://homeserver.tahr-triggerfish.ts.net/request (dashboard moves off 443); form = name + email; phone alert on new request = yes; rejected people see "not approved".
+
+## Pending decision
+- Family join requests: Implementation checkpoint offered 2026-10-22, awaiting "Implement this step". No code written yet.
