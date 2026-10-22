@@ -21,8 +21,8 @@ This folder is synced through a private GitHub repo, so Claude has the same cont
 
 ## Confirmed design rules (don't break these)
 
-- Nothing is public. No router ports are opened.
-- Remote access only through Tailscale; only approved devices; owner's laptop and phone reach everything, family devices reach streaming only.
+- No router ports are opened. Exactly one public page: the join request page https://homeserver.tahr-triggerfish.ts.net/request (Tailscale Funnel on :443 -> 127.0.0.1:8097, `requests/`, its own locked-down `joinreq` system service with no access to /home). Owner approved this exception on 2026-10-22. Nothing else is ever put on Funnel.
+- Remote access only through Tailscale; only approved devices; owner's laptop and phone reach everything, family devices reach the dashboard (8446), their own files folder (8444) and streaming (8445).
 - Netheron listens on `127.0.0.1` only; its workspace (4142) reaches the tailnet through Tailscale Serve. Port 4141 (model proxy, no login) is never published anywhere. Files bind to the Tailscale side only, never `0.0.0.0`.
 - The streaming site is isolated: separate `streamer` user, rootless container running as that user, media read-only, own network, its own login.
 - Never commit secrets (API keys, tokens, passwords) to this repo.
@@ -34,7 +34,7 @@ This folder is synced through a private GitHub repo, so Claude has the same cont
 - Tailscale: homeserver = 100.114.125.48, laptop desktop-sb5io1v = 100.91.27.57, phone shais-s24 = 100.100.141.115 (tailnet owner shairaam12@gmail.com).
 - From the laptop: `ssh homeserver` (now via the Tailscale IP) (key `~/.ssh/id_ed25519_homeserver`, no passphrase; defined in `~/.ssh/config`).
 - Netheron: user service `netheron.service` (`systemctl --user status netheron`), MemoryMax 2G, repo `~/Workspace/Netheron` on branch `relay-redesign`. Workspace: https://homeserver.tahr-triggerfish.ts.net:8443 (tailnet only; the dashboard tile signs the owner in; token in `~/.mm/token`, never paste it into chat).
-- Dashboard: https://homeserver.tahr-triggerfish.ts.net (code in `dashboard/`, user service `dashboard`, see `dashboard/README.md`). Phone alerts: ntfy user service, https://homeserver.tahr-triggerfish.ts.net:10000, topic `homeserver`.
+- Dashboard: https://homeserver.tahr-triggerfish.ts.net:8446 (the plain address redirects tailnet visitors there; code in `dashboard/`, user service `dashboard`, see `dashboard/README.md`). Phone alerts: ntfy user service, https://homeserver.tahr-triggerfish.ts.net:10000, topic `homeserver`.
 - The folder name `Setup[` contains a bracket. On Linux, quote it: `cd 'Setup['`.
 
 ## Status page

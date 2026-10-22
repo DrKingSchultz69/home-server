@@ -99,7 +99,7 @@ footer { color: var(--muted); font-size: 14px; }
 <div class="wrap">
 
   <header>
-    <span class="eyebrow">Home server · desktop PC · updated 22 Oct 2026 · files done, streaming and family built</span>
+    <span class="eyebrow">Home server · desktop PC · updated 22 Oct 2026 · join request page live</span>
     <h1>Homeserver Build Plan</h1>
     <p class="lede">A 7th-gen i5 desktop running Fedora KDE as a daily PC and an always-on private server. Nothing is public: every remote connection goes through your Tailscale network.</p>
     <div class="progress" aria-label="Progress">
@@ -111,12 +111,12 @@ footer { color: var(--muted); font-size: 14px; }
   </header>
 
   <div class="next">
-    <span class="eyebrow">Your dashboard: https://homeserver.tahr-triggerfish.ts.net · Next action · Phase 11</span>
-    <h3>Invite the first family member</h3>
+    <span class="eyebrow">Your dashboard: https://homeserver.tahr-triggerfish.ts.net:8446 · Next action · Phase 11</span>
+    <h3>Get the first family member in</h3>
     <ol>
-      <li>Tailscale console → Users → Invite users. Role: <b>Member</b>, never Admin.</li>
-      <li>They install Tailscale, open the link, accept and sign in.</li>
-      <li>Approve their phone in Machines, then check their access with Claude.</li>
+      <li>Send them <b>https://homeserver.tahr-triggerfish.ts.net/request</b>. They enter their name and email.</li>
+      <li>Your phone gets an alert. Press <b>Approve</b> on the dashboard's Access page; Tailscale emails them an invite.</li>
+      <li>They install Tailscale and sign in, then check their access with Claude.</li>
     </ol>
   </div>
 
@@ -156,7 +156,8 @@ flowchart LR
   fw["firewalld<br/>home Wi-Fi zone"]
   subgraph server["homeserver · Fedora 44"]
     ssh["Tailscale SSH<br/>check mode"]
-      dash["Dashboard :443<br/>127.0.0.1:8080"]
+      req["Join request page :443<br/>joinreq service · public"]
+      dash["Dashboard :8446<br/>127.0.0.1:8080"]
   neth["Netheron :8443<br/>127.0.0.1:4142"]
     files["Files :8444<br/>gate → File Browser<br/>+ Samba for the laptop"]
     stream["Streaming :8445<br/>isolated streamer user"]
@@ -171,6 +172,8 @@ flowchart LR
   ts --> stream
   tv -. "LAN" .-> fw -.-> stream
   internet -- "blocked" --x router
+  internet -- "Funnel: /request only" --> req
+  req -- "list over a local secret door" --> dash
   classDef planned stroke-dasharray: 5 4
 </pre>
     </div>
@@ -181,7 +184,7 @@ flowchart LR
     <span class="eyebrow">Design rules</span>
     <h2>Confirmed rules</h2>
     <div class="rules">
-      <div class="rule"><h3>Nothing public</h3><p>No router ports are opened. Remote access only through Tailscale.</p></div>
+      <div class="rule"><h3>One public page only</h3><p>No router ports are opened. The only thing on the internet is the join request page (name + email), through Tailscale Funnel, in its own locked-down service. Everything else needs Tailscale.</p></div>
       <div class="rule"><h3>Approved devices only</h3><p>Device approval is on. Only approve devices you know are safe. Key expiry stays on.</p></div>
       <div class="rule"><h3>You vs family</h3><p>Your laptop and phone reach everything. Family devices reach the dashboard, their own files folder and streaming: ports 443, 8444 and 8445 only.</p></div>
       <div class="rule"><h3>Private services stay private</h3><p>Services listen on 127.0.0.1 and reach the tailnet only through Tailscale Serve. Port 4141 is never published.</p></div>
@@ -207,7 +210,7 @@ flowchart LR
       <li class="phase"><span class="num">8b</span><div class="body"><h3>Server dashboard</h3><p>Live at <span class="mono">https://homeserver.tahr-triggerfish.ts.net</span>: up/down per service, CPU, memory, disk, hourly storage breakdown; changes by viewer; Netheron tile signs you in. Phone alerts through ntfy when a service goes down or disk passes 90%.</p></div><span class="chip done">Done</span></li>
       <li class="phase"><span class="num">9</span><div class="body"><h3>File access</h3><p>Browser (File Browser behind an owner/family gate on :8444), Windows drive over Samba, and a one-way laptop Workspace backup. Opens from the phone over Tailscale.</p></div><span class="chip done">Done</span></li>
       <li class="phase now"><span class="num">10</span><div class="body"><h3>Streaming site</h3><p>Own neo-brutal site on :8445: albums, movies, shows, resume, subtitles, full-screen player with VLC keys. Left: the Bravia TV app.</p></div><span class="chip todo">TV left</span></li>
-      <li class="phase now"><span class="num">11</span><div class="body"><h3>Family access</h3><p>Built: per-person folders, recycle bin, Access page, Tailscale rule applied. Left: invite the first family member and test.</p></div><span class="chip todo">Invite left</span></li>
+      <li class="phase now"><span class="num">11</span><div class="body"><h3>Family access</h3><p>Built: public join request page with dashboard Approve/Reject and phone alerts, per-person folders, recycle bin, Access page, Tailscale rule applied. Left: the first family member joins and gets tested.</p></div><span class="chip todo">First person left</span></li>
     </ol>
   </section>
 
