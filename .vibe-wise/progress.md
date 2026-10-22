@@ -68,4 +68,4 @@
 - Learner answers: option A (public request page, accepting a rule change for it); address https://homeserver.tahr-triggerfish.ts.net/request (dashboard moves off 443); form = name + email; phone alert on new request = yes; rejected people see "not approved".
 
 ## Pending decision
-- Family join requests: Implementation checkpoint offered 2026-10-22, awaiting "Implement this step". No code written yet.
+- Family join requests: "Implement this step" given 2026-10-22; build in progress.
