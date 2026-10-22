@@ -68,4 +68,4 @@
 - Learner answers: option A (public request page, accepting a rule change for it); address https://homeserver.tahr-triggerfish.ts.net/request (dashboard moves off 443); form = name + email; phone alert on new request = yes; rejected people see "not approved".
 
 ## Pending decision
-- Family join requests: "Implement this step" given 2026-10-22; build in progress.
+- Family join requests: "Implement this step" given 2026-10-22. Code committed (cc128e2); request page checked in a laptop-only preview. Server so far: secret file and Serve :8446 -> dashboard exist. Still to do, at the laptop (owner on phone 2026-10-22): (1) paste files/tailscale-policy.hujson in the Tailscale console (adds 8446 + funnel nodeAttr); (2) new OAuth client with Users write + Devices Core read, saved to ~/.config/homeserver/tailscale-oauth.json; (3) `ssh -t homeserver "sudo sh ~/Server/requests/install.sh"`. Then Claude: Funnel :443 -> 127.0.0.1:8097 (owner said yes to going public 2026-10-22), test from the internet, update CLAUDE.md "nothing public" rule and the status page.
