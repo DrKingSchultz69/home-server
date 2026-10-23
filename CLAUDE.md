@@ -22,7 +22,7 @@ This folder is synced through a private GitHub repo, so Claude has the same cont
 ## Confirmed design rules (don't break these)
 
 - No router ports are opened. Exactly one public page: the join request page https://homeserver.tahr-triggerfish.ts.net/request (Tailscale Funnel on :443 -> 127.0.0.1:8097, `requests/`, its own locked-down `joinreq` system service with no access to /home). Owner approved this exception on 2026-10-22. Nothing else is ever put on Funnel.
-- Remote access only through Tailscale; only approved devices; owner's laptop and phone reach everything, family devices reach the dashboard (8446), their own files folder (8444) and streaming (8445).
+- Remote access only through Tailscale; only approved devices; owner's laptop and phone reach everything, family devices reach the dashboard (8446), their own files folder (8444), streaming (8445) and the Watcher app backend (8447, owner approved 2026-10-23; it limits each person to their role).
 - Netheron listens on `127.0.0.1` only; its workspace (4142) reaches the tailnet through Tailscale Serve. Port 4141 (model proxy, no login) is never published anywhere. Files bind to the Tailscale side only, never `0.0.0.0`.
 - The streaming site is isolated: separate `streamer` user, rootless container running as that user, media read-only, own network, its own login.
 - Never commit secrets (API keys, tokens, passwords) to this repo.

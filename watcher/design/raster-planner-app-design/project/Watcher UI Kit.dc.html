@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>html,body{background:#050506}body{margin:0;color:#F5F5F7;font-family:'Geist',sans-serif;-webkit-font-smoothing:antialiased}a{color:#0A84FF;text-decoration:none}a:hover{color:#30D5C8}@keyframes wspin{to{transform:rotate(360deg)}}.wscroll::-webkit-scrollbar{display:none}</style>
+</helmet>
+<section style="padding:64px;display:flex;flex-direction:column;gap:40px;background:#050506;min-width:max-content">
+  <div style="display:flex;align-items:center;gap:18px">
+    <svg width="56" height="56" viewBox="0 0 48 48" fill="none" stroke="#F5F5F7" stroke-width="2" stroke-linejoin="round"><path d="M8 13 L16 6 L24 11 L32 6 L40 13 V33 Q40 43 24 43 Q8 43 8 33 Z"></path><path d="M10 28 L16 17 L22 28 Z"></path><path d="M26 28 L32 17 L38 28 Z"></path><circle cx="16" cy="24" r="2" fill="#0A84FF" stroke="none"></circle><circle cx="32" cy="24" r="2" fill="#0A84FF" stroke="none"></circle><path d="M24 31 L26 34 L24 37 L22 34 Z"></path></svg>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <div style="font-size:40px;font-weight:700;letter-spacing:-.02em">Watcher UI Kit</div>
+      <div style="font-size:15px;color:#8E8E93">Dark only · Android + Windows (Flutter) · Owl mark is a placeholder until the real asset is supplied</div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:20px;width:560px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">01 · COLOUR</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        <sc-for list="{{ swatches }}" as="c" hint-placeholder-count="10">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="height:56px;border-radius:12px;background:{{ c.hex }};box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)"></div>
+            <div style="font-size:13px;font-weight:500">{{ c.name }}</div>
+            <div style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">{{ c.hex }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size:13px;color:#8E8E93;line-height:1.5">Tints for badges and banners: status colour at 15% on #1C1C1E. Blue is the only interactive colour. Teal is reserved for data.</div>
+    </div>
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;width:560px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">02 · TYPE · RADII</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:baseline;gap:16px"><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93;width:84px;flex:none">Status 56/700</span><span style="font-size:56px;font-weight:700;letter-spacing:-.04em;line-height:1">41d</span></div>
+        <div style="display:flex;align-items:baseline;gap:16px"><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93;width:84px;flex:none">Large 30/700</span><span style="font-size:30px;font-weight:700;letter-spacing:-.02em">Overview</span></div>
+        <div style="display:flex;align-items:baseline;gap:16px"><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93;width:84px;flex:none">Title 17/600</span><span style="font-size:17px;font-weight:600">Jellyfin</span></div>
+        <div style="display:flex;align-items:baseline;gap:16px"><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93;width:84px;flex:none">Body 15/400</span><span style="font-size:15px">Streaming to 3 devices</span></div>
+        <div style="display:flex;align-items:baseline;gap:16px"><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93;width:84px;flex:none">Caption 13</span><span style="font-size:13px;color:#8E8E93">Last checked 12 s ago</span></div>
+        <div style="display:flex;align-items:baseline;gap:16px"><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93;width:84px;flex:none">Data mono</span><span style="font-family:'Geist Mono',monospace;font-size:22px;font-variant-numeric:tabular-nums">11.4 GB · 84 Mb/s</span></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-end">
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center"><div style="width:56px;height:40px;background:#2C2C2E;border-radius:8px"></div><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">8 badge</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center"><div style="width:56px;height:40px;background:#2C2C2E;border-radius:12px"></div><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">12 control</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center"><div style="width:56px;height:40px;background:#2C2C2E;border-radius:16px"></div><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">16 card</span></div>
+        <div style="flex:1;font-size:13px;color:#8E8E93;line-height:1.5;padding-left:8px">Spacing 4 · 8 · 12 · 16 · 24 · 32. Min hit target 48dp.</div>
+      </div>
+    </div>
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;width:760px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">03 · BUTTONS</div>
+      <div style="display:grid;grid-template-columns:100px repeat(5,1fr);gap:10px;align-items:center">
+        <div></div>
+        <div style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">DEFAULT</div><div style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">HOVER</div><div style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">PRESSED</div><div style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">LOADING</div><div style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">DISABLED</div>
+        <div style="font-size:13px;color:#8E8E93">Primary</div>
+        <div style="height:48px;border-radius:12px;background:#0A84FF;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Restart</div>
+        <div style="height:48px;border-radius:12px;background:#3395FF;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Restart</div>
+        <div style="height:48px;border-radius:12px;background:#0070DB;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Restart</div>
+        <div style="height:48px;border-radius:12px;background:#0A84FF;display:flex;align-items:center;justify-content:center">{{ spinnerLight }}</div>
+        <div style="height:48px;border-radius:12px;background:#2C2C2E;color:#5A5A5E;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Restart</div>
+        <div style="font-size:13px;color:#8E8E93">Secondary</div>
+        <div style="height:48px;border-radius:12px;background:#2C2C2E;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500">View logs</div>
+        <div style="height:48px;border-radius:12px;background:#3A3A3C;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500">View logs</div>
+        <div style="height:48px;border-radius:12px;background:#48484A;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500">View logs</div>
+        <div style="height:48px;border-radius:12px;background:#2C2C2E;display:flex;align-items:center;justify-content:center">{{ spinnerLight2 }}</div>
+        <div style="height:48px;border-radius:12px;background:#1C1C1E;color:#5A5A5E;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500">View logs</div>
+        <div style="font-size:13px;color:#8E8E93">Destructive</div>
+        <div style="height:48px;border-radius:12px;background:rgba(255,69,58,.15);color:#FF453A;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Remove</div>
+        <div style="height:48px;border-radius:12px;background:rgba(255,69,58,.22);color:#FF453A;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Remove</div>
+        <div style="height:48px;border-radius:12px;background:#FF453A;color:#F5F5F7;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Remove</div>
+        <div style="height:48px;border-radius:12px;background:rgba(255,69,58,.15);display:flex;align-items:center;justify-content:center">{{ spinnerRed }}</div>
+        <div style="height:48px;border-radius:12px;background:#1C1C1E;color:#5A5A5E;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Remove</div>
+        <div style="font-size:13px;color:#8E8E93">Plain</div>
+        <div style="height:48px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:#0A84FF">Cancel</div>
+        <div style="height:48px;border-radius:12px;background:rgba(10,132,255,.1);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:#0A84FF">Cancel</div>
+        <div style="height:48px;border-radius:12px;background:rgba(10,132,255,.18);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:#0A84FF">Cancel</div>
+        <div style="height:48px;display:flex;align-items:center;justify-content:center">{{ spinnerBlue }}</div>
+        <div style="height:48px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:#5A5A5E">Cancel</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;padding-top:4px">
+        <div style="height:36px;padding:0 14px;border-radius:10px;background:#0A84FF;display:flex;align-items:center;font-size:13px;font-weight:600">Small</div>
+        <div style="height:36px;padding:0 14px;border-radius:10px;background:#2C2C2E;display:flex;align-items:center;font-size:13px;font-weight:500">Small</div>
+        <div style="width:48px;height:48px;border-radius:12px;background:#2C2C2E;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#F5F5F7" stroke-width="1.75" stroke-linecap="round"><path d="M16 10a6 6 0 1 1-1.8-4.3"></path><path d="M16 3v3.5h-3.5"></path></svg></div>
+        <span style="font-size:13px;color:#8E8E93">Icon button 48 · small 36 (desktop only)</span>
+      </div>
+    </div>
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;width:560px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">04 · INPUTS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;color:#8E8E93">Default</span><div style="height:48px;border-radius:12px;background:#1C1C1E;display:flex;align-items:center;padding:0 14px;font-size:15px;color:#8E8E93">Server address</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;color:#8E8E93">Focused</span><div style="height:48px;border-radius:12px;background:#1C1C1E;box-shadow:0 0 0 2px #0A84FF;display:flex;align-items:center;padding:0 14px;font-size:15px">192.168.1<span style="width:1.5px;height:20px;background:#0A84FF;margin-left:1px"></span></div></div>
+        <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;color:#8E8E93">Filled</span><div style="height:48px;border-radius:12px;background:#1C1C1E;display:flex;align-items:center;padding:0 14px;font-size:15px">watcher.local</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;color:#8E8E93">Error</span><div style="height:48px;border-radius:12px;background:#1C1C1E;box-shadow:0 0 0 2px #FF453A;display:flex;align-items:center;padding:0 14px;font-size:15px">192.168.1.999</div><span style="font-size:13px;color:#FF453A">Not a valid IP address</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;color:#8E8E93">Disabled</span><div style="height:48px;border-radius:12px;background:#151517;display:flex;align-items:center;padding:0 14px;font-size:15px;color:#5A5A5E">Port 8096</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;color:#8E8E93">Password</span><div style="height:48px;border-radius:12px;background:#1C1C1E;display:flex;align-items:center;padding:0 14px;gap:8px;font-size:15px"><span style="flex:1;letter-spacing:.2em">••••••••</span><span style="font-size:13px;font-weight:500;color:#0A84FF">Show</span></div></div>
+      </div>
+      <div style="height:40px;border-radius:12px;background:#1C1C1E;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:15px;color:#8E8E93"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#8E8E93" stroke-width="1.6"><circle cx="7" cy="7" r="5"></circle><path d="M11 11l3 3" stroke-linecap="round"></path></svg>Search files and media</div>
+    </div>
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;width:560px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">05 · TOGGLES · SEGMENTED</div>
+      <div style="display:flex;gap:28px;align-items:center">
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center"><div onClick="{{ toggle }}" style="width:51px;height:31px;border-radius:16px;background:{{ toggleBg }};padding:2px;box-sizing:border-box;display:flex;justify-content:{{ toggleJustify }};cursor:pointer;transition:background .2s"><div style="width:27px;height:27px;border-radius:50%;background:#F5F5F7"></div></div><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">LIVE</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center"><div style="width:51px;height:31px;border-radius:16px;background:#30D158;padding:2px;box-sizing:border-box;display:flex;justify-content:flex-end"><div style="width:27px;height:27px;border-radius:50%;background:#F5F5F7"></div></div><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">ON</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center"><div style="width:51px;height:31px;border-radius:16px;background:#3A3A3C;padding:2px;box-sizing:border-box;display:flex"><div style="width:27px;height:27px;border-radius:50%;background:#F5F5F7"></div></div><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">OFF</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center;opacity:.4"><div style="width:51px;height:31px;border-radius:16px;background:#30D158;padding:2px;box-sizing:border-box;display:flex;justify-content:flex-end"><div style="width:27px;height:27px;border-radius:50%;background:#F5F5F7"></div></div><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">DISABLED</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);background:#1C1C1E;border-radius:12px;padding:2px">
+          <sc-for list="{{ ranges }}" as="r" hint-placeholder-count="3">
+            <div onClick="{{ r.pick }}" style="text-align:center;font-family:'Geist Mono',monospace;font-size:13px;font-weight:500;padding:9px 0;border-radius:10px;cursor:pointer;background:{{ r.bg }};color:{{ r.fg }}">{{ r.label }}</div>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);background:#1C1C1E;border-radius:12px;padding:2px;width:60%">
+          <sc-for list="{{ views }}" as="r" hint-placeholder-count="2">
+            <div onClick="{{ r.pick }}" style="text-align:center;font-size:13px;font-weight:500;padding:9px 0;border-radius:10px;cursor:pointer;background:{{ r.bg }};color:{{ r.fg }}">{{ r.label }}</div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;width:560px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">06 · BADGES</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;background:rgba(48,209,88,.15);color:#30D158"><span style="width:6px;height:6px;border-radius:50%;background:#30D158"></span>Online</span>
+        <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;background:rgba(255,159,10,.15);color:#FF9F0A"><span style="width:6px;height:6px;border-radius:50%;background:#FF9F0A"></span>Degraded</span>
+        <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;background:rgba(255,69,58,.15);color:#FF453A"><span style="width:6px;height:6px;border-radius:50%;background:#FF453A"></span>Down</span>
+        <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;background:#2C2C2E;color:#8E8E93"><span style="width:6px;height:6px;border-radius:50%;border:1.5px solid #8E8E93;box-sizing:border-box"></span>Unknown</span>
+        <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;background:rgba(10,132,255,.15);color:#0A84FF">{{ spinnerTiny }}Restarting</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <span style="font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;background:#2C2C2E;color:#F5F5F7">User</span>
+        <span style="font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;background:rgba(48,213,200,.15);color:#30D5C8">Family</span>
+        <span style="font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;background:rgba(10,132,255,.18);color:#0A84FF">Admin</span>
+        <span style="min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:10px;background:#FF453A;font-family:'Geist Mono',monospace;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center">3</span>
+        <span style="font-family:'Geist Mono',monospace;font-size:11px;padding:4px 8px;border-radius:8px;background:#2C2C2E;color:#8E8E93">4K · HDR</span>
+      </div>
+    </div>
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;width:560px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">07 · LIST ROWS</div>
+      <div style="background:#1C1C1E;border-radius:16px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:12px;padding:0 16px;min-height:52px" style-hover="background:#242426"><div style="width:30px;height:30px;border-radius:8px;background:#0A84FF;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#F5F5F7" stroke-width="1.6"><circle cx="8" cy="6" r="3"></circle><path d="M2.5 14c.8-2.6 3-4 5.5-4s4.7 1.4 5.5 4"></path></svg></div><span style="flex:1;font-size:15px">Users &amp; roles</span><span style="font-size:15px;color:#8E8E93">5</span><svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="#5A5A5E" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"></path></svg></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:0 16px;min-height:52px;border-top:1px solid #2C2C2E;margin-left:0"><div style="width:30px;height:30px;border-radius:8px;background:#FF9F0A;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#101011" stroke-width="1.6"><path d="M4 11V7a4 4 0 0 1 8 0v4l1.5 1.5h-11z"></path></svg></div><span style="flex:1;font-size:15px">Push alerts</span><div onClick="{{ toggle }}" style="width:51px;height:31px;border-radius:16px;background:{{ toggleBg }};padding:2px;box-sizing:border-box;display:flex;justify-content:{{ toggleJustify }};cursor:pointer;transition:background .2s"><div style="width:27px;height:27px;border-radius:50%;background:#F5F5F7"></div></div></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;min-height:52px;box-sizing:border-box;border-top:1px solid #2C2C2E"><div style="width:30px;height:30px;border-radius:50%;background:#2C2C2E;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">MK</div><div style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:15px">Mira K.</span><span style="font-size:13px;color:#8E8E93">Last seen 2 h ago</span></div><span style="font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;background:rgba(48,213,200,.15);color:#30D5C8">Family</span></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:0 16px;min-height:52px;border-top:1px solid #2C2C2E;background:#2C2C2E"><span style="flex:1;font-size:15px">Pressed state</span><svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="#5A5A5E" stroke-width="2" stroke-linecap="round"><path d="M1 1l6 6-6 6"></path></svg></div>
+        <div style="display:flex;align-items:center;justify-content:center;min-height:52px;border-top:1px solid #2C2C2E;font-size:15px;color:#FF453A">Sign out of server</div>
+      </div>
+    </div>
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;width:760px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">08 · SERVICE CARDS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <sc-for list="{{ serviceCards }}" as="v" hint-placeholder-count="4">
+          <div style="background:#1C1C1E;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:40px;height:40px;border-radius:10px;background:#2C2C2E;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">{{ v.initial }}</div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:17px;font-weight:600">{{ v.name }}</span><span style="font-family:'Geist Mono',monospace;font-size:12px;color:#8E8E93">{{ v.host }}</span></div>
+              <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;background:{{ v.tint }};color:{{ v.color }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ v.color }}"></span>{{ v.status }}</span>
+            </div>
+            <div style="display:flex;gap:20px">
+              <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#8E8E93">Uptime</span><span style="font-family:'Geist Mono',monospace;font-size:15px;font-variant-numeric:tabular-nums">{{ v.uptime }}</span></div>
+              <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#8E8E93">Response</span><span style="font-family:'Geist Mono',monospace;font-size:15px;font-variant-numeric:tabular-nums">{{ v.resp }}</span></div>
+              <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#8E8E93">CPU</span><span style="font-family:'Geist Mono',monospace;font-size:15px;font-variant-numeric:tabular-nums">{{ v.cpu }}</span></div>
+            </div>
+            <div style="font-size:13px;color:{{ v.noteColor }}">{{ v.note }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;width:760px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">09 · SERVER STATUS · STAT TILES</div>
+      <div style="background:#1C1C1E;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between"><span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;background:rgba(48,209,88,.15);color:#30D158"><span style="width:6px;height:6px;border-radius:50%;background:#30D158"></span>All systems normal</span><span style="font-family:'Geist Mono',monospace;font-size:12px;color:#8E8E93">watcher.local</span></div>
+        <div style="display:flex;align-items:baseline;gap:10px"><span style="font-size:56px;font-weight:700;letter-spacing:-.04em;line-height:1">41d 6h</span><span style="font-size:15px;color:#8E8E93">uptime</span></div>
+        <div style="font-size:13px;color:#8E8E93">6 of 7 services online · last check 12 s ago</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+          <div style="background:#1C1C1E;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:13px;color:#8E8E93">{{ s.label }}</div>
+            <div style="display:flex;align-items:baseline;gap:4px"><span style="font-family:'Geist Mono',monospace;font-size:24px;font-weight:500;font-variant-numeric:tabular-nums">{{ s.value }}</span><span style="font-family:'Geist Mono',monospace;font-size:12px;color:#8E8E93">{{ s.unit }}</span></div>
+            <svg viewBox="0 0 120 32" style="width:100%;height:28px" preserveAspectRatio="none"><path d="{{ s.area }}" fill="#30D5C8" fill-opacity=".14"></path><path d="{{ s.line }}" fill="none" stroke="#30D5C8" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg>
+            <div style="font-family:'Geist Mono',monospace;font-size:11px;color:{{ s.deltaColor }}">{{ s.delta }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;width:760px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">10 · CHARTS</div>
+      <div style="background:#1C1C1E;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:17px;font-weight:600">CPU load</span><span style="font-family:'Geist Mono',monospace;font-size:13px;color:#8E8E93">{{ rangeLabel }} · avg 21%</span></div>
+        <div style="display:grid;grid-template-columns:36px 1fr;gap:8px">
+          <div style="display:flex;flex-direction:column;justify-content:space-between;font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93;height:160px;text-align:right"><span>100</span><span>50</span><span>0</span></div>
+          <div style="position:relative;height:160px">
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between"><div style="height:1px;background:#2C2C2E"></div><div style="height:1px;background:#2C2C2E"></div><div style="height:1px;background:#2C2C2E"></div></div>
+            <svg viewBox="0 0 600 160" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><path d="{{ chartArea }}" fill="#30D5C8" fill-opacity=".14"></path><path d="{{ chartLine }}" fill="none" stroke="#30D5C8" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><line x1="420" y1="0" x2="420" y2="160" stroke="#F5F5F7" stroke-opacity=".4" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"></line></svg>
+            <div style="position:absolute;left:70%;top:8px;transform:translateX(8px);background:#2C2C2E;border-radius:8px;padding:6px 8px;font-family:'Geist Mono',monospace;font-size:12px;display:flex;flex-direction:column;gap:2px"><span style="color:#8E8E93">16:40</span><span>34%</span></div>
+          </div>
+          <div></div>
+          <div style="display:flex;justify-content:space-between;font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93"><sc-for list="{{ xTicks }}" as="x" hint-placeholder-count="5"><span>{{ x }}</span></sc-for></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="background:#1C1C1E;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px">
+          <span style="font-size:15px;font-weight:600">Bandwidth · 7d</span>
+          <div style="display:flex;align-items:flex-end;gap:8px;height:96px">
+            <sc-for list="{{ bars }}" as="b" hint-placeholder-count="7"><div style="flex:1;display:flex;flex-direction:column;gap:6px;align-items:center;height:100%;justify-content:flex-end"><div style="width:100%;height:{{ b.h }};background:{{ b.bg }};border-radius:4px"></div><span style="font-family:'Geist Mono',monospace;font-size:10px;color:#8E8E93">{{ b.d }}</span></div></sc-for>
+          </div>
+        </div>
+        <div style="background:#1C1C1E;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px">
+          <span style="font-size:15px;font-weight:600">Storage</span>
+          <sc-for list="{{ disks }}" as="d" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;justify-content:space-between;font-size:13px"><span>{{ d.name }}</span><span style="font-family:'Geist Mono',monospace;color:{{ d.textColor }}">{{ d.used }}</span></div>
+              <div style="height:8px;border-radius:4px;background:#2C2C2E;overflow:hidden"><div style="height:100%;width:{{ d.pct }};background:{{ d.color }};border-radius:4px"></div></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:#0A0A0B;border-radius:12px;padding:14px 16px;font-family:'Geist Mono',monospace;font-size:12px;line-height:1.8;display:flex;flex-direction:column">
+        <sc-for list="{{ logs }}" as="l" hint-placeholder-count="5"><div style="display:flex;gap:12px"><span style="color:#5A5A5E">{{ l.t }}</span><span style="width:40px;color:{{ l.c }}">{{ l.lvl }}</span><span style="color:#F5F5F7">{{ l.msg }}</span></div></sc-for>
+      </div>
+    </div>
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:14px;width:560px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">11 · BANNERS · TOASTS</div>
+      <sc-for list="{{ banners }}" as="b" hint-placeholder-count="4">
+        <div style="display:flex;gap:12px;align-items:flex-start;background:{{ b.tint }};border-radius:14px;padding:12px 14px">
+          <div style="width:8px;height:8px;border-radius:50%;background:{{ b.color }};margin-top:6px;flex:none"></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="font-size:15px;font-weight:600">{{ b.title }}</div><div style="font-size:13px;color:#8E8E93">{{ b.body }}</div></div>
+          <span style="font-size:13px;font-weight:600;color:#0A84FF;margin-top:2px">{{ b.action }}</span>
+        </div>
+      </sc-for>
+      <div style="display:flex;flex-direction:column;gap:10px;padding-top:8px">
+        <div style="display:flex;align-items:center;gap:10px;background:#2C2C2E;border-radius:14px;padding:12px 14px;box-shadow:0 12px 32px rgba(0,0,0,.5)"><span style="width:8px;height:8px;border-radius:50%;background:#30D158"></span><span style="font-size:15px;flex:1">Jellyfin restarted</span><span style="font-size:15px;font-weight:600;color:#0A84FF">Undo</span></div>
+        <div style="display:flex;align-items:center;gap:10px;background:#2C2C2E;border-radius:14px;padding:12px 14px;box-shadow:0 12px 32px rgba(0,0,0,.5)"><span style="width:8px;height:8px;border-radius:50%;background:#FF453A"></span><span style="font-size:15px;flex:1">Couldn't reach server</span><span style="font-size:15px;font-weight:600;color:#0A84FF">Retry</span></div>
+        <div style="display:flex;align-items:center;gap:10px;background:#2C2C2E;border-radius:14px;padding:12px 14px;box-shadow:0 12px 32px rgba(0,0,0,.5)">{{ spinnerTiny2 }}<span style="font-size:15px;flex:1">Uploading 3 files…</span><span style="font-family:'Geist Mono',monospace;font-size:13px;color:#8E8E93">62%</span></div>
+      </div>
+    </div>
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;width:760px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">12 · SHEET · CONFIRM DIALOG</div>
+      <div style="display:flex;gap:16px;align-items:flex-end">
+        <div style="flex:1;background:rgba(0,0,0,.5);border-radius:16px;height:380px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;box-shadow:inset 0 0 0 1px #1C1C1E">
+          <div style="background:#1C1C1E;border-radius:16px 16px 0 0;padding:10px 16px 20px;display:flex;flex-direction:column;gap:14px">
+            <div style="width:36px;height:5px;border-radius:3px;background:#48484A;align-self:center"></div>
+            <div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:10px;background:#2C2C2E;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">J</div><div style="flex:1;display:flex;flex-direction:column"><span style="font-size:17px;font-weight:600">Jellyfin</span><span style="font-family:'Geist Mono',monospace;font-size:12px;color:#8E8E93">:8096 · 200 OK</span></div></div>
+            <div style="background:#2C2C2E;border-radius:12px;overflow:hidden">
+              <div style="padding:14px 16px;font-size:15px">Restart service</div>
+              <div style="padding:14px 16px;font-size:15px;border-top:1px solid #3A3A3C">View logs</div>
+              <div style="padding:14px 16px;font-size:15px;border-top:1px solid #3A3A3C;color:#FF453A">Stop service</div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;background:rgba(0,0,0,.5);border-radius:16px;height:380px;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px #1C1C1E">
+          <div style="width:290px;background:#2C2C2E;border-radius:16px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="padding:20px 18px 16px;display:flex;flex-direction:column;gap:6px;text-align:center"><span style="font-size:17px;font-weight:600">Remove Mira K.?</span><span style="font-size:13px;color:#8E8E93;line-height:1.45">She'll lose access to Family libraries and shared folders. Her files stay on the server.</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #3A3A3C"><div style="height:48px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#0A84FF">Cancel</div><div style="height:48px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#FF453A;border-left:1px solid #3A3A3C">Remove</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;width:760px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">13 · NAVIGATION</div>
+      <div style="display:flex;gap:16px;align-items:flex-start">
+        <div style="width:240px;background:#1C1C1E;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:2px;flex:none">
+          <sc-for list="{{ sidebar }}" as="n" hint-placeholder-count="6">
+            <div style="display:flex;align-items:center;gap:10px;height:40px;padding:0 10px;border-radius:10px;font-size:14px;background:{{ n.bg }};color:{{ n.fg }}" style-hover="background:#2C2C2E"><span style="width:16px;height:16px;border-radius:5px;border:1.6px solid {{ n.icon }};box-sizing:border-box"></span><span style="flex:1">{{ n.label }}</span><span style="font-family:'Geist Mono',monospace;font-size:12px;color:{{ n.countColor }}">{{ n.count }}</span></div>
+          </sc-for>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+          <div style="height:72px;background:#1C1C1E;border-radius:16px;display:grid;grid-template-columns:repeat(4,1fr);align-items:center">
+            <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;font-weight:500;color:{{ t.color }}"><div style="position:relative"><span style="display:block;width:22px;height:22px;border-radius:7px;border:1.75px solid {{ t.color }};box-sizing:border-box;background:{{ t.fill }}"></span><span style="position:absolute;top:-6px;right:-10px;min-width:16px;height:16px;border-radius:8px;background:#FF453A;color:#F5F5F7;font-family:'Geist Mono',monospace;font-size:10px;display:{{ t.badgeDisplay }};align-items:center;justify-content:center">3</span></div>{{ t.label }}</div>
+            </sc-for>
+          </div>
+          <div style="font-size:13px;color:#8E8E93;line-height:1.5">Android: bottom tab bar, 4 destinations, active = blue, badge for unread alerts. Windows: sidebar, active row #2C2C2E with blue icon; Admin section visible only to Admin role.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;width:760px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">14 · FILE ITEMS</div>
+      <div style="background:#1C1C1E;border-radius:16px;overflow:hidden">
+        <sc-for list="{{ fileRows }}" as="f" hint-placeholder-count="4">
+          <div onClick="{{ f.pick }}" style="display:flex;align-items:center;gap:12px;padding:0 16px;min-height:56px;border-top:{{ f.sep }};background:{{ f.bg }};cursor:pointer">
+            <div style="width:32px;height:32px;border-radius:8px;background:{{ f.iconBg }};display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:10px;font-weight:500;color:{{ f.iconFg }}">{{ f.ext }}</div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:15px">{{ f.name }}</span><span style="font-size:13px;color:#8E8E93">{{ f.meta }}</span></div>
+            <span style="font-family:'Geist Mono',monospace;font-size:13px;color:#8E8E93">{{ f.size }}</span>
+            <div style="width:22px;height:22px;border-radius:50%;box-sizing:border-box;border:{{ f.checkBorder }};background:{{ f.checkBg }};display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="{{ f.checkMark }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5 4.5-5.5"></path></svg></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+        <sc-for list="{{ fileTiles }}" as="f" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="aspect-ratio:1;border-radius:14px;background:#1C1C1E;display:flex;align-items:center;justify-content:center;box-shadow:{{ f.ring }}"><div style="width:52px;height:52px;border-radius:12px;background:{{ f.iconBg }};display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:12px;color:{{ f.iconFg }}">{{ f.ext }}</div></div>
+            <div style="display:flex;flex-direction:column;gap:1px;padding:0 2px"><span style="font-size:13px;font-weight:500">{{ f.name }}</span><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">{{ f.size }}</span></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="background:#101011;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;width:760px;box-sizing:border-box">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93">15 · VIDEO POSTER CARDS</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+        <sc-for list="{{ posters }}" as="p" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="aspect-ratio:2/3;border-radius:14px;background:{{ p.bg }};position:relative;overflow:hidden;display:flex;align-items:flex-end;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)">
+              <span style="position:absolute;top:8px;left:8px;font-size:11px;font-weight:600;padding:3px 7px;border-radius:6px;background:#0A84FF;display:{{ p.newDisplay }}">New</span>
+              <span style="position:absolute;top:8px;right:8px;font-family:'Geist Mono',monospace;font-size:10px;padding:3px 6px;border-radius:6px;background:rgba(0,0,0,.6);color:#F5F5F7">{{ p.q }}</span>
+              <div style="position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font-family:'Geist Mono',monospace;font-size:11px;color:#5A5A5E">poster</div>
+              <div style="width:100%;height:4px;background:rgba(255,255,255,.15);display:{{ p.progDisplay }}"><div style="height:100%;width:{{ p.prog }};background:#0A84FF"></div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:1px;padding:0 2px"><span style="font-size:15px;font-weight:500">{{ p.title }}</span><span style="font-size:13px;color:#8E8E93">{{ p.meta }}</span></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size:13px;color:#8E8E93">States: new · in progress (blue bar) · watched (dimmed 50%) · focused on desktop (2px blue ring).</div>
+    </div>
+  </div>
+
+  <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.1em;color:#8E8E93;padding-top:24px">EXAMPLE SCREENS</div>
+  <div style="display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start">
+
+    <div style="width:360px;height:780px;background:#101011;border-radius:36px;box-shadow:0 0 0 8px #1C1C1E;overflow:hidden;display:flex;flex-direction:column;flex:none" data-screen-label="Admin Overview (Android)">
+      <div style="height:32px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:13px;font-weight:500;flex:none"><span>9:41</span><span style="width:18px;height:10px;border:1.5px solid #F5F5F7;border-radius:3px"></span></div>
+      <div class="wscroll" style="flex:1;overflow:auto;scrollbar-width:none;padding:8px 16px 20px;display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px">
+          <div style="display:flex;flex-direction:column;gap:2px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:13px;color:#8E8E93">watcher.local</span><span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;background:rgba(10,132,255,.18);color:#0A84FF">Admin</span></div><div style="font-size:30px;font-weight:700;letter-spacing:-.02em">Overview</div></div>
+          <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="#F5F5F7" stroke-width="2" stroke-linejoin="round"><path d="M8 13 L16 6 L24 11 L32 6 L40 13 V33 Q40 43 24 43 Q8 43 8 33 Z"></path><path d="M10 28 L16 17 L22 28 Z"></path><path d="M26 28 L32 17 L38 28 Z"></path><circle cx="16" cy="24" r="2" fill="#0A84FF" stroke="none"></circle><circle cx="32" cy="24" r="2" fill="#0A84FF" stroke="none"></circle><path d="M24 31 L26 34 L24 37 L22 34 Z"></path></svg>
+        </div>
+        <div style="background:#1C1C1E;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px">
+          <span style="display:flex;align-self:flex-start;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;background:rgba(255,159,10,.15);color:#FF9F0A"><span style="width:6px;height:6px;border-radius:50%;background:#FF9F0A"></span>1 service down</span>
+          <div style="display:flex;align-items:baseline;gap:8px"><span style="font-size:56px;font-weight:700;letter-spacing:-.04em;line-height:1">6/7</span><span style="font-size:15px;color:#8E8E93">services online</span></div>
+          <div style="font-family:'Geist Mono',monospace;font-size:12px;color:#8E8E93">Up 41d 6h · checked 12 s ago</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);background:#1C1C1E;border-radius:12px;padding:2px">
+          <sc-for list="{{ ranges }}" as="r" hint-placeholder-count="3">
+            <div onClick="{{ r.pick }}" style="text-align:center;font-family:'Geist Mono',monospace;font-size:13px;font-weight:500;padding:9px 0;border-radius:10px;cursor:pointer;background:{{ r.bg }};color:{{ r.fg }}">{{ r.label }}</div>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+            <div style="background:#1C1C1E;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:13px;color:#8E8E93">{{ s.label }}</div>
+              <div style="display:flex;align-items:baseline;gap:4px"><span style="font-family:'Geist Mono',monospace;font-size:22px;font-weight:500;font-variant-numeric:tabular-nums">{{ s.value }}</span><span style="font-family:'Geist Mono',monospace;font-size:12px;color:#8E8E93">{{ s.unit }}</span></div>
+              <svg viewBox="0 0 120 32" style="width:100%;height:26px" preserveAspectRatio="none"><path d="{{ s.area }}" fill="#30D5C8" fill-opacity=".14"></path><path d="{{ s.line }}" fill="none" stroke="#30D5C8" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;background:rgba(255,69,58,.15);border-radius:14px;padding:12px 14px">
+          <div style="width:8px;height:8px;border-radius:50%;background:#FF453A;margin-top:6px;flex:none"></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="font-size:15px;font-weight:600">Home Assistant is down</div><div style="font-size:13px;color:#8E8E93">No response on :8123 for 4 min.</div></div>
+          <span style="font-size:13px;font-weight:600;color:#0A84FF;margin-top:2px">Restart</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:13px;color:#8E8E93;padding:0 4px">SERVICES</div>
+          <div style="background:#1C1C1E;border-radius:16px;overflow:hidden">
+            <sc-for list="{{ services }}" as="v" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:12px;padding:0 14px;min-height:56px;border-top:{{ v.sep }}">
+                <div style="width:32px;height:32px;border-radius:8px;background:#2C2C2E;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">{{ v.initial }}</div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:1px"><div style="font-size:15px;font-weight:500">{{ v.name }}</div><div style="font-size:13px;color:#8E8E93">{{ v.meta }}</div></div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:{{ v.color }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ v.color }}"></span>{{ v.status }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:13px;color:#8E8E93;padding:0 4px">USERS</div>
+          <div style="background:#1C1C1E;border-radius:16px;overflow:hidden">
+            <sc-for list="{{ users }}" as="u" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:12px;padding:0 14px;min-height:52px;border-top:{{ u.sep }}"><div style="width:30px;height:30px;border-radius:50%;background:#2C2C2E;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">{{ u.ini }}</div><span style="flex:1;font-size:15px">{{ u.name }}</span><span style="font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;background:{{ u.bg }};color:{{ u.fg }}">{{ u.role }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <div style="height:72px;background:#1C1C1E;display:grid;grid-template-columns:repeat(4,1fr);align-items:center;flex:none">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;font-weight:500;color:{{ t.color }}"><div style="position:relative"><span style="display:block;width:22px;height:22px;border-radius:7px;border:1.75px solid {{ t.color }};box-sizing:border-box;background:{{ t.fill }}"></span><span style="position:absolute;top:-6px;right:-10px;min-width:16px;height:16px;border-radius:8px;background:#FF453A;color:#F5F5F7;font-family:'Geist Mono',monospace;font-size:10px;display:{{ t.badgeDisplay }};align-items:center;justify-content:center">3</span></div>{{ t.label }}</div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="width:1280px;height:800px;background:#101011;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 0 1px #2C2C2E;flex:none" data-screen-label="Files (Windows)">
+      <div style="height:36px;display:flex;align-items:center;justify-content:space-between;padding-left:16px;background:#101011;flex:none"><span style="font-size:12px;color:#8E8E93">Watcher</span><div style="display:flex;height:100%"><span style="width:46px;display:flex;align-items:center;justify-content:center"><span style="width:10px;height:1px;background:#8E8E93"></span></span><span style="width:46px;display:flex;align-items:center;justify-content:center"><span style="width:9px;height:9px;border:1px solid #8E8E93"></span></span><span style="width:46px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#8E8E93">✕</span></div></div>
+      <div style="flex:1;display:grid;grid-template-columns:240px minmax(0,1fr) 300px;min-height:0">
+        <div style="background:#1C1C1E;padding:12px;display:flex;flex-direction:column;gap:2px">
+          <div style="display:flex;align-items:center;gap:10px;padding:6px 10px 16px"><svg width="26" height="26" viewBox="0 0 48 48" fill="none" stroke="#F5F5F7" stroke-width="2.4" stroke-linejoin="round"><path d="M8 13 L16 6 L24 11 L32 6 L40 13 V33 Q40 43 24 43 Q8 43 8 33 Z"></path><path d="M10 28 L16 17 L22 28 Z"></path><path d="M26 28 L32 17 L38 28 Z"></path><circle cx="16" cy="24" r="2.4" fill="#0A84FF" stroke="none"></circle><circle cx="32" cy="24" r="2.4" fill="#0A84FF" stroke="none"></circle></svg><div style="display:flex;flex-direction:column"><span style="font-size:15px;font-weight:600">watcher.local</span><span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#30D158"><span style="width:6px;height:6px;border-radius:50%;background:#30D158"></span>Online</span></div></div>
+          <sc-for list="{{ sidebar }}" as="n" hint-placeholder-count="6">
+            <div style="display:flex;align-items:center;gap:10px;height:40px;padding:0 10px;border-radius:10px;font-size:14px;background:{{ n.bg }};color:{{ n.fg }}" style-hover="background:#2C2C2E"><span style="width:16px;height:16px;border-radius:5px;border:1.6px solid {{ n.icon }};box-sizing:border-box"></span><span style="flex:1">{{ n.label }}</span><span style="font-family:'Geist Mono',monospace;font-size:12px;color:{{ n.countColor }}">{{ n.count }}</span></div>
+          </sc-for>
+          <div style="margin-top:auto;padding:12px 10px;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#8E8E93">Storage</span><span style="font-family:'Geist Mono',monospace">3.1 / 8 TB</span></div>
+            <div style="height:6px;border-radius:3px;background:#2C2C2E;overflow:hidden"><div style="width:39%;height:100%;background:#30D5C8"></div></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;min-width:0">
+          <div style="display:flex;align-items:center;gap:12px;padding:16px 24px">
+            <div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="display:flex;gap:6px;font-size:13px;color:#8E8E93"><span>Files</span><span>/</span><span>Family</span></div><div style="font-size:26px;font-weight:700;letter-spacing:-.02em">Photos 2026</div></div>
+            <div style="width:240px;height:36px;border-radius:10px;background:#1C1C1E;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:14px;color:#8E8E93"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8E8E93" stroke-width="1.6"><circle cx="7" cy="7" r="5"></circle><path d="M11 11l3 3" stroke-linecap="round"></path></svg>Search</div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);background:#1C1C1E;border-radius:10px;padding:2px;width:140px">
+              <sc-for list="{{ views }}" as="r" hint-placeholder-count="2"><div onClick="{{ r.pick }}" style="text-align:center;font-size:13px;font-weight:500;padding:7px 0;border-radius:8px;cursor:pointer;background:{{ r.bg }};color:{{ r.fg }}">{{ r.label }}</div></sc-for>
+            </div>
+            <div style="height:36px;padding:0 14px;border-radius:10px;background:#0A84FF;display:flex;align-items:center;font-size:13px;font-weight:600;cursor:pointer" style-hover="background:#3395FF">Upload</div>
+          </div>
+          <sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;padding:0 16px;overflow:auto;min-height:0">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 110px 150px 110px;gap:12px;padding:8px 12px;font-size:12px;color:#8E8E93;border-bottom:1px solid #2C2C2E"><span>Name</span><span style="text-align:right">Size</span><span>Modified</span><span>Shared with</span></div>
+              <sc-for list="{{ deskFiles }}" as="f" hint-placeholder-count="8">
+                <div onClick="{{ f.pick }}" style="display:grid;grid-template-columns:minmax(0,1fr) 110px 150px 110px;gap:12px;align-items:center;padding:0 12px;height:48px;border-radius:10px;background:{{ f.bg }};cursor:pointer" style-hover="background:#1C1C1E">
+                  <div style="display:flex;align-items:center;gap:10px;min-width:0"><div style="width:28px;height:28px;border-radius:7px;background:{{ f.iconBg }};display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:9px;color:{{ f.iconFg }};flex:none">{{ f.ext }}</div><span style="font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ f.name }}</span></div>
+                  <span style="font-family:'Geist Mono',monospace;font-size:13px;color:#8E8E93;text-align:right">{{ f.size }}</span>
+                  <span style="font-family:'Geist Mono',monospace;font-size:13px;color:#8E8E93">{{ f.date }}</span>
+                  <span style="justify-self:start;font-size:12px;font-weight:600;padding:4px 9px;border-radius:8px;background:{{ f.roleBg }};color:{{ f.roleFg }}">{{ f.role }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ isGrid }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;padding:8px 24px;overflow:auto;min-height:0">
+              <sc-for list="{{ deskFiles }}" as="f" hint-placeholder-count="8">
+                <div onClick="{{ f.pick }}" style="display:flex;flex-direction:column;gap:8px;cursor:pointer">
+                  <div style="aspect-ratio:4/3;border-radius:14px;background:#1C1C1E;display:flex;align-items:center;justify-content:center;box-shadow:{{ f.ring }}"><div style="width:48px;height:48px;border-radius:12px;background:{{ f.iconBg }};display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:11px;color:{{ f.iconFg }}">{{ f.ext }}</div></div>
+                  <div style="display:flex;flex-direction:column;gap:1px"><span style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ f.name }}</span><span style="font-family:'Geist Mono',monospace;font-size:11px;color:#8E8E93">{{ f.size }}</span></div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <div style="background:#1C1C1E;margin:12px;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:16px">
+          <div style="aspect-ratio:4/3;border-radius:12px;background:#2C2C2E;display:flex;align-items:center;justify-content:center"><div style="width:64px;height:64px;border-radius:14px;background:{{ sel.iconBg }};display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:13px;color:{{ sel.iconFg }}">{{ sel.ext }}</div></div>
+          <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:17px;font-weight:600;word-break:break-word">{{ sel.name }}</span><span style="font-size:13px;color:#8E8E93">{{ sel.kind }}</span></div>
+          <div style="background:#2C2C2E;border-radius:12px;overflow:hidden">
+            <div style="display:flex;justify-content:space-between;padding:10px 14px;font-size:13px"><span style="color:#8E8E93">Size</span><span style="font-family:'Geist Mono',monospace">{{ sel.size }}</span></div>
+            <div style="display:flex;justify-content:space-between;padding:10px 14px;font-size:13px;border-top:1px solid #3A3A3C"><span style="color:#8E8E93">Modified</span><span style="font-family:'Geist Mono',monospace">{{ sel.date }}</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;font-size:13px;border-top:1px solid #3A3A3C"><span style="color:#8E8E93">Access</span><span style="font-size:12px;font-weight:600;padding:3px 8px;border-radius:6px;background:{{ sel.roleBg }};color:{{ sel.roleFg }}">{{ sel.role }}</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:auto">
+            <div style="height:40px;border-radius:12px;background:#0A84FF;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Download</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="height:40px;border-radius:12px;background:#2C2C2E;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500">Share</div><div style="height:40px;border-radius:12px;background:rgba(255,69,58,.15);color:#FF453A;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">Delete</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { range: '24h', on: true, view: 'List', fileSel: 1, deskSel: 2 };
+  spinner(color, size) {
+    return React.createElement('span', { style: { display: 'inline-block', width: size, height: size, borderRadius: '50%', border: `2px solid ${color}`, borderTopColor: 'transparent', animation: 'wspin .8s linear infinite', boxSizing: 'border-box', flex: 'none' } });
+  }
+  renderVals() {
+    const { range, on, view, fileSel, deskSel } = this.state;
+    const S = {
+      '24h': [[24,22,25,18,20,14,16,10,13,8,11,6,9],[12,14,13,16,15,18,17,20,19,22,21,23,24],[20,20,19,21,20,22,21,20,21,19,20,20,21],[28,26,27,22,24,25,20,18,21,16,18,14,15]],
+      '7d': [[16,18,14,20,12,15,10,14,18,12,9,13,11],[22,20,21,18,19,16,17,15,16,13,14,12,12],[18,19,20,18,21,20,19,22,21,20,22,21,20],[20,24,18,22,26,20,24,18,22,20,16,18,17]],
+      '30d': [[20,16,18,14,16,12,15,11,13,10,12,9,10],[26,24,22,22,20,19,18,17,16,15,14,13,12],[21,20,20,21,20,21,20,20,21,20,21,20,20],[24,22,26,20,24,22,18,22,20,18,20,16,18]]
+    }[range];
+    const line = (p, dx = 10) => p.map((y, i) => `${i ? 'L' : 'M'}${i * dx} ${y}`).join(' ');
+    const area = (p, dx = 10, h = 32) => line(p, dx) + ` L${(p.length - 1) * dx} ${h} L0 ${h} Z`;
+    const big = { '24h': [120,118,124,110,112,100,104,96,108,90,94,84,88,96,80,86,104,92,98,110,106,114,108,112,118], '7d': [110,104,116,98,120,100,92,108,114,96,88,102,94,110,100,90,106,98,112,104,96,108,100,94,102], '30d': [100,108,96,104,98,110,102,96,106,100,94,104,98,108,96,102,100,94,104,98,106,100,96,102,98] }[range];
+    const stat = [['CPU', '23', '%', '−4% vs avg', '#30D158'], ['Memory', '11.4', 'GB', '+0.8 GB', '#8E8E93'], ['Network', '84', 'Mb/s', '3 streams', '#8E8E93'], ['Disk 2', '91', '%', '+2% today', '#FF9F0A']];
+    const C = { ok: '#30D158', warn: '#FF9F0A', down: '#FF453A', busy: '#0A84FF' };
+    const T = { ok: 'rgba(48,209,88,.15)', warn: 'rgba(255,159,10,.15)', down: 'rgba(255,69,58,.15)', busy: 'rgba(10,132,255,.15)' };
+    const svc = [['Jellyfin', 'Streaming · 3 active', 'ok', 'Online'], ['Nextcloud', 'Files · 1.2 TB', 'ok', 'Online'], ['Backups', 'Last run 02:00 · slow', 'warn', 'Slow'], ['Home Assistant', 'No response 4 min', 'down', 'Down'], ['Pi-hole', 'DNS · 14k queries', 'ok', 'Online']];
+    const roleStyle = { User: ['#2C2C2E', '#F5F5F7'], Family: ['rgba(48,213,200,.15)', '#30D5C8'], Admin: ['rgba(10,132,255,.18)', '#0A84FF'] };
+    const ft = { DIR: ['rgba(10,132,255,.18)', '#0A84FF', 'Folder'], JPG: ['rgba(48,213,200,.15)', '#30D5C8', 'JPEG image'], MKV: ['rgba(255,159,10,.15)', '#FF9F0A', 'Video'], PDF: ['rgba(255,69,58,.15)', '#FF453A', 'PDF document'], ZIP: ['#2C2C2E', '#8E8E93', 'Archive'] };
+    const files = [['DIR', 'Summer trip', '—', '12 Oct', 'Family'], ['DIR', 'Birthday', '—', '03 Sep', 'Family'], ['JPG', 'IMG_2041.jpg', '4.2 MB', '21 Oct 18:02', 'Family'], ['JPG', 'IMG_2042.jpg', '3.9 MB', '21 Oct 18:03', 'Family'], ['MKV', 'Beach clip.mkv', '1.8 GB', '20 Oct 14:40', 'Family'], ['PDF', 'Insurance 2026.pdf', '412 KB', '02 Oct 09:15', 'Admin'], ['ZIP', 'Raw exports.zip', '6.3 GB', '28 Sep 22:10', 'Admin'], ['JPG', 'Cover.jpg', '2.1 MB', '18 Sep 11:30', 'User']];
+    const mkFile = ([ext, name, size, date, role], i, sel, setKey) => ({ ext, name, size, date, role, kind: ft[ext][2], iconBg: ft[ext][0], iconFg: ft[ext][1], roleBg: roleStyle[role][0], roleFg: roleStyle[role][1], bg: i === sel ? 'rgba(10,132,255,.18)' : 'transparent', ring: i === sel ? '0 0 0 2px #0A84FF' : 'none', pick: () => this.setState({ [setKey]: i }) });
+    const deskFiles = files.map((f, i) => mkFile(f, i, deskSel, 'deskSel'));
+    const lvl = { INFO: '#8E8E93', OK: '#30D158', WARN: '#FF9F0A', ERR: '#FF453A' };
+    return {
+      swatches: [['Base', '#101011'], ['Surface', '#1C1C1E'], ['Raised', '#2C2C2E'], ['Text', '#F5F5F7'], ['Secondary', '#8E8E93'], ['Primary', '#0A84FF'], ['Data', '#30D5C8'], ['OK', '#30D158'], ['Warning', '#FF9F0A'], ['Down', '#FF453A']].map(([name, hex]) => ({ name, hex })),
+      spinnerLight: this.spinner('#F5F5F7', 18), spinnerLight2: this.spinner('#F5F5F7', 18), spinnerRed: this.spinner('#FF453A', 18), spinnerBlue: this.spinner('#0A84FF', 18), spinnerTiny: this.spinner('#0A84FF', 10), spinnerTiny2: this.spinner('#0A84FF', 14),
+      ranges: ['24h', '7d', '30d'].map(r => ({ label: r, pick: () => this.setState({ range: r }), bg: r === range ? '#3A3A3C' : 'transparent', fg: r === range ? '#F5F5F7' : '#8E8E93' })),
+      rangeLabel: range,
+      views: ['List', 'Grid'].map(r => ({ label: r, pick: () => this.setState({ view: r }), bg: r === view ? '#3A3A3C' : 'transparent', fg: r === view ? '#F5F5F7' : '#8E8E93' })),
+      isList: view === 'List', isGrid: view === 'Grid',
+      toggle: () => this.setState(s => ({ on: !s.on })), toggleBg: on ? '#30D158' : '#3A3A3C', toggleJustify: on ? 'flex-end' : 'flex-start',
+      stats: stat.map(([label, value, unit, delta, deltaColor], i) => ({ label, value, unit, delta, deltaColor, line: line(S[i]), area: area(S[i]) })),
+      chartLine: line(big, 25), chartArea: area(big, 25, 160),
+      xTicks: { '24h': ['00:00', '06:00', '12:00', '18:00', 'now'], '7d': ['Fri', 'Sun', 'Tue', 'Wed', 'now'], '30d': ['24 Sep', '01 Oct', '08 Oct', '15 Oct', 'now'] }[range],
+      bars: [['M', 42], ['T', 58], ['W', 36], ['T', 72], ['F', 88], ['S', 64], ['S', 50]].map(([d, v], i) => ({ d, h: v + '%', bg: i === 4 ? '#30D5C8' : 'rgba(48,213,200,.35)' })),
+      disks: [{ name: 'Disk 1 · System', used: '212 / 500 GB', pct: '42%', color: '#30D5C8', textColor: '#8E8E93' }, { name: 'Disk 2 · Media', used: '7.3 / 8 TB', pct: '91%', color: '#FF9F0A', textColor: '#FF9F0A' }],
+      logs: [['18:02:11', 'INFO', 'jellyfin: transcode started (1080p → 720p)'], ['18:02:14', 'OK', 'backup: snapshot 2026-10-23 verified'], ['18:04:40', 'WARN', 'disk2: usage 91% (threshold 90%)'], ['18:06:02', 'ERR', 'homeassistant: health check timeout :8123'], ['18:06:05', 'INFO', 'alert sent to 2 admins']].map(([t, l, msg]) => ({ t, lvl: l, msg, c: lvl[l] })),
+      serviceCards: [['Jellyfin', 'media.local:8096', 'ok', 'Online', '41d 6h', '38 ms', '12%', '3 active streams', '#8E8E93'], ['Backups', 'restic · nightly', 'warn', 'Degraded', '41d 6h', '—', '4%', 'Last run took 2h 14m (avg 48m)', '#FF9F0A'], ['Home Assistant', 'ha.local:8123', 'down', 'Down', '—', 'timeout', '—', 'No response for 4 min', '#FF453A'], ['Nextcloud', 'cloud.local:443', 'busy', 'Restarting', '—', '—', '—', 'Started by Alex · 8 s ago', '#8E8E93']].map(([name, host, k, status, uptime, resp, cpu, note, noteColor]) => ({ name, host, status, uptime, resp, cpu, note, noteColor, initial: name[0], color: C[k], tint: T[k] })),
+      services: svc.map(([name, meta, k, status], i) => ({ name, meta, status, color: C[k], initial: name[0], sep: i ? '1px solid #2C2C2E' : 'none' })),
+      users: [['AL', 'Alex L.', 'Admin'], ['MK', 'Mira K.', 'Family'], ['JT', 'Jonas T.', 'User']].map(([ini, name, role], i) => ({ ini, name, role, bg: roleStyle[role][0], fg: roleStyle[role][1], sep: i ? '1px solid #2C2C2E' : 'none' })),
+      banners: [['rgba(10,132,255,.15)', '#0A84FF', 'Update available', 'Watcher 2.4 is ready to install.', 'Update'], ['rgba(48,209,88,.15)', '#30D158', 'Backup complete', 'Snapshot verified · 412 GB.', 'View'], ['rgba(255,159,10,.15)', '#FF9F0A', 'Disk 2 at 91%', 'Media volume full in ~6 days.', 'Manage'], ['rgba(255,69,58,.15)', '#FF453A', 'Home Assistant is down', 'No response on :8123 for 4 min.', 'Restart']].map(([tint, color, title, body, action]) => ({ tint, color, title, body, action })),
+      sidebar: [['Overview', ''], ['Media', ''], ['Files', ''], ['Alerts', '3'], ['Users', '5'], ['Settings', '']].map(([label, count]) => { const a = label === 'Files'; return { label, count, bg: a ? '#2C2C2E' : 'transparent', fg: '#F5F5F7', icon: a ? '#0A84FF' : '#8E8E93', countColor: label === 'Alerts' ? '#FF453A' : '#8E8E93' }; }),
+      tabs: ['Overview', 'Media', 'Files', 'Alerts'].map((label, i) => ({ label, color: i ? '#8E8E93' : '#0A84FF', fill: i ? 'transparent' : 'rgba(10,132,255,.2)', badgeDisplay: i === 3 ? 'flex' : 'none' })),
+      fileRows: files.slice(0, 5).map((f, i) => { const o = mkFile(f, i, fileSel, 'fileSel'); const s = i === fileSel; return { ...o, meta: f[0] === 'DIR' ? '24 items · ' + f[3] : f[3], size: f[2], sep: i ? '1px solid #2C2C2E' : 'none', checkBorder: s ? 'none' : '1.5px solid #48484A', checkBg: s ? '#0A84FF' : 'transparent', checkMark: s ? '#F5F5F7' : 'transparent' }; }),
+      fileTiles: [files[0], files[2], files[4], files[5]].map((f, i) => ({ ...mkFile(f, i, 1, 'fileSel'), size: f[0] === 'DIR' ? '24 items' : f[2] })),
+      posters: [['Northern Line', 'Series · S2 E4', '4K', true, '64%', '#1C2A3A'], ['Slow Harbour', 'Film · 1h 52m', 'HD', false, '0%', '#2A2420'], ['Field Notes', 'Docu · 48m', '4K', true, '0%', '#1E2A26'], ['Paper Moons', 'Film · 2h 06m', 'HD', false, '22%', '#2A1E2A']].map(([title, meta, q, isNew, prog, bg]) => ({ title, meta, q, bg, prog, newDisplay: isNew ? 'block' : 'none', progDisplay: prog === '0%' ? 'none' : 'block' })),
+      deskFiles, sel: deskFiles[deskSel]
+    };
+  }
+}
+</script>
+</body>
+</html>

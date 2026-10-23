@@ -1,0 +1,19 @@
+[Unit]
+Description=Watcher app backend (127.0.0.1:8090; reached through Tailscale Serve :8447)
+After=network-online.target
+
+[Service]
+WorkingDirectory=%h/Server/watcher-api
+Environment=PATH=%h/.local/node24/bin:/usr/local/bin:/usr/bin:/bin
+Environment=WATCH_OWNER=shairaam12@gmail.com
+ExecStart=%h/.local/node24/bin/node --max-old-space-size=32 --disable-warning=ExperimentalWarning server.mjs
+Restart=on-failure
+RestartSec=5
+Nice=10
+# Keep it light: it can never take more than this.
+MemoryMax=80M
+CPUQuota=5%
+# No NoNewPrivileges here: restart/reboot use the narrow sudo rule in sudoers-watcher.
+
+[Install]
+WantedBy=default.target

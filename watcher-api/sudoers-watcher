@@ -1,0 +1,3 @@
+# Lets watcher-api (user palani) restart exactly these system services and reboot, nothing else.
+# Install: sudo install -m 0440 sudoers-watcher /etc/sudoers.d/watcher && sudo visudo -c
+palani ALL=(root) NOPASSWD: /usr/bin/systemctl restart streaming.service, /usr/bin/systemctl restart smb.service, /usr/bin/systemctl restart sshd.service, /usr/bin/systemctl restart join-requests.service, /usr/bin/systemctl reboot

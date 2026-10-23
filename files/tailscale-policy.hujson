@@ -1,8 +1,8 @@
 // Tailscale access rules for the homeserver tailnet (Phase 11).
 // Paste into: Tailscale console -> Access controls -> JSON editor (replace everything), then Save.
 //   Owner (you):  every device, every port.
-//   Family:       only the dashboard (8446; 443 redirects there), their files (8444) and streaming (8445)
-//                 on homeserver. Netheron (8443), alerts (10000), SSH and the Z: drive (445) stay closed.
+//   Family:       only the dashboard (8446; 443 redirects there), their files (8444), streaming (8445)
+//                 and the Watcher app backend (8447, limits them to their role) on homeserver. Netheron (8443), alerts (10000), SSH and the Z: drive (445) stay closed.
 //   Public:       Funnel on homeserver :443 only = the join request page (requests/).
 {
 	"hosts": {
@@ -11,7 +11,7 @@
 
 	"acls": [
 		{"action": "accept", "src": ["autogroup:owner", "autogroup:admin"], "dst": ["*:*"]},
-		{"action": "accept", "src": ["autogroup:member"], "dst": ["homeserver:443,8444,8445,8446"]},
+		{"action": "accept", "src": ["autogroup:member"], "dst": ["homeserver:443,8444,8445,8446,8447"]},
 	],
 
 	// Funnel (public join request page): only the owner's devices may turn it on.
@@ -33,7 +33,7 @@
 	"tests": [
 		{
 			"src":    "shairaam12@gmail.com",
-			"accept": ["homeserver:443", "homeserver:8443", "homeserver:8444", "homeserver:8445", "homeserver:8446", "homeserver:10000", "homeserver:22"],
+			"accept": ["homeserver:443", "homeserver:8443", "homeserver:8444", "homeserver:8445", "homeserver:8446", "homeserver:8447", "homeserver:10000", "homeserver:22"],
 		},
 	],
 }

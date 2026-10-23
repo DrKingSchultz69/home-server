@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#050506;color:#F5F5F7;font-family:'Geist',sans-serif;-webkit-font-smoothing:antialiased}a{color:#0A84FF;text-decoration:none}a:hover{color:#30D5C8}</style>
+</helmet>
+<section style="padding:64px;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:760px">
+    <div style="font-family:'Geist Mono',monospace;font-size:13px;letter-spacing:.1em;color:#8E8E93">TURN 2 — WATCHER · THREE DIRECTIONS</div>
+    <div style="font-size:17px;line-height:1.55;color:#F5F5F7;text-wrap:pretty">Same palette, three treatments of shape, type and density. Each shows the Android Admin Overview plus a component sample. Pick one and I'll build the full component sheet (all states) and the desktop Files screen in it.</div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:56px;align-items:flex-start">
+
+    <!-- 2a GROUPED -->
+    <div id="2a" style="display:flex;flex-direction:column;gap:16px;font-family:'Geist',sans-serif">
+      <div style="display:flex;gap:10px;align-items:center;font-family:'Geist Mono',monospace;font-size:13px;color:#8E8E93"><span style="background:#F5F5F7;color:#101011;padding:3px 8px;border-radius:4px">2a</span>Grouped — Apple-style inset lists, soft radii, blue accent</div>
+      <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+        <div style="width:360px;height:760px;background:#101011;border-radius:36px;box-shadow:0 0 0 8px #1C1C1E;overflow:hidden;display:flex;flex-direction:column">
+          <div style="height:32px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:13px;font-weight:500"><span>9:41</span><span style="width:18px;height:10px;border:1.5px solid #F5F5F7;border-radius:3px"></span></div>
+          <div style="flex:1;overflow:auto;padding:8px 16px 16px;display:flex;flex-direction:column;gap:18px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px">
+              <div style="display:flex;flex-direction:column;gap:2px">
+                <div style="font-size:13px;color:#8E8E93">watcher.local · Admin</div>
+                <div style="font-size:30px;font-weight:700;letter-spacing:-.02em">Overview</div>
+              </div>
+              <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="#F5F5F7" stroke-width="2" stroke-linejoin="round"><path d="M8 13 L16 6 L24 11 L32 6 L40 13 V33 Q40 43 24 43 Q8 43 8 33 Z"></path><path d="M10 28 L16 17 L22 28 Z"></path><path d="M26 28 L32 17 L38 28 Z"></path><circle cx="16" cy="24" r="2" fill="#0A84FF" stroke="none"></circle><circle cx="32" cy="24" r="2" fill="#0A84FF" stroke="none"></circle><path d="M24 31 L26 34 L24 37 L22 34 Z"></path></svg>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);background:#1C1C1E;border-radius:10px;padding:2px">
+              <sc-for list="{{ ranges }}" as="r" hint-placeholder-count="3">
+                <div onClick="{{ r.pick }}" style="text-align:center;font-size:13px;font-weight:500;padding:7px 0;border-radius:8px;cursor:pointer;background:{{ r.bgA }};color:{{ r.fgA }}">{{ r.label }}</div>
+              </sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+                <div style="background:#1C1C1E;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px">
+                  <div style="font-size:13px;color:#8E8E93">{{ s.label }}</div>
+                  <div style="display:flex;align-items:baseline;gap:4px"><span style="font-size:26px;font-weight:600;letter-spacing:-.02em">{{ s.value }}</span><span style="font-size:13px;color:#8E8E93">{{ s.unit }}</span></div>
+                  <svg viewBox="0 0 120 32" style="width:100%;height:28px" preserveAspectRatio="none"><path d="{{ s.area }}" fill="#30D5C8" fill-opacity=".14"></path><path d="{{ s.line }}" fill="none" stroke="#30D5C8" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;background:rgba(255,159,10,.12);border-radius:14px;padding:12px 14px">
+              <div style="width:8px;height:8px;border-radius:50%;background:#FF9F0A;margin-top:6px;flex:none"></div>
+              <div style="display:flex;flex-direction:column;gap:2px"><div style="font-size:15px;font-weight:600">Disk 2 at 91%</div><div style="font-size:13px;color:#8E8E93">Media volume will be full in ~6 days.</div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:13px;color:#8E8E93;padding:0 4px">SERVICES</div>
+              <div style="background:#1C1C1E;border-radius:16px;overflow:hidden">
+                <sc-for list="{{ services }}" as="v" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:{{ v.sep }}">
+                    <div style="width:32px;height:32px;border-radius:8px;background:#2C2C2E;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">{{ v.initial }}</div>
+                    <div style="flex:1;display:flex;flex-direction:column;gap:1px"><div style="font-size:15px;font-weight:500">{{ v.name }}</div><div style="font-size:13px;color:#8E8E93">{{ v.meta }}</div></div>
+                    <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:{{ v.color }}"><span style="width:7px;height:7px;border-radius:50%;background:{{ v.color }}"></span>{{ v.status }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="height:68px;background:#1C1C1E;display:grid;grid-template-columns:repeat(4,1fr);align-items:center">
+            <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:500;color:{{ t.colorA }}"><span style="width:20px;height:20px;border-radius:6px;border:1.75px solid {{ t.colorA }}"></span>{{ t.label }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="width:300px;display:flex;flex-direction:column;gap:22px">
+          <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:34px;font-weight:700;letter-spacing:-.02em">Aa Geist</div><div style="font-size:13px;color:#8E8E93">Display 30/700 · Body 15/400 · Caption 13</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="height:44px;border-radius:12px;background:#0A84FF;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;cursor:pointer" style-hover="background:#3395FF">Restart service</div>
+            <div style="height:44px;border-radius:12px;background:#2C2C2E;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;cursor:pointer" style-hover="background:#3A3A3C">View logs</div>
+            <div style="height:44px;border-radius:12px;background:rgba(255,69,58,.14);color:#FF453A;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Remove user</div>
+          </div>
+          <div style="background:#1C1C1E;border-radius:16px;overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px"><span style="font-size:15px">Push alerts</span><div onClick="{{ toggle }}" style="width:51px;height:31px;border-radius:16px;background:{{ toggleBg }};padding:2px;box-sizing:border-box;display:flex;justify-content:{{ toggleJustify }};cursor:pointer;transition:background .2s"><div style="width:27px;height:27px;border-radius:50%;background:#F5F5F7"></div></div></div>
+            <div style="display:flex;align-items:center;gap:8px;padding:12px 14px;border-top:1px solid #2C2C2E"><span style="font-size:15px;color:#8E8E93;flex:1">Server address</span><span style="font-size:15px">192.168.1.20</span></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <span style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(48,209,88,.15);color:#30D158">Online</span>
+            <span style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(255,159,10,.15);color:#FF9F0A">Degraded</span>
+            <span style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(255,69,58,.15);color:#FF453A">Down</span>
+            <span style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:#2C2C2E;color:#F5F5F7">User</span>
+            <span style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(48,213,200,.15);color:#30D5C8">Family</span>
+            <span style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(10,132,255,.18);color:#0A84FF">Admin</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:#2C2C2E;border-radius:14px;padding:12px 14px;box-shadow:0 12px 32px rgba(0,0,0,.5)"><span style="width:8px;height:8px;border-radius:50%;background:#30D158"></span><span style="font-size:15px;flex:1">Jellyfin restarted</span><span style="font-size:15px;font-weight:600;color:#0A84FF">Undo</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2b INSTRUMENT -->
+    <div id="2b" style="display:flex;flex-direction:column;gap:16px;font-family:'Instrument Sans',sans-serif">
+      <div style="display:flex;gap:10px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:#8E8E93"><span style="background:#F5F5F7;color:#101011;padding:3px 8px;border-radius:2px">2b</span>Instrument — hairlines, mono numerals, teal as signal</div>
+      <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+        <div style="width:360px;height:760px;background:#101011;border-radius:36px;box-shadow:0 0 0 8px #1C1C1E;overflow:hidden;display:flex;flex-direction:column">
+          <div style="height:32px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-family:'JetBrains Mono',monospace;font-size:12px"><span>09:41</span><span style="width:18px;height:10px;border:1px solid #F5F5F7;border-radius:2px"></span></div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 20px 16px;border-bottom:1px solid #2C2C2E">
+            <svg width="28" height="28" viewBox="0 0 48 48" fill="none" stroke="#F5F5F7" stroke-width="2.2" stroke-linejoin="miter"><path d="M8 13 L16 6 L24 11 L32 6 L40 13 V33 Q40 43 24 43 Q8 43 8 33 Z"></path><path d="M10 28 L16 17 L22 28 Z"></path><path d="M26 28 L32 17 L38 28 Z"></path><circle cx="16" cy="24" r="2" fill="#30D5C8" stroke="none"></circle><circle cx="32" cy="24" r="2" fill="#30D5C8" stroke="none"></circle></svg>
+            <div style="flex:1;display:flex;flex-direction:column"><div style="font-size:20px;font-weight:600">Overview</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8E93;letter-spacing:.06em">WATCHER.LOCAL · UP 41D 06H</div></div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;padding:3px 6px;border:1px solid #0A84FF;color:#0A84FF;border-radius:2px">ADMIN</span>
+          </div>
+          <div style="flex:1;overflow:auto;display:flex;flex-direction:column">
+            <div style="display:flex;padding:12px 20px;gap:0;border-bottom:1px solid #2C2C2E">
+              <sc-for list="{{ ranges }}" as="r" hint-placeholder-count="3">
+                <div onClick="{{ r.pick }}" style="flex:1;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;padding:6px 0;border:1px solid #2C2C2E;margin-left:-1px;cursor:pointer;background:{{ r.bgB }};color:{{ r.fgB }}">{{ r.label }}</div>
+              </sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr">
+              <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+                <div style="padding:14px 20px;border-bottom:1px solid #2C2C2E;border-right:{{ s.divB }};display:flex;flex-direction:column;gap:6px">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;color:#8E8E93">{{ s.code }}</div>
+                  <div style="display:flex;align-items:baseline;gap:4px"><span style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:500">{{ s.value }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8E93">{{ s.unit }}</span></div>
+                  <svg viewBox="0 0 120 32" style="width:100%;height:24px" preserveAspectRatio="none"><path d="{{ s.line }}" fill="none" stroke="#30D5C8" stroke-width="1.25" vector-effect="non-scaling-stroke"></path></svg>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;padding:12px 20px;border-bottom:1px solid #2C2C2E;border-left:2px solid #FF9F0A">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;color:#FF9F0A">WARN</span>
+              <span style="font-size:14px;flex:1">Disk 2 at 91% — full in ~6d</span>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;color:#8E8E93;padding:18px 20px 8px">SERVICES · 4</div>
+            <sc-for list="{{ services }}" as="v" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-top:1px solid #2C2C2E">
+                <span style="width:6px;height:6px;background:{{ v.color }}"></span>
+                <div style="flex:1;font-size:15px;font-weight:500">{{ v.name }}</div>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8E8E93">{{ v.port }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;width:44px;text-align:right;color:{{ v.color }}">{{ v.code }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="height:60px;border-top:1px solid #2C2C2E;display:grid;grid-template-columns:repeat(4,1fr);align-items:stretch">
+            <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;color:{{ t.colorB }};border-top:{{ t.barB }}">{{ t.code }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="width:300px;display:flex;flex-direction:column;gap:22px">
+          <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:34px;font-weight:600">Aa Instrument</div><div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8E8E93">0123456789 · JetBrains Mono for data</div></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="height:44px;border-radius:4px;background:#0A84FF;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;cursor:pointer" style-hover="background:#3395FF">Restart service</div>
+            <div style="height:44px;border-radius:4px;border:1px solid #2C2C2E;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;cursor:pointer" style-hover="border-color:#8E8E93">View logs</div>
+            <div style="height:44px;border-radius:4px;border:1px solid #FF453A;color:#FF453A;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Remove user</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;color:#8E8E93">SERVER ADDRESS</div>
+            <div style="height:44px;border:1px solid #30D5C8;border-radius:4px;display:flex;align-items:center;padding:0 12px;font-family:'JetBrains Mono',monospace;font-size:14px">192.168.1.20<span style="width:1px;height:18px;background:#30D5C8;margin-left:2px"></span></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid #2C2C2E;border-bottom:1px solid #2C2C2E;padding:12px 0"><span style="font-size:15px">Push alerts</span><div onClick="{{ toggle }}" style="width:44px;height:24px;border-radius:2px;border:1px solid {{ toggleBorderB }};padding:3px;box-sizing:border-box;display:flex;justify-content:{{ toggleJustify }};cursor:pointer"><div style="width:16px;height:16px;border-radius:1px;background:{{ toggleKnobB }}"></div></div></div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em">
+            <span style="padding:3px 6px;border:1px solid #30D158;color:#30D158;border-radius:2px">OK</span>
+            <span style="padding:3px 6px;border:1px solid #FF9F0A;color:#FF9F0A;border-radius:2px">WARN</span>
+            <span style="padding:3px 6px;border:1px solid #FF453A;color:#FF453A;border-radius:2px">DOWN</span>
+            <span style="padding:3px 6px;border:1px solid #8E8E93;color:#F5F5F7;border-radius:2px">USER</span>
+            <span style="padding:3px 6px;border:1px solid #30D5C8;color:#30D5C8;border-radius:2px">FAMILY</span>
+            <span style="padding:3px 6px;border:1px solid #0A84FF;color:#0A84FF;border-radius:2px">ADMIN</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:#1C1C1E;border:1px solid #2C2C2E;border-radius:4px;padding:12px 14px"><span style="width:6px;height:6px;background:#30D158"></span><span style="font-size:14px;flex:1">jellyfin restarted</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#0A84FF">UNDO</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2c SOFT -->
+    <div id="2c" style="display:flex;flex-direction:column;gap:16px;font-family:'Manrope',sans-serif">
+      <div style="display:flex;gap:10px;align-items:center;font-family:'Geist Mono',monospace;font-size:13px;color:#8E8E93"><span style="background:#F5F5F7;color:#101011;padding:3px 8px;border-radius:999px">2c</span>Soft — big numerals, pill shapes, tinted status surfaces</div>
+      <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+        <div style="width:360px;height:760px;background:#101011;border-radius:36px;box-shadow:0 0 0 8px #1C1C1E;overflow:hidden;display:flex;flex-direction:column">
+          <div style="height:32px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:13px;font-weight:600"><span>9:41</span><span style="width:18px;height:10px;border:1.5px solid #F5F5F7;border-radius:3px"></span></div>
+          <div style="flex:1;overflow:auto;padding:8px 14px 16px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:12px;padding:4px 6px 8px">
+              <div style="width:44px;height:44px;border-radius:50%;background:#1C1C1E;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 48 48" fill="none" stroke="#F5F5F7" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M8 13 L16 6 L24 11 L32 6 L40 13 V33 Q40 43 24 43 Q8 43 8 33 Z"></path><path d="M10 28 L16 17 L22 28 Z"></path><path d="M26 28 L32 17 L38 28 Z"></path><circle cx="16" cy="24" r="2.2" fill="#30D5C8" stroke="none"></circle><circle cx="32" cy="24" r="2.2" fill="#30D5C8" stroke="none"></circle></svg></div>
+              <div style="flex:1;display:flex;flex-direction:column"><div style="font-size:13px;color:#8E8E93;font-weight:500">Good evening, Alex</div><div style="font-size:22px;font-weight:800;letter-spacing:-.02em">All systems calm</div></div>
+            </div>
+            <div style="background:#1C1C1E;border-radius:28px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:14px;font-weight:600;color:#8E8E93">CPU load</span>
+                <div style="display:flex;gap:2px;background:#2C2C2E;border-radius:999px;padding:3px">
+                  <sc-for list="{{ ranges }}" as="r" hint-placeholder-count="3">
+                    <span onClick="{{ r.pick }}" style="font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;cursor:pointer;background:{{ r.bgC }};color:{{ r.fgC }}">{{ r.label }}</span>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:56px;font-weight:800;letter-spacing:-.04em;line-height:1">23</span><span style="font-size:20px;font-weight:700;color:#8E8E93">%</span></div>
+              <svg viewBox="0 0 120 32" style="width:100%;height:56px" preserveAspectRatio="none"><path d="{{ bigArea }}" fill="#30D5C8" fill-opacity=".16"></path><path d="{{ bigLine }}" fill="none" stroke="#30D5C8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path></svg>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+              <sc-for list="{{ miniStats }}" as="s" hint-placeholder-count="3">
+                <div style="background:#1C1C1E;border-radius:22px;padding:14px 12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:22px;font-weight:800;letter-spacing:-.02em">{{ s.value }}</span><span style="font-size:12px;font-weight:600;color:#8E8E93">{{ s.label }}</span></div>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ services }}" as="v" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:12px;background:#1C1C1E;border-radius:22px;padding:10px 12px 10px 10px">
+                  <div style="width:40px;height:40px;border-radius:50%;background:#2C2C2E;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800">{{ v.initial }}</div>
+                  <div style="flex:1;display:flex;flex-direction:column"><span style="font-size:15px;font-weight:700">{{ v.name }}</span><span style="font-size:12px;font-weight:500;color:#8E8E93">{{ v.meta }}</span></div>
+                  <span style="font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;background:{{ v.tint }};color:{{ v.color }}">{{ v.status }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="padding:0 14px 14px"><div style="height:60px;background:#1C1C1E;border-radius:999px;display:grid;grid-template-columns:repeat(4,1fr);align-items:center;padding:0 6px">
+            <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+              <div style="height:48px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:{{ t.bgC }};color:{{ t.colorC }}">{{ t.label }}</div>
+            </sc-for>
+          </div></div>
+        </div>
+        <div style="width:300px;display:flex;flex-direction:column;gap:22px">
+          <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:34px;font-weight:800;letter-spacing:-.03em">Aa Manrope</div><div style="font-size:13px;font-weight:500;color:#8E8E93">Numerals 56/800 · Body 15/600</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="height:52px;border-radius:999px;background:#0A84FF;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;cursor:pointer" style-hover="background:#3395FF">Restart service</div>
+            <div style="height:52px;border-radius:999px;background:#1C1C1E;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;cursor:pointer" style-hover="background:#2C2C2E">View logs</div>
+            <div style="height:52px;border-radius:999px;background:rgba(255,69,58,.14);color:#FF453A;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700">Remove user</div>
+          </div>
+          <div style="height:52px;border-radius:999px;background:#1C1C1E;display:flex;align-items:center;padding:0 20px;font-size:15px;font-weight:600;color:#8E8E93">Server address</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#1C1C1E;border-radius:22px;padding:12px 12px 12px 18px"><span style="font-size:15px;font-weight:600">Push alerts</span><div onClick="{{ toggle }}" style="width:56px;height:34px;border-radius:999px;background:{{ toggleBgC }};padding:3px;box-sizing:border-box;display:flex;justify-content:{{ toggleJustify }};cursor:pointer;transition:background .2s"><div style="width:28px;height:28px;border-radius:50%;background:#F5F5F7"></div></div></div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:12px;font-weight:700">
+            <span style="padding:6px 12px;border-radius:999px;background:rgba(48,209,88,.15);color:#30D158">Online</span>
+            <span style="padding:6px 12px;border-radius:999px;background:rgba(255,159,10,.15);color:#FF9F0A">Degraded</span>
+            <span style="padding:6px 12px;border-radius:999px;background:rgba(255,69,58,.15);color:#FF453A">Down</span>
+            <span style="padding:6px 12px;border-radius:999px;background:#2C2C2E;color:#F5F5F7">User</span>
+            <span style="padding:6px 12px;border-radius:999px;background:#30D5C8;color:#101011">Family</span>
+            <span style="padding:6px 12px;border-radius:999px;background:#0A84FF;color:#F5F5F7">Admin</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:#2C2C2E;border-radius:999px;padding:8px 8px 8px 18px;box-shadow:0 12px 32px rgba(0,0,0,.5)"><span style="font-size:15px;font-weight:600;flex:1">Jellyfin restarted</span><span style="font-size:14px;font-weight:700;padding:8px 14px;border-radius:999px;background:#F5F5F7;color:#101011">Undo</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { range: '24h', on: true };
+  renderVals() {
+    const { range, on } = this.state;
+    const series = {
+      '24h': [[24,22,25,18,20,14,16,10,13,8,11,6,9],[12,14,13,16,15,18,17,20,19,22,21,23,24],[20,20,19,21,20,22,21,20,21,19,20,20,21],[28,26,27,22,24,25,20,18,21,16,18,14,15]],
+      '7d':  [[16,18,14,20,12,15,10,14,18,12,9,13,11],[22,20,21,18,19,16,17,15,16,13,14,12,12],[18,19,20,18,21,20,19,22,21,20,22,21,20],[20,24,18,22,26,20,24,18,22,20,16,18,17]],
+      '30d': [[20,16,18,14,16,12,15,11,13,10,12,9,10],[26,24,22,22,20,19,18,17,16,15,14,13,12],[21,20,20,21,20,21,20,20,21,20,21,20,20],[24,22,26,20,24,22,18,22,20,18,20,16,18]]
+    }[range];
+    const line = p => p.map((y, i) => `${i ? 'L' : 'M'}${i * 10} ${y}`).join(' ');
+    const area = p => line(p) + ' L120 32 L0 32 Z';
+    const meta = [['CPU', 'CPU', '23', '%'], ['Memory', 'MEM', '11.4', 'GB'], ['Network', 'NET', '84', 'Mb/s'], ['Storage', 'DSK', '91', '%']];
+    const C = { ok: '#30D158', warn: '#FF9F0A', down: '#FF453A' };
+    const T = { ok: 'rgba(48,209,88,.15)', warn: 'rgba(255,159,10,.15)', down: 'rgba(255,69,58,.15)' };
+    const svc = [['Jellyfin', 'Streaming · 3 active', ':8096', 'ok', 'Online', '200'], ['Nextcloud', 'Files · 1.2 TB', ':443', 'ok', 'Online', '200'], ['Backups', 'Last run 02:00', ':—', 'warn', 'Slow', 'WARN'], ['Home Assistant', 'Not responding', ':8123', 'down', 'Down', '503']];
+    const tabNames = [['Overview', 'OVR'], ['Media', 'MED'], ['Files', 'FIL'], ['Alerts', 'ALR']];
+    return {
+      ranges: ['24h', '7d', '30d'].map(r => {
+        const a = r === range;
+        return { label: r, pick: () => this.setState({ range: r }),
+          bgA: a ? '#3A3A3C' : 'transparent', fgA: a ? '#F5F5F7' : '#8E8E93',
+          bgB: a ? 'rgba(48,213,200,.12)' : 'transparent', fgB: a ? '#30D5C8' : '#8E8E93',
+          bgC: a ? '#F5F5F7' : 'transparent', fgC: a ? '#101011' : '#8E8E93' };
+      }),
+      stats: meta.map(([label, code, value, unit], i) => ({ label, code, value, unit, line: line(series[i]), area: area(series[i]), divB: i % 2 === 0 ? '1px solid #2C2C2E' : 'none' })),
+      bigLine: line(series[0]), bigArea: area(series[0]),
+      miniStats: [{ value: '11.4', label: 'GB RAM' }, { value: '84', label: 'Mb/s' }, { value: '91%', label: 'Disk 2' }],
+      services: svc.map(([name, m, port, k, status, code], i) => ({ name, meta: m, port, status, code, color: C[k], tint: T[k], initial: name[0], sep: i ? '1px solid #2C2C2E' : 'none' })),
+      tabs: tabNames.map(([label, code], i) => ({ label, code, colorA: i ? '#8E8E93' : '#0A84FF', colorB: i ? '#8E8E93' : '#F5F5F7', barB: i ? '2px solid transparent' : '2px solid #30D5C8', bgC: i ? 'transparent' : '#2C2C2E', colorC: i ? '#8E8E93' : '#F5F5F7' })),
+      toggle: () => this.setState(s => ({ on: !s.on })),
+      toggleBg: on ? '#30D158' : '#3A3A3C', toggleBgC: on ? '#0A84FF' : '#3A3A3C',
+      toggleJustify: on ? 'flex-end' : 'flex-start',
+      toggleBorderB: on ? '#30D5C8' : '#2C2C2E', toggleKnobB: on ? '#30D5C8' : '#8E8E93'
+    };
+  }
+}
+</script>
+</body>
+</html>
