@@ -79,4 +79,4 @@
 - Proposed (AI, awaiting approval): flow request (Google-verified) -> owner approves in app -> Tailscale invite -> sign in through built-in Tailscale -> app shows only allowed services; screens Welcome, Request, Home, Admin. Laptop has Android SDK but no Flutter, Go, or Visual Studio C++ yet.
 
 ## Pending decision
-- Homeserver app: design checkpoint. Waiting for approval of the flow and screens, and the owner's admin-area list (stats, services + restart, logs, backups, members/requests). Nothing built yet.
+- Homeserver app: the owner will provide their own screen design (2026-10-23); my mockup is only a placeholder. Also still needed: their admin-area list. Nothing built yet.
