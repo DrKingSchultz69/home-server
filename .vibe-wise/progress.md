@@ -77,6 +77,8 @@
 
 - Learner answers (2026-10-23): 3) B, the app checks in about every 15 minutes and shows alerts itself (no ntfy app, no outside checker); 4) Flutter (Dart).
 - Proposed (AI, awaiting approval): flow request (Google-verified) -> owner approves in app -> Tailscale invite -> sign in through built-in Tailscale -> app shows only allowed services; screens Welcome, Request, Home, Admin. Laptop has Android SDK but no Flutter, Go, or Visual Studio C++ yet.
+- Learner answers on the functional requirements (2026-10-23): in-app update notices; sign out allowed; native Files (upload from phone photos, download, share, download from server); streaming inside the app; access tiers (every approved user: Streaming; family: Streaming + Files upload/download); admin: history graphs, per-service status with alerts, logs, devices/people last seen, restart service, restart/shut down server, remove person/device, backups page designed but not wired; notify on almost every problem, with quiet hours; subtle dark mode; app name Watcher, asked for colour suggestions.
+- Learner answers (2026-10-23): colours = mix of Night Watch blue, Sentinel teal, Graphite greys; roles User (Streaming), Family (Streaming + Files), Admin (everything; anyone given admin access, not only the owner); quiet hours broken only by a real outage (power cut, shutdown, any reason the server is truly down); sign out does NOT remove the device; no shut-down button, restart only; icon idea: an owl with Illuminati (eye of providence) eyes.
 
 ## Pending decision
-- Homeserver app: the owner will provide their own screen design (2026-10-23); my mockup is only a placeholder. Also still needed: their admin-area list. Nothing built yet.
+- Homeserver app (Watcher): requirements mostly answered. Open: quiet-hours times (default proposed 23:00-07:00), owner still to send screen design and icon. Nothing built yet.
